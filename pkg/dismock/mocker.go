@@ -32,9 +32,6 @@ type (
 		server *httptest.Server
 		// t is the test type called on error.
 		t *testing.T
-
-		// session is the session that is being mocked.
-		session *session.Session
 	}
 
 	// Handler is a named handler for mocked endpoints.
