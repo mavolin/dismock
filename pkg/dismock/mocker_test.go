@@ -12,6 +12,13 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+var testHandler = Handler{
+	Name: "test",
+	Handler: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusNoContent)
+	}),
+}
+
 // tests the Server started in New.
 func TestMocker_Server(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
@@ -58,8 +65,7 @@ func TestMocker_Server(t *testing.T) {
 
 		m.handlers["/handled/path"] = make(map[string][]Handler)
 
-		m.handlers["/handled/path"][http.MethodPost] = append(m.handlers["/handled/path"][http.MethodPost],
-			Handler{})
+		m.handlers["/handled/path"][http.MethodPost] = append(m.handlers["/handled/path"][http.MethodPost], testHandler)
 
 		url := "https://" + m.server.Listener.Addr().String() + "/handled/path"
 
@@ -74,6 +80,84 @@ func TestMocker_Server(t *testing.T) {
 		client.Get(url)
 
 		assert.True(t, tMock.Failed())
+	})
+
+	t.Run("delete", func(t *testing.T) {
+		t.Run("only handler and only method", func(t *testing.T) {
+			m, _ := New(t)
+
+			m.handlers["/path"] = make(map[string][]Handler)
+
+			m.handlers["/path"][http.MethodGet] = append(m.handlers["/path"][http.MethodGet], testHandler)
+
+			url := "https://" + m.server.Listener.Addr().String() + "/path"
+
+			client := http.Client{
+				Transport: &http.Transport{
+					TLSClientConfig: &tls.Config{
+						InsecureSkipVerify: true,
+					},
+				},
+			}
+
+			_, err := client.Get(url)
+			require.NoError(t, err)
+
+			assert.Len(t, m.handlers, 0)
+		})
+
+		t.Run("only handler multiple methods", func(t *testing.T) {
+			m, _ := New(t)
+
+			m.handlers["/path"] = make(map[string][]Handler)
+
+			m.handlers["/path"][http.MethodGet] = append(m.handlers["/path"][http.MethodGet], testHandler)
+			m.handlers["/path"][http.MethodPost] = append(m.handlers["/path"][http.MethodPost], testHandler)
+
+			url := "https://" + m.server.Listener.Addr().String() + "/path"
+
+			client := http.Client{
+				Transport: &http.Transport{
+					TLSClientConfig: &tls.Config{
+						InsecureSkipVerify: true,
+					},
+				},
+			}
+
+			_, err := client.Get(url)
+			require.NoError(t, err)
+
+			assert.Len(t, m.handlers, 1)
+			assert.Len(t, m.handlers["/path"], 1)
+
+			_, ok := m.handlers["/path"][http.MethodPost]
+			assert.True(t, ok)
+		})
+
+		t.Run("multiple handlers", func(t *testing.T) {
+			m, _ := New(t)
+
+			m.handlers["/path"] = make(map[string][]Handler)
+
+			m.handlers["/path"][http.MethodGet] = append(m.handlers["/path"][http.MethodGet], testHandler, testHandler)
+
+			url := "https://" + m.server.Listener.Addr().String() + "/path"
+
+			client := http.Client{
+				Transport: &http.Transport{
+					TLSClientConfig: &tls.Config{
+						InsecureSkipVerify: true,
+					},
+				},
+			}
+
+			_, err := client.Get(url)
+			require.NoError(t, err)
+
+			assert.Len(t, m.handlers, 1)
+			assert.Len(t, m.handlers["/path"], 1)
+			assert.Len(t, m.handlers["/path"][http.MethodGet], 1)
+		})
 	})
 }
 
@@ -161,7 +245,7 @@ func TestMocker_Eval(t *testing.T) {
 		}()
 
 		// as the started goroutine is terminated, this is necessary to ensure execution
-		time.Sleep(100 * time.Microsecond)
+		time.Sleep(500 * time.Microsecond)
 
 		assert.True(t, tMock.Failed())
 	})
