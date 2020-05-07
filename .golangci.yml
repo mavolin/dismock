@@ -47,3 +47,7 @@ issues:
         - gosec
         - goconst
         - funlen
+    - path: ^pkg/dismock/mocker.go$ # needed to mock
+      message: "^G402: TLS InsecureSkipVerify set true.$"
+      linters:
+        - gosec
