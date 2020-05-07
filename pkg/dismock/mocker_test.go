@@ -1,14 +1,81 @@
 package dismock
 
 import (
+	"crypto/tls"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 	"time"
 
+	"github.com/diamondburned/arikawa/discord"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
+
+// tests the Server started in New.
+func TestMocker_Server(t *testing.T) {
+	t.Run("success", func(t *testing.T) {
+		m, s := New(t)
+
+		expect := discord.Channel{
+			ID: 123,
+		}
+
+		m.Channel(expect)
+
+		actual, err := s.Channel(123)
+		require.NoError(t, err)
+
+		assert.Equal(t, expect, *actual)
+	})
+
+	t.Run("unhandled path", func(t *testing.T) {
+		tMock := new(testing.T)
+
+		m, _ := New(tMock)
+
+		url := "https://" + m.server.Listener.Addr().String() + "/unhandled/path"
+
+		client := http.Client{
+			Transport: &http.Transport{
+				TLSClientConfig: &tls.Config{
+					InsecureSkipVerify: true,
+				},
+			},
+		}
+
+		client.Get(url)
+
+		m.Eval()
+
+		assert.True(t, tMock.Failed())
+	})
+
+	t.Run("unhandled method", func(t *testing.T) {
+		tMock := new(testing.T)
+
+		m, _ := New(tMock)
+
+		m.handlers["/handled/path"] = make(map[string][]Handler)
+
+		m.handlers["/handled/path"][http.MethodPost] = append(m.handlers["/handled/path"][http.MethodPost],
+			Handler{})
+
+		url := "https://" + m.server.Listener.Addr().String() + "/handled/path"
+
+		client := http.Client{
+			Transport: &http.Transport{
+				TLSClientConfig: &tls.Config{
+					InsecureSkipVerify: true,
+				},
+			},
+		}
+
+		client.Get(url)
+
+		assert.True(t, tMock.Failed())
+	})
+}
 
 func TestMocker_Mock(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
