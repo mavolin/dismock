@@ -1,0 +1,20 @@
+name: Test
+on: [push, pull_request]
+
+jobs:
+  test:
+    name: Go test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install Go
+        uses: actions/setup-go@v2
+        env:
+          GOPATH: /home/runner/work/go
+        with:
+          go-version: 1.14.x
+      - name: Checkout
+        uses: actions/checkout@v1
+        with:
+          path: ./go/src/github.com/${{ github.repository }}
+      - name: Test
+        run: go test -race ./...
