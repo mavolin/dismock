@@ -47,7 +47,12 @@ issues:
         - gosec
         - goconst
         - funlen
+        - bodyclose
     - path: ^pkg/dismock/mocker.go$ # needed to mock
-      message: "^G402: TLS InsecureSkipVerify set true.$"
+      text: "^G402: TLS InsecureSkipVerify set true.$"
       linters:
         - gosec
+    - path: ^pkg/dismock/.+\.go$ # possible, but param should be limited to discord.Snowflake
+      text: ^`\w+` can be `fmt.Stringer`$
+      linters:
+        - interfacer
