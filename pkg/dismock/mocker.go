@@ -126,6 +126,8 @@ func (m *Mocker) Mock(name, method, path string, f MockFunc) {
 		Handler: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			if f != nil {
 				f(w, r, m.t)
+			} else {
+				w.WriteHeader(http.StatusNoContent)
 			}
 		}),
 	}

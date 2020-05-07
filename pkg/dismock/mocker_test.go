@@ -42,7 +42,11 @@ func TestMocker_Mock(t *testing.T) {
 		h, ok := m.handlers["/api/v6"+path][method]
 		require.True(t, ok)
 
-		h[0].ServeHTTP(new(httptest.ResponseRecorder), new(http.Request)) // if unsuccessful, this would panic
+		r := new(httptest.ResponseRecorder)
+
+		h[0].ServeHTTP(r, new(http.Request)) // if unsuccessful, this would panic
+
+		assert.Equal(t, http.StatusNoContent, r.Code)
 	})
 }
 
