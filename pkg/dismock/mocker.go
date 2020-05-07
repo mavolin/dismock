@@ -12,6 +12,7 @@ import (
 	"sync"
 	"testing"
 
+	"github.com/diamondburned/arikawa/gateway"
 	"github.com/diamondburned/arikawa/session"
 	"github.com/diamondburned/arikawa/utils/httputil/httpdriver"
 	"github.com/stretchr/testify/require"
@@ -61,14 +62,10 @@ func New(t *testing.T) (*Mocker, *session.Session) {
 		defer m.mut.Unlock()
 
 		h, ok := m.handlers[r.URL.Path]
-		if !ok {
-			require.Fail(t, "unhandled path '"+r.URL.Path+"'")
-		}
+		require.True(t, ok, "unhandled path '"+r.URL.Path+"'")
 
 		methHandlers, ok := h[r.Method]
-		if !ok {
-			require.Fail(t, "unhandled method '"+r.Method+"' on path '"+r.URL.Path+"'")
-		}
+		require.True(t, ok, "unhandled method '"+r.Method+"' on path '"+r.URL.Path+"'")
 
 		methHandlers[0].ServeHTTP(w, r)
 
@@ -90,10 +87,8 @@ func New(t *testing.T) (*Mocker, *session.Session) {
 
 // newMockedSession creates a new mocked session using the passed address.
 func newMockedSession(addr string) *session.Session {
-	s, err := session.New("Bot 1234")
-	if err != nil {
-		panic(err)
-	}
+	gw := gateway.NewCustomGateway("", "")
+	s := session.NewWithGateway(gw)
 
 	client := http.Client{
 		Transport: &http.Transport{
@@ -107,6 +102,7 @@ func newMockedSession(addr string) *session.Session {
 	}
 
 	s.Client.Client.Client = httpdriver.WrapClient(client)
+	s.Client.Retries = 1
 
 	return s
 }
@@ -163,16 +159,21 @@ func (m *Mocker) Clone(t *testing.T) (*Mocker, *session.Session) {
 	return clone, s
 }
 
-// Eval evaluates if all registered handlers were invoked.
+// Eval closes the server and evaluates if all registered handlers were invoked.
 // If not it will Fatal, stating the uninvoked handlers.
 // This must be called at the end of every test.
 func (m *Mocker) Eval() {
+	m.Close()
+
 	if len(m.handlers) == 0 {
 		return
 	}
 
 	m.t.Fatal("there are uninvoked handlers:\n\n" + m.genUninvokedMsg())
 }
+
+// Close shuts down the server and blocks until all outstanding requests on this server have completed.
+func (m *Mocker) Close() { m.server.Close() }
 
 // genUninvokedMsg generates an error message stating the unused handlers.
 //
