@@ -116,14 +116,14 @@ func TestMocker_ModifyEmoji(t *testing.T) {
 
 		var (
 			guildID discord.Snowflake   = 123
-			emojiI  discord.Snowflake   = 456
+			emojiID discord.Snowflake   = 456
 			name                        = "abc"
 			roles   []discord.Snowflake = nil
 		)
 
-		m.ModifyEmoji(guildID, emojiI, name, roles)
+		m.ModifyEmoji(guildID, emojiID, name, roles)
 
-		err := s.ModifyEmoji(guildID, emojiI, name, roles)
+		err := s.ModifyEmoji(guildID, emojiID, name, roles)
 		require.NoError(t, err)
 
 		m.Eval()
