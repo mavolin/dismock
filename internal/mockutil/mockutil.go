@@ -9,6 +9,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+// WriteJSON writes the passed value to the passed Writer.
 func WriteJSON(t *testing.T, w io.Writer, v interface{}) {
 	err := json.NewEncoder(w).Encode(v)
 	require.NoError(t, err)
