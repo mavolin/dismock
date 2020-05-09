@@ -5,6 +5,7 @@ import (
 
 	"github.com/diamondburned/arikawa/api"
 	"github.com/diamondburned/arikawa/discord"
+	"github.com/diamondburned/arikawa/utils/json"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -87,14 +88,22 @@ func TestMocker_MoveChannel(t *testing.T) {
 		m, s := New(t)
 
 		var (
-			guildID   discord.Snowflake = 123
-			channelID discord.Snowflake = 456
-			position                    = 1
+			guildID discord.Snowflake = 123
+			data                      = []api.MoveChannelData{
+				{
+					ID:       123,
+					Position: json.Int(0),
+				},
+				{
+					ID:       456,
+					Position: json.Int(1),
+				},
+			}
 		)
 
-		m.MoveChannel(guildID, channelID, position)
+		m.MoveChannel(guildID, data)
 
-		err := s.MoveChannel(guildID, channelID, position)
+		err := s.MoveChannel(guildID, data)
 		require.NoError(t, err)
 
 		m.Eval()
@@ -107,9 +116,27 @@ func TestMocker_MoveChannel(t *testing.T) {
 
 		var guildID discord.Snowflake = 123
 
-		m.MoveChannel(guildID, 456, 1)
+		m.MoveChannel(guildID, []api.MoveChannelData{
+			{
+				ID:       123,
+				Position: json.Int(0),
+			},
+			{
+				ID:       456,
+				Position: json.Int(1),
+			},
+		})
 
-		err := s.MoveChannel(guildID, 789, 1)
+		err := s.MoveChannel(guildID, []api.MoveChannelData{
+			{
+				ID:       789,
+				Position: json.Int(0),
+			},
+			{
+				ID:       012,
+				Position: json.Int(1),
+			},
+		})
 		require.NoError(t, err)
 
 		assert.True(t, tMock.Failed())

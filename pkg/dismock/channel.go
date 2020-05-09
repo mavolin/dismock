@@ -28,22 +28,11 @@ func (m *Mocker) CreateChannel(d api.CreateChannelData, c discord.Channel) {
 		})
 }
 
-type moveChannelPayload struct {
-	ID  discord.Snowflake `json:"id"`
-	Pos int               `json:"position"`
-}
-
 // MoveChannel mocks a MoveChannel request.
-func (m *Mocker) MoveChannel(guildID, channelID discord.Snowflake, position int) {
+func (m *Mocker) MoveChannel(guildID discord.Snowflake, d []api.MoveChannelData) {
 	m.Mock("CreateChannel", http.MethodPatch, "/guilds/"+guildID.String()+"/channels",
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
-			expect := moveChannelPayload{
-				ID:  channelID,
-				Pos: position,
-			}
-
-			mockutil.CheckJSONBody(t, r.Body, new(moveChannelPayload), &expect)
-
+			mockutil.CheckJSONBody(t, r.Body, &[]api.MoveChannelData{}, &d)
 			w.WriteHeader(http.StatusNoContent)
 		})
 }
@@ -58,8 +47,8 @@ func (m *Mocker) Channel(c discord.Channel) {
 }
 
 // ModifyChannel mocks a ModifyChannel request.
-func (m *Mocker) ModifyChannel(channelID discord.Snowflake, d api.ModifyChannelData) {
-	m.Mock("ModifyChannel", http.MethodPatch, "/channels/"+channelID.String(),
+func (m *Mocker) ModifyChannel(id discord.Snowflake, d api.ModifyChannelData) {
+	m.Mock("ModifyChannel", http.MethodPatch, "/channels/"+id.String(),
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
 			mockutil.CheckJSONBody(t, r.Body, new(api.ModifyChannelData), &d)
 			w.WriteHeader(http.StatusNoContent)
@@ -67,8 +56,8 @@ func (m *Mocker) ModifyChannel(channelID discord.Snowflake, d api.ModifyChannelD
 }
 
 // DeleteChannel mocks a DeleteChannel request.
-func (m *Mocker) DeleteChannel(channelID discord.Snowflake) {
-	m.Mock("DeleteChannel", http.MethodDelete, "/channels/"+channelID.String(), nil)
+func (m *Mocker) DeleteChannel(id discord.Snowflake) {
+	m.Mock("DeleteChannel", http.MethodDelete, "/channels/"+id.String(), nil)
 }
 
 // EditChannelPermission mocks a EditChannelPermission request.

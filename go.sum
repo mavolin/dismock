@@ -2,6 +2,10 @@ github.com/davecgh/go-spew v1.1.0 h1:ZDRjVQ15GmhC3fiQ8ni8+OwkZQO4DARzQgrnXU1Liz8
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/diamondburned/arikawa v0.6.2 h1:8dfaLNaaSGqVtl6xEDyGCjJa6bLVrMzLsPVjj0k4VsQ=
 github.com/diamondburned/arikawa v0.6.2/go.mod h1:nIhVIatzTQhPUa7NB8w4koG1RF9gYbpAr8Fj8sKq660=
+github.com/diamondburned/arikawa v0.6.3 h1:yq6qnxDpOhIodlo7UaAK8olnHg1Ny4Alzem3AXp1Q1U=
+github.com/diamondburned/arikawa v0.6.3/go.mod h1:nIhVIatzTQhPUa7NB8w4koG1RF9gYbpAr8Fj8sKq660=
+github.com/diamondburned/arikawa v0.6.4 h1:SWH5g3kZhr4lG83RYz1NGgifPM6hImn5vj3UUXbUWeg=
+github.com/diamondburned/arikawa v0.6.4/go.mod h1:nIhVIatzTQhPUa7NB8w4koG1RF9gYbpAr8Fj8sKq660=
 github.com/gorilla/schema v1.1.0 h1:CamqUDOFUBqzrvxuz2vEwo8+SUdwsluFh7IlzJh30LY=
 github.com/gorilla/schema v1.1.0/go.mod h1:kgLaKoK1FELgZqMAVxx/5cbj0kT+57qxUrAlIO2eleU=
 github.com/gorilla/websocket v1.4.2 h1:+/TMaTYc4QFitKJxsQ7Yye35DkWvkdLcvGKqM+x0Ufc=
