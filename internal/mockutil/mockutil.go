@@ -3,8 +3,10 @@ package mockutil
 import (
 	"encoding/json"
 	"io"
+	"net/url"
 	"testing"
 
+	"github.com/gorilla/schema"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -23,6 +25,17 @@ func CheckJSONBody(t *testing.T, r io.ReadCloser, v interface{}, expect interfac
 	require.NoError(t, err)
 
 	require.NoError(t, r.Close())
+
+	assert.Equal(t, expect, v)
+}
+
+// CheckQuery checks if the passed query contains the values found in except.
+func CheckQuery(t *testing.T, query url.Values, v interface{}, expect interface{}) {
+	d := schema.NewDecoder()
+	d.ZeroEmpty(true)
+
+	err := d.Decode(v, query)
+	require.NoError(t, err)
 
 	assert.Equal(t, expect, v)
 }
