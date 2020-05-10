@@ -6,7 +6,6 @@ import (
 	"net/url"
 	"testing"
 
-	"github.com/gorilla/schema"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -30,12 +29,22 @@ func CheckJSON(t *testing.T, r io.ReadCloser, v interface{}, expect interface{})
 }
 
 // CheckQuery checks if the passed query contains the values found in except.
-func CheckQuery(t *testing.T, query url.Values, v interface{}, expect interface{}) {
-	d := schema.NewDecoder()
-	d.ZeroEmpty(true)
+func CheckQuery(t *testing.T, query url.Values, expect map[string]string) {
+	for name, vals := range query {
+		if len(vals) == 0 {
+			continue
+		}
+		expectVal, ok := expect[name]
+		if !assert.True(t, ok, "unexpected query field: '"+name+"' with value '"+vals[0]+"'") {
+			continue
+		}
 
-	err := d.Decode(v, query)
-	require.NoError(t, err)
+		assert.Equal(t, expectVal, vals[0], "query fields for '"+name+"' don't match")
 
-	assert.Equal(t, expect, v)
+		delete(expect, name)
+	}
+
+	for name := range expect {
+		assert.Fail(t, "missing query field: '"+name+"'")
+	}
 }

@@ -96,77 +96,40 @@ func TestCheckJSONBody(t *testing.T) {
 	})
 }
 
-type testSchema struct {
-	Needed    string `schema:"needed"`
-	Omittable string `schema:"omittable,omitempty"`
-}
-
 func TestCheckQuery(t *testing.T) {
-	successCases := []struct {
-		name   string
-		query  url.Values
-		expect testSchema
-	}{
-		{
-			name: "all fields filled",
-			query: map[string][]string{
-				"needed":    {"present"},
-				"omittable": {"present as well"},
-			},
-			expect: testSchema{
-				Needed:    "present",
-				Omittable: "present as well",
-			},
-		},
-		{
-			name: "field omitted",
-			query: map[string][]string{
-				"needed": {"present"},
-			},
-			expect: testSchema{
-				Needed: "present",
-			},
-		},
-		{
-			name: "zero values",
-			query: map[string][]string{
-				"needed": {""},
-			},
-			expect: testSchema{},
-		},
-	}
-
 	failureCases := []struct {
 		name        string
 		query       url.Values
-		falseExpect testSchema
+		falseExpect map[string]string
 	}{
 		{
 			name: "unequal",
 			query: map[string][]string{
-				"needed":    {"abc"},
-				"omittable": {"def"},
+				"foo": {"abc"},
+				"bar": {"123"},
 			},
-			falseExpect: testSchema{
-				Needed:    "ghi",
-				Omittable: "jkl",
+			falseExpect: map[string]string{
+				"foo": "def",
+				"bar": "456",
 			},
 		},
 		{
-			name: "required field missing",
+			name: "field missing",
 			query: map[string][]string{
-				"omittable": {"present"},
+				"foo": {"present"},
 			},
-			falseExpect: testSchema{},
+			falseExpect: map[string]string{},
 		},
 	}
 
 	t.Run("success", func(t *testing.T) {
-		for _, c := range successCases {
-			t.Run(c.name, func(t *testing.T) {
-				CheckQuery(t, c.query, new(testSchema), &c.expect)
-			})
-		}
+		CheckQuery(t, url.Values{
+			"foo": {"present"},
+			"bar": {"123"},
+		}, map[string]string{
+			"foo": "present",
+			"bar": "123",
+		})
 	})
 
 	t.Run("failure", func(t *testing.T) {
@@ -174,7 +137,7 @@ func TestCheckQuery(t *testing.T) {
 			t.Run(c.name, func(t *testing.T) {
 				tMock := new(testing.T)
 
-				CheckQuery(tMock, c.query, new(testSchema), &c.falseExpect)
+				CheckQuery(tMock, c.query, c.falseExpect)
 
 				assert.True(t, tMock.Failed())
 			})
