@@ -44,7 +44,7 @@ func (m *Mocker) CreateEmoji(guildID discord.Snowflake, i api.Image, e discord.E
 				Roles: e.RoleIDs,
 			}
 
-			mockutil.CheckJSONBody(t, r.Body, new(createEmojiPayload), expect)
+			mockutil.CheckJSON(t, r.Body, new(createEmojiPayload), expect)
 			mockutil.WriteJSON(t, w, e)
 		})
 }
@@ -63,7 +63,7 @@ func (m *Mocker) ModifyEmoji(guildID, emojiID discord.Snowflake, name string, ro
 				Roles: roles,
 			}
 
-			mockutil.CheckJSONBody(t, r.Body, new(modifyEmojiPayload), expect)
+			mockutil.CheckJSON(t, r.Body, new(modifyEmojiPayload), expect)
 			w.WriteHeader(http.StatusNoContent)
 		})
 }

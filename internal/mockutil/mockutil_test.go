@@ -72,7 +72,7 @@ func TestCheckJSONBody(t *testing.T) {
 			Field2: "Hello World!",
 		}
 
-		CheckJSONBody(t, r, new(testStruct), expect)
+		CheckJSON(t, r, new(testStruct), expect)
 
 		assert.True(t, r.closed)
 	})
@@ -89,7 +89,7 @@ func TestCheckJSONBody(t *testing.T) {
 
 		tMock := new(testing.T)
 
-		CheckJSONBody(tMock, r, &testStruct{}, expect)
+		CheckJSON(tMock, r, &testStruct{}, expect)
 
 		assert.True(t, tMock.Failed())
 		assert.True(t, r.closed)
