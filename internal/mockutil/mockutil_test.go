@@ -3,8 +3,10 @@ package mockutil
 import (
 	"io"
 	"net/url"
+	"reflect"
 	"testing"
 
+	"github.com/diamondburned/arikawa/utils/json/option"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -61,7 +63,7 @@ func (r *mockReader) Close() error {
 	return nil
 }
 
-func TestCheckJSONBody(t *testing.T) {
+func TestCheckJSON(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		r := &mockReader{
 			src: []byte("{\"field_1\":123,\"field_2\":\"Hello World!\"}\n"),
@@ -96,6 +98,120 @@ func TestCheckJSONBody(t *testing.T) {
 	})
 }
 
+func TestReplaceNullables(t *testing.T) {
+	testCases := []struct {
+		name   string
+		in     interface{}
+		expect interface{}
+	}{
+		{
+			name:   "nothing",
+			in:     nil,
+			expect: nil,
+		},
+		{
+			name: "NullableBool",
+			in: &struct {
+				B option.NullableBool
+			}{
+				B: option.NullBool,
+			},
+			expect: &struct {
+				B option.NullableBool
+			}{
+				B: nil,
+			},
+		},
+		{
+			name: "NullableUint",
+			in: &struct {
+				B option.NullableUint
+			}{
+				B: option.NullUint,
+			},
+			expect: &struct {
+				B option.NullableUint
+			}{
+				B: nil,
+			},
+		},
+		{
+			name: "NullableInt",
+			in: &struct {
+				B option.NullableInt
+			}{
+				B: option.NullInt,
+			},
+			expect: &struct {
+				B option.NullableInt
+			}{
+				B: nil,
+			},
+		},
+		{
+			name: "NullableString",
+			in: &struct {
+				B option.NullableString
+			}{
+				B: option.NullString,
+			},
+			expect: &struct {
+				B option.NullableString
+			}{
+				B: nil,
+			},
+		},
+		{
+			name: "NullableColor",
+			in: &struct {
+				B option.NullableColor
+			}{
+				B: option.NullColor,
+			},
+			expect: &struct {
+				B option.NullableColor
+			}{
+				B: nil,
+			},
+		},
+		{
+			name: "nested",
+			in: &struct {
+				Nest struct {
+					B option.NullableBool
+				}
+			}{
+				Nest: struct {
+					B option.NullableBool
+				}{
+					B: option.NullBool,
+				},
+			},
+			expect: &struct {
+				Nest struct {
+					B option.NullableBool
+				}
+			}{
+				Nest: struct {
+					B option.NullableBool
+				}{
+					B: nil,
+				},
+			},
+		},
+	}
+
+	for _, c := range testCases {
+		t.Run(c.name, func(t *testing.T) {
+			val := reflect.ValueOf(c.in)
+
+			replaceNullables(val)
+
+			assert.Equal(t, c.expect, c.in)
+		})
+	}
+}
+
 func TestCheckQuery(t *testing.T) {
 	failureCases := []struct {
 		name        string
@@ -114,11 +230,27 @@ func TestCheckQuery(t *testing.T) {
 			},
 		},
 		{
-			name: "field missing",
+			name: "unexpected field",
 			query: map[string][]string{
 				"foo": {"present"},
 			},
 			falseExpect: map[string]string{},
+		},
+		{
+			name:  "missing field",
+			query: map[string][]string{},
+			falseExpect: map[string]string{
+				"foo": "I expected this to be here",
+			},
+		},
+		{
+			name: "empty query",
+			query: map[string][]string{
+				"foo": {},
+			},
+			falseExpect: map[string]string{
+				"foo": "this should be filled",
+			},
 		},
 	}
 

@@ -23,10 +23,13 @@ type (
 	Mocker struct {
 		// handlers contains all mock handlers.
 		// The first map is sorted by path, the second by method.
-		// This ensures that different requests don't share the same Handler array, while still enforcing the call order.
+		// This ensures that different requests don't share the same Handler array, while still
+		// enforcing the call order.
 		handlers map[string]map[string][]Handler // map[Path]map[HTTPMethod][]Handler
-		// mut is the Mutex used to secure the handlers map, when multiple request come in concurrently.
-		// However, adding handlers is not concurrent safe, as there is no point in it, when testing in a single method.
+		// mut is the Mutex used to secure the handlers map, when multiple request come in
+		// concurrently.
+		// However, adding handlers is not concurrent safe, as there is no point in it, when
+		// testing in a single method.
 		mut *sync.Mutex
 		// server is the Server used to mock the requests.
 		server *httptest.Server
@@ -46,7 +49,8 @@ type (
 	MockFunc func(w http.ResponseWriter, r *http.Request, t *testing.T)
 )
 
-// New creates a new Mocker, starts its test server and returns a manipulated Session using the test server.
+// New creates a new Mocker, starts its test server and returns a manipulated
+// Session using the test server.
 func New(t *testing.T) (*Mocker, *session.Session) {
 	m := &Mocker{
 		handlers: make(map[string]map[string][]Handler, 1),
@@ -106,7 +110,8 @@ func newMockedSession(addr string) *session.Session {
 
 // Mock uses the passed MockFunc to as handler for the passed path and method.
 // The path is the path with "/api/v6" stripped.
-// If there are already handlers for this path with the same method, the handler will be queued up behind the other
+// If there are already handlers for this path with the same method, the
+// handler will be queued up behind the other
 // handlers with the same path and method.
 // Queued up handlers are invoked in the same order they were added in.
 //
@@ -132,7 +137,8 @@ func (m *Mocker) Mock(name, method, path string, f MockFunc) {
 	m.handlers[path][method] = append(m.handlers[path][method], h)
 }
 
-// Clone clones handlers of the Mocker and returns the cloned Mocker and a new Session.
+// Clone clones handlers of the Mocker and returns the cloned Mocker and a new
+// Session.
 // Useful for multiple tests with the same API calls.
 func (m *Mocker) Clone(t *testing.T) (*Mocker, *session.Session) {
 	handlersCopy := make(map[string]map[string][]Handler, len(m.handlers))
@@ -158,7 +164,8 @@ func (m *Mocker) Clone(t *testing.T) (*Mocker, *session.Session) {
 	return clone, s
 }
 
-// Eval closes the server and evaluates if all registered handlers were invoked.
+// Eval closes the server and evaluates if all registered handlers were
+// invoked.
 // If not it will Fatal, stating the uninvoked handlers.
 // This must be called at the end of every test.
 func (m *Mocker) Eval() {
@@ -171,7 +178,8 @@ func (m *Mocker) Eval() {
 	m.t.Fatal("there are uninvoked handlers:\n\n" + m.genUninvokedMsg())
 }
 
-// Close shuts down the server and blocks until all outstanding requests on this server have completed.
+// Close shuts down the server and blocks until all outstanding requests on
+// this server have completed.
 func (m *Mocker) Close() { m.server.Close() }
 
 // genUninvokedMsg generates an error message stating the unused handlers.
@@ -200,7 +208,8 @@ func (m *Mocker) genUninvokedMsg() string {
 		n += len(p)
 
 		for name, qty := range missingRequests {
-			// log10(qty) is the number of digits and 19 is the number of characters without placeholders
+			// log10(qty) is the number of digits and 19 is the number of characters without
+			// placeholders
 			n += len(name) + int(math.Log10(float64(qty))) + 19
 
 			if qty > 1 { // handler has to be pluralized

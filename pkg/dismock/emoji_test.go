@@ -7,6 +7,8 @@ import (
 	"github.com/diamondburned/arikawa/discord"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	"github.com/mavolin/dismock/internal/sanitize"
 )
 
 func TestMocker_Emojis(t *testing.T) {
@@ -21,6 +23,10 @@ func TestMocker_Emojis(t *testing.T) {
 		{
 			ID: 789,
 		},
+	}
+
+	for i, e := range expect {
+		expect[i] = sanitize.Emoji(e, 1, 1)
 	}
 
 	m.Emojis(guildID, expect)
@@ -38,10 +44,10 @@ func TestMocker_Emoji(t *testing.T) {
 
 	var guildID discord.Snowflake = 123
 
-	expect := discord.Emoji{
+	expect := sanitize.Emoji(discord.Emoji{
 		ID:   456,
 		Name: "abc",
-	}
+	}, 1, 1)
 
 	m.Emoji(guildID, expect)
 
@@ -59,21 +65,24 @@ func TestMocker_CreateEmoji(t *testing.T) {
 
 		var (
 			guildID discord.Snowflake = 123
-			image                     = api.Image{
-				ContentType: "image/png",
-				Content:     []byte{1, 255, 3},
+			data                      = api.CreateEmojiData{
+				Name: "dismock",
+				Image: api.Image{
+					ContentType: "image/png",
+					Content:     []byte{1, 255, 3},
+				},
 			}
 		)
 
-		expect := discord.Emoji{
+		expect := sanitize.Emoji(discord.Emoji{
 			ID:      456,
-			Name:    "dismock",
+			Name:    data.Name,
 			RoleIDs: []discord.Snowflake{789},
-		}
+		}, 1, 1)
 
-		m.CreateEmoji(guildID, image, expect)
+		m.CreateEmoji(guildID, data, expect)
 
-		actual, err := s.CreateEmoji(guildID, expect.Name, image, expect.RoleIDs)
+		actual, err := s.CreateEmoji(guildID, data)
 		require.NoError(t, err)
 
 		assert.Equal(t, expect, *actual)
@@ -88,21 +97,26 @@ func TestMocker_CreateEmoji(t *testing.T) {
 
 		var guildID discord.Snowflake = 123
 
-		expect := discord.Emoji{
-			ID:      456,
-			Name:    "abc",
-			RoleIDs: []discord.Snowflake{789},
-		}
+		expect := sanitize.Emoji(discord.Emoji{
+			ID:   456,
+			Name: "abc",
+		}, 1, 1)
 
-		m.CreateEmoji(guildID, api.Image{
-			ContentType: "image/png",
-			Content:     []byte{1, 255, 3},
+		m.CreateEmoji(guildID, api.CreateEmojiData{
+			Name: expect.Name,
+			Image: api.Image{
+				ContentType: "image/png",
+				Content:     []byte{0, 255, 100},
+			},
 		}, expect)
 
-		actual, err := s.CreateEmoji(guildID, expect.Name, api.Image{
-			ContentType: "image/png",
-			Content:     []byte{255, 0, 8},
-		}, expect.RoleIDs)
+		actual, err := s.CreateEmoji(guildID, api.CreateEmojiData{
+			Name: expect.Name,
+			Image: api.Image{
+				ContentType: "image/png",
+				Content:     []byte{1, 255, 3},
+			},
+		})
 		require.NoError(t, err)
 
 		assert.Equal(t, expect, *actual)
@@ -115,15 +129,16 @@ func TestMocker_ModifyEmoji(t *testing.T) {
 		m, s := New(t)
 
 		var (
-			guildID discord.Snowflake   = 123
-			emojiID discord.Snowflake   = 456
-			name                        = "abc"
-			roles   []discord.Snowflake = nil
+			guildID discord.Snowflake = 123
+			emojiID discord.Snowflake = 456
+			data                      = api.ModifyEmojiData{
+				Name: "abc",
+			}
 		)
 
-		m.ModifyEmoji(guildID, emojiID, name, roles)
+		m.ModifyEmoji(guildID, emojiID, data)
 
-		err := s.ModifyEmoji(guildID, emojiID, name, roles)
+		err := s.ModifyEmoji(guildID, emojiID, data)
 		require.NoError(t, err)
 
 		m.Eval()
@@ -139,9 +154,13 @@ func TestMocker_ModifyEmoji(t *testing.T) {
 			emojiID discord.Snowflake = 456
 		)
 
-		m.ModifyEmoji(guildID, emojiID, "", []discord.Snowflake{789, 012})
+		m.ModifyEmoji(guildID, emojiID, api.ModifyEmojiData{
+			Roles: &[]discord.Snowflake{789, 012},
+		})
 
-		err := s.ModifyEmoji(guildID, emojiID, "", []discord.Snowflake{345, 678})
+		err := s.ModifyEmoji(guildID, emojiID, api.ModifyEmojiData{
+			Roles: &[]discord.Snowflake{345, 678},
+		})
 		require.NoError(t, err)
 
 		assert.True(t, tMock.Failed())

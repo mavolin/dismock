@@ -5,9 +5,11 @@ import (
 
 	"github.com/diamondburned/arikawa/api"
 	"github.com/diamondburned/arikawa/discord"
-	"github.com/diamondburned/arikawa/utils/json"
+	"github.com/diamondburned/arikawa/utils/json/option"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	"github.com/mavolin/dismock/internal/sanitize"
 )
 
 func TestMocker_Channels(t *testing.T) {
@@ -22,6 +24,10 @@ func TestMocker_Channels(t *testing.T) {
 		{
 			ID: 789,
 		},
+	}
+
+	for i, c := range expect {
+		expect[i] = sanitize.Channel(c, 1)
 	}
 
 	m.Channels(guildID, expect)
@@ -42,11 +48,11 @@ func TestMocker_CreateChannel(t *testing.T) {
 			Name: "abc",
 		}
 
-		expect := discord.Channel{
+		expect := sanitize.Channel(discord.Channel{
 			ID:      456,
 			GuildID: 123,
 			Name:    "abc",
-		}
+		}, 1)
 
 		m.CreateChannel(data, expect)
 
@@ -63,11 +69,11 @@ func TestMocker_CreateChannel(t *testing.T) {
 
 		m, s := New(tMock)
 
-		expect := discord.Channel{
+		expect := sanitize.Channel(discord.Channel{
 			ID:      456,
 			GuildID: 123,
 			Name:    "abc",
-		}
+		}, 1)
 
 		m.CreateChannel(api.CreateChannelData{
 			Name: "abc",
@@ -92,11 +98,11 @@ func TestMocker_MoveChannel(t *testing.T) {
 			data                      = []api.MoveChannelData{
 				{
 					ID:       123,
-					Position: json.Int(0),
+					Position: option.NewInt(0),
 				},
 				{
 					ID:       456,
-					Position: json.Int(1),
+					Position: option.NewInt(1),
 				},
 			}
 		)
@@ -119,22 +125,22 @@ func TestMocker_MoveChannel(t *testing.T) {
 		m.MoveChannel(guildID, []api.MoveChannelData{
 			{
 				ID:       123,
-				Position: json.Int(0),
+				Position: option.NewInt(0),
 			},
 			{
 				ID:       456,
-				Position: json.Int(1),
+				Position: option.NewInt(1),
 			},
 		})
 
 		err := s.MoveChannel(guildID, []api.MoveChannelData{
 			{
 				ID:       789,
-				Position: json.Int(0),
+				Position: option.NewInt(0),
 			},
 			{
 				ID:       012,
-				Position: json.Int(1),
+				Position: option.NewInt(1),
 			},
 		})
 		require.NoError(t, err)
@@ -146,9 +152,9 @@ func TestMocker_MoveChannel(t *testing.T) {
 func TestMocker_Channel(t *testing.T) {
 	m, s := New(t)
 
-	expect := discord.Channel{
+	expect := sanitize.Channel(discord.Channel{
 		ID: 456,
-	}
+	}, 1)
 
 	m.Channel(expect)
 
@@ -303,6 +309,10 @@ func TestMocker_PinnedMessages(t *testing.T) {
 		{
 			ID: 789,
 		},
+	}
+
+	for i, m := range expect {
+		expect[i] = sanitize.Message(m, 1, channelID, channelID)
 	}
 
 	m.PinnedMessages(channelID, expect)

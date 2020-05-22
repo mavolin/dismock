@@ -7,24 +7,36 @@ import (
 	"github.com/diamondburned/arikawa/api"
 	"github.com/diamondburned/arikawa/discord"
 
-	"github.com/mavolin/dismock/internal/mockutil"
+	. "github.com/mavolin/dismock/internal/mockutil"
+	"github.com/mavolin/dismock/internal/sanitize"
 )
 
 // Channels mocks a channels request.
+//
+// This method will sanitize Channel.ID.
 func (m *Mocker) Channels(guildID discord.Snowflake, c []discord.Channel) {
+	for i, channel := range c {
+		c[i] = sanitize.Channel(channel, 1)
+	}
+
 	m.Mock("Channels", http.MethodGet, "/guilds/"+guildID.String()+"/channels",
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
-			mockutil.WriteJSON(t, w, c)
+			WriteJSON(t, w, c)
 		})
 }
 
 // CreateChannel mocks a CreateChannel request.
+//
 // The GuildID field of the passed Channel must be set.
+//
+// This method will sanitize Channel.ID.
 func (m *Mocker) CreateChannel(d api.CreateChannelData, c discord.Channel) {
+	c = sanitize.Channel(c, 1)
+
 	m.Mock("CreateChannel", http.MethodPost, "/guilds/"+c.GuildID.String()+"/channels",
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
-			mockutil.CheckJSON(t, r.Body, new(api.CreateChannelData), &d)
-			mockutil.WriteJSON(t, w, c)
+			CheckJSON(t, r.Body, new(api.CreateChannelData), &d)
+			WriteJSON(t, w, c)
 		})
 }
 
@@ -32,17 +44,22 @@ func (m *Mocker) CreateChannel(d api.CreateChannelData, c discord.Channel) {
 func (m *Mocker) MoveChannel(guildID discord.Snowflake, d []api.MoveChannelData) {
 	m.Mock("CreateChannel", http.MethodPatch, "/guilds/"+guildID.String()+"/channels",
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
-			mockutil.CheckJSON(t, r.Body, &[]api.MoveChannelData{}, &d)
+			CheckJSON(t, r.Body, &[]api.MoveChannelData{}, &d)
 			w.WriteHeader(http.StatusNoContent)
 		})
 }
 
 // Channel mocks a Channel request.
+//
 // The ID field of the passed Channel must be set.
+//
+// This method will sanitize Channel.ID.
 func (m *Mocker) Channel(c discord.Channel) {
+	c = sanitize.Channel(c, 1)
+
 	m.Mock("CreateChannel", http.MethodGet, "/channels/"+c.ID.String(),
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
-			mockutil.WriteJSON(t, w, c)
+			WriteJSON(t, w, c)
 		})
 }
 
@@ -50,7 +67,7 @@ func (m *Mocker) Channel(c discord.Channel) {
 func (m *Mocker) ModifyChannel(id discord.Snowflake, d api.ModifyChannelData) {
 	m.Mock("ModifyChannel", http.MethodPatch, "/channels/"+id.String(),
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
-			mockutil.CheckJSON(t, r.Body, new(api.ModifyChannelData), &d)
+			CheckJSON(t, r.Body, new(api.ModifyChannelData), &d)
 			w.WriteHeader(http.StatusNoContent)
 		})
 }
@@ -61,13 +78,14 @@ func (m *Mocker) DeleteChannel(id discord.Snowflake) {
 }
 
 // EditChannelPermission mocks a EditChannelPermission request.
+//
 // The ID field of the Overwrite must be set.
 func (m *Mocker) EditChannelPermission(channelID discord.Snowflake, o discord.Overwrite) {
 	m.Mock("EditChannelPermission", http.MethodPut, "/channels/"+channelID.String()+"/permissions/"+o.ID.String(),
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
 			o.ID = 0
 
-			mockutil.CheckJSON(t, r.Body, new(discord.Overwrite), &o)
+			CheckJSON(t, r.Body, new(discord.Overwrite), &o)
 			w.WriteHeader(http.StatusNoContent)
 		})
 }
@@ -84,10 +102,17 @@ func (m *Mocker) Typing(channelID discord.Snowflake) {
 }
 
 // PinnedMessages mocks a PinnedMessages request.
+//
+// This method will sanitize Message.ID, Message.ChannelID and
+// Message.Author.ID.
 func (m *Mocker) PinnedMessages(channelID discord.Snowflake, messages []discord.Message) {
+	for i, message := range messages {
+		messages[i] = sanitize.Message(message, 1, channelID, 1)
+	}
+
 	m.Mock("PinnedMessages", http.MethodGet, "/channels/"+channelID.String()+"/pins",
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
-			mockutil.WriteJSON(t, w, messages)
+			WriteJSON(t, w, messages)
 		})
 }
 
@@ -110,7 +135,7 @@ func (m *Mocker) AddRecipient(channelID, userID discord.Snowflake, accessToken, 
 				Nickname:    nickname,
 			}
 
-			mockutil.CheckJSON(t, r.Body, new(addRecipientPayload), &expect)
+			CheckJSON(t, r.Body, new(addRecipientPayload), &expect)
 
 			w.WriteHeader(http.StatusNoContent)
 		})
@@ -125,7 +150,7 @@ func (m *Mocker) RemoveRecipient(channelID, userID discord.Snowflake) {
 func (m *Mocker) Ack(channelID, messageID discord.Snowflake, send, ret api.Ack) {
 	m.Mock("Ack", http.MethodPost, "/channels/"+channelID.String()+"/messages/"+messageID.String()+"/ack",
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
-			mockutil.CheckJSON(t, r.Body, new(api.Ack), &send)
-			mockutil.WriteJSON(t, w, ret)
+			CheckJSON(t, r.Body, new(api.Ack), &send)
+			WriteJSON(t, w, ret)
 		})
 }
