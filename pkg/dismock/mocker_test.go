@@ -22,26 +22,43 @@ var testHandler = Handler{
 // tests the Server started in New.
 func TestMocker_Server(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
-		m, s := New(t)
+		t.Run("arikawa session", func(t *testing.T) {
+			m, s := NewArikawaSession(t)
 
-		expect := discord.Channel{
-			ID: 123,
-		}
+			expect := discord.Channel{
+				ID: 123,
+			}
 
-		m.Channel(expect)
+			m.Channel(expect)
 
-		actual, err := s.Channel(123)
-		require.NoError(t, err)
+			actual, err := s.Channel(123)
+			require.NoError(t, err)
 
-		assert.Equal(t, expect, *actual)
+			assert.Equal(t, expect, *actual)
+		})
+
+		t.Run("arikawa state", func(t *testing.T) {
+			m, s := NewArikawaState(t)
+
+			expect := discord.Channel{
+				ID: 123,
+			}
+
+			m.Channel(expect)
+
+			actual, err := s.Channel(123)
+			require.NoError(t, err)
+
+			assert.Equal(t, expect, *actual)
+		})
 	})
 
 	t.Run("unhandled path", func(t *testing.T) {
 		tMock := new(testing.T)
 
-		m, _ := New(tMock)
+		m := New(tMock)
 
-		url := "https://" + m.server.Listener.Addr().String() + "/unhandled/path"
+		url := "https://" + m.Server.Listener.Addr().String() + "/unhandled/path"
 
 		client := http.Client{
 			Transport: &http.Transport{
@@ -51,7 +68,7 @@ func TestMocker_Server(t *testing.T) {
 			},
 		}
 
-		client.Get(url)
+		_, _ = client.Get(url) // this will error
 
 		m.Eval()
 
@@ -61,13 +78,13 @@ func TestMocker_Server(t *testing.T) {
 	t.Run("unhandled method", func(t *testing.T) {
 		tMock := new(testing.T)
 
-		m, _ := New(tMock)
+		m := New(tMock)
 
 		m.handlers["/handled/path"] = make(map[string][]Handler)
 
 		m.handlers["/handled/path"][http.MethodPost] = append(m.handlers["/handled/path"][http.MethodPost], testHandler)
 
-		url := "https://" + m.server.Listener.Addr().String() + "/handled/path"
+		url := "https://" + m.Server.Listener.Addr().String() + "/handled/path"
 
 		client := http.Client{
 			Transport: &http.Transport{
@@ -77,20 +94,20 @@ func TestMocker_Server(t *testing.T) {
 			},
 		}
 
-		client.Get(url)
+		_, _ = client.Get(url) // this will error
 
 		assert.True(t, tMock.Failed())
 	})
 
 	t.Run("delete", func(t *testing.T) {
 		t.Run("only handler and only method", func(t *testing.T) {
-			m, _ := New(t)
+			m, _ := NewArikawaSession(t)
 
 			m.handlers["/path"] = make(map[string][]Handler)
 
 			m.handlers["/path"][http.MethodGet] = append(m.handlers["/path"][http.MethodGet], testHandler)
 
-			url := "https://" + m.server.Listener.Addr().String() + "/path"
+			url := "https://" + m.Server.Listener.Addr().String() + "/path"
 
 			client := http.Client{
 				Transport: &http.Transport{
@@ -107,14 +124,14 @@ func TestMocker_Server(t *testing.T) {
 		})
 
 		t.Run("only handler multiple methods", func(t *testing.T) {
-			m, _ := New(t)
+			m, _ := NewArikawaSession(t)
 
 			m.handlers["/path"] = make(map[string][]Handler)
 
 			m.handlers["/path"][http.MethodGet] = append(m.handlers["/path"][http.MethodGet], testHandler)
 			m.handlers["/path"][http.MethodPost] = append(m.handlers["/path"][http.MethodPost], testHandler)
 
-			url := "https://" + m.server.Listener.Addr().String() + "/path"
+			url := "https://" + m.Server.Listener.Addr().String() + "/path"
 
 			client := http.Client{
 				Transport: &http.Transport{
@@ -135,13 +152,13 @@ func TestMocker_Server(t *testing.T) {
 		})
 
 		t.Run("multiple handlers", func(t *testing.T) {
-			m, _ := New(t)
+			m, _ := NewArikawaSession(t)
 
 			m.handlers["/path"] = make(map[string][]Handler)
 
 			m.handlers["/path"][http.MethodGet] = append(m.handlers["/path"][http.MethodGet], testHandler, testHandler)
 
-			url := "https://" + m.server.Listener.Addr().String() + "/path"
+			url := "https://" + m.Server.Listener.Addr().String() + "/path"
 
 			client := http.Client{
 				Transport: &http.Transport{
@@ -163,7 +180,7 @@ func TestMocker_Server(t *testing.T) {
 
 func TestMocker_Mock(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
-		m, _ := New(t)
+		m, _ := NewArikawaSession(t)
 
 		invoked := false
 
@@ -183,7 +200,7 @@ func TestMocker_Mock(t *testing.T) {
 	})
 
 	t.Run("nil support", func(t *testing.T) {
-		m, _ := New(t)
+		m, _ := NewArikawaSession(t)
 
 		method := http.MethodPost
 		path := "/path/123"
@@ -201,14 +218,32 @@ func TestMocker_Mock(t *testing.T) {
 	})
 }
 
-func TestMocker_Clone(t *testing.T) {
-	m1, _ := New(new(testing.T))
+func TestMocker_CloneArikawaSession(t *testing.T) {
+	m1, _ := NewArikawaSession(new(testing.T))
 
 	m1.handlers["path"] = map[string][]Handler{
 		http.MethodGet: {},
 	}
 
-	m2, _ := m1.Clone(t)
+	m2, _ := m1.CloneArikawaSession(t)
+
+	assert.Equal(t, m1.handlers, m2.handlers)
+
+	m1.handlers["path2"] = map[string][]Handler{
+		http.MethodPatch: {},
+	}
+
+	assert.NotEqual(t, m1.handlers, m2.handlers)
+}
+
+func TestMocker_CloneArikawaState(t *testing.T) {
+	m1, _ := NewArikawaState(new(testing.T))
+
+	m1.handlers["path"] = map[string][]Handler{
+		http.MethodGet: {},
+	}
+
+	m2, _ := m1.CloneArikawaState(t)
 
 	assert.Equal(t, m1.handlers, m2.handlers)
 
@@ -223,7 +258,7 @@ func TestMocker_Eval(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		tMock := new(testing.T)
 
-		m, _ := New(tMock)
+		m, _ := NewArikawaSession(tMock)
 
 		m.Eval()
 
@@ -234,7 +269,7 @@ func TestMocker_Eval(t *testing.T) {
 	t.Run("failure", func(t *testing.T) {
 		tMock := new(testing.T)
 
-		m, _ := New(tMock)
+		m, _ := NewArikawaSession(tMock)
 
 		m.handlers["path"] = map[string][]Handler{
 			"request0": {},
@@ -253,7 +288,7 @@ func TestMocker_Eval(t *testing.T) {
 
 func TestMocker_genUninvokedMsg(t *testing.T) {
 	t.Run("singular", func(t *testing.T) {
-		m, _ := New(new(testing.T))
+		m, _ := NewArikawaSession(new(testing.T))
 
 		expect := "path:\n\trequest0: 1 uninvoked handler"
 
@@ -270,7 +305,7 @@ func TestMocker_genUninvokedMsg(t *testing.T) {
 	})
 
 	t.Run("plural", func(t *testing.T) {
-		m, _ := New(new(testing.T))
+		m, _ := NewArikawaSession(new(testing.T))
 
 		expect := "path:\n\trequest0: 2 uninvoked handlers"
 

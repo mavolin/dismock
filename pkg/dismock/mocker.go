@@ -14,6 +14,7 @@ import (
 
 	"github.com/diamondburned/arikawa/gateway"
 	"github.com/diamondburned/arikawa/session"
+	"github.com/diamondburned/arikawa/state"
 	"github.com/diamondburned/arikawa/utils/httputil/httpdriver"
 	"github.com/stretchr/testify/require"
 )
@@ -31,8 +32,8 @@ type (
 		// However, adding handlers is not concurrent safe, as there is no point in it, when
 		// testing in a single method.
 		mut *sync.Mutex
-		// server is the Server used to mock the requests.
-		server *httptest.Server
+		// Server is the Server used to mock the requests.
+		Server *httptest.Server
 		// t is the test type called on error.
 		t *testing.T
 	}
@@ -49,16 +50,15 @@ type (
 	MockFunc func(w http.ResponseWriter, r *http.Request, t *testing.T)
 )
 
-// New creates a new Mocker, starts its test server and returns a manipulated
-// Session using the test server.
-func New(t *testing.T) (*Mocker, *session.Session) {
+// New creates a new Mocker with a started serve listening on Mocker.Server.Listener.Addr().
+func New(t *testing.T) *Mocker {
 	m := &Mocker{
 		handlers: make(map[string]map[string][]Handler, 1),
 		mut:      new(sync.Mutex),
 		t:        t,
 	}
 
-	m.server = httptest.NewUnstartedServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	m.Server = httptest.NewUnstartedServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		m.mut.Lock()
 		defer m.mut.Unlock()
 
@@ -81,20 +81,23 @@ func New(t *testing.T) (*Mocker, *session.Session) {
 		}
 	}))
 
-	m.server.StartTLS()
+	m.Server.StartTLS()
 
-	return m, newMockedSession(m.server.Listener.Addr().String())
+	return m
 }
 
-// newMockedSession creates a new mocked session using the passed address.
-func newMockedSession(addr string) *session.Session {
+// NewArikawaSession creates a new Mocker, starts its test Server and returns a
+// manipulated Session using the test Server.
+func NewArikawaSession(t *testing.T) (*Mocker, *session.Session) {
+	m := New(t)
+
 	gw := gateway.NewCustomGateway("", "")
 	s := session.NewWithGateway(gw)
 
 	client := http.Client{
 		Transport: &http.Transport{
 			DialContext: func(ctx context.Context, network, _ string) (conn net.Conn, err error) {
-				return net.Dial(network, addr)
+				return net.Dial(network, m.Server.Listener.Addr().String())
 			},
 			TLSClientConfig: &tls.Config{
 				InsecureSkipVerify: true,
@@ -105,7 +108,22 @@ func newMockedSession(addr string) *session.Session {
 	s.Client.Client.Client = httpdriver.WrapClient(client)
 	s.Client.Retries = 1
 
-	return s
+	return m, s
+}
+
+// NewArikawaSession creates a new Mocker, starts its test Server and returns a
+// manipulated State using the test Server.
+// In order to allow for successful testing, the State's Store, will always
+// return an error, forcing the use of the (mocked) Session.
+func NewArikawaState(t *testing.T) (*Mocker, *state.State) {
+	m, se := NewArikawaSession(t)
+
+	st, err := state.NewFromSession(se, new(state.NoopStore))
+	if err != nil {
+		panic(err) // this should never happen
+	}
+
+	return m, st
 }
 
 // Mock uses the passed MockFunc to as handler for the passed path and method.
@@ -137,10 +155,14 @@ func (m *Mocker) Mock(name, method, path string, f MockFunc) {
 	m.handlers[path][method] = append(m.handlers[path][method], h)
 }
 
-// Clone clones handlers of the Mocker and returns the cloned Mocker and a new
+// CloneArikawaSession clones handlers of the Mocker and returns the cloned Mocker and a new
 // Session.
 // Useful for multiple tests with the same API calls.
-func (m *Mocker) Clone(t *testing.T) (*Mocker, *session.Session) {
+//
+// Creating a clone will automatically close the current server.
+func (m *Mocker) CloneArikawaSession(t *testing.T) (*Mocker, *session.Session) {
+	m.Close()
+
 	handlersCopy := make(map[string]map[string][]Handler, len(m.handlers))
 
 	for p, sub := range m.handlers {
@@ -157,14 +179,45 @@ func (m *Mocker) Clone(t *testing.T) (*Mocker, *session.Session) {
 		handlersCopy[p] = subCopy
 	}
 
-	clone, s := New(t)
+	clone, s := NewArikawaSession(t)
 
 	clone.handlers = handlersCopy
 
 	return clone, s
 }
 
-// Eval closes the server and evaluates if all registered handlers were
+// CloneArikawaState clones handlers of the Mocker and returns the cloned Mocker and a new
+// State.
+// Useful for multiple tests with the same API calls.
+//
+// Creating a clone will automatically close the current server.
+func (m *Mocker) CloneArikawaState(t *testing.T) (*Mocker, *state.State) {
+	m.Close()
+
+	handlersCopy := make(map[string]map[string][]Handler, len(m.handlers))
+
+	for p, sub := range m.handlers {
+		subCopy := make(map[string][]Handler, len(sub))
+
+		for m, ssub := range sub {
+			ssubCopy := make([]Handler, len(ssub))
+
+			copy(ssubCopy, ssub)
+
+			subCopy[m] = ssubCopy
+		}
+
+		handlersCopy[p] = subCopy
+	}
+
+	clone, s := NewArikawaState(t)
+
+	clone.handlers = handlersCopy
+
+	return clone, s
+}
+
+// Eval closes the Server and evaluates if all registered handlers were
 // invoked.
 // If not it will Fatal, stating the uninvoked handlers.
 // This must be called at the end of every test.
@@ -178,9 +231,9 @@ func (m *Mocker) Eval() {
 	m.t.Fatal("there are uninvoked handlers:\n\n" + m.genUninvokedMsg())
 }
 
-// Close shuts down the server and blocks until all outstanding requests on
-// this server have completed.
-func (m *Mocker) Close() { m.server.Close() }
+// Close shuts down the Server and blocks until all outstanding requests on
+// this Server have completed.
+func (m *Mocker) Close() { m.Server.Close() }
 
 // genUninvokedMsg generates an error message stating the unused handlers.
 //

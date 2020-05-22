@@ -10,7 +10,7 @@ import (
 )
 
 func TestMocker_Error(t *testing.T) {
-	m, s := New(t)
+	m, s := NewArikawaSession(t)
 
 	sendErr := httputil.HTTPError{
 		Status:  http.StatusBadRequest,

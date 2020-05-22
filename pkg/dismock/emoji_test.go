@@ -12,7 +12,7 @@ import (
 )
 
 func TestMocker_Emojis(t *testing.T) {
-	m, s := New(t)
+	m, s := NewArikawaSession(t)
 
 	var guildID discord.Snowflake = 123
 
@@ -40,7 +40,7 @@ func TestMocker_Emojis(t *testing.T) {
 }
 
 func TestMocker_Emoji(t *testing.T) {
-	m, s := New(t)
+	m, s := NewArikawaSession(t)
 
 	var guildID discord.Snowflake = 123
 
@@ -61,7 +61,7 @@ func TestMocker_Emoji(t *testing.T) {
 
 func TestMocker_CreateEmoji(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
-		m, s := New(t)
+		m, s := NewArikawaSession(t)
 
 		var (
 			guildID discord.Snowflake = 123
@@ -93,7 +93,7 @@ func TestMocker_CreateEmoji(t *testing.T) {
 	t.Run("failure", func(t *testing.T) {
 		tMock := new(testing.T)
 
-		m, s := New(tMock)
+		m, s := NewArikawaSession(tMock)
 
 		var guildID discord.Snowflake = 123
 
@@ -126,7 +126,7 @@ func TestMocker_CreateEmoji(t *testing.T) {
 
 func TestMocker_ModifyEmoji(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
-		m, s := New(t)
+		m, s := NewArikawaSession(t)
 
 		var (
 			guildID discord.Snowflake = 123
@@ -147,7 +147,7 @@ func TestMocker_ModifyEmoji(t *testing.T) {
 	t.Run("failure", func(t *testing.T) {
 		tMock := new(testing.T)
 
-		m, s := New(tMock)
+		m, s := NewArikawaSession(tMock)
 
 		var (
 			guildID discord.Snowflake = 123
@@ -168,7 +168,7 @@ func TestMocker_ModifyEmoji(t *testing.T) {
 }
 
 func TestMocker_DeleteEmoji(t *testing.T) {
-	m, s := New(t)
+	m, s := NewArikawaSession(t)
 
 	var (
 		guildID discord.Snowflake = 123
