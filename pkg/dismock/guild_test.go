@@ -25,7 +25,7 @@ func TestMocker_CreateGuild(t *testing.T) {
 		expect := sanitize.Guild(discord.Guild{
 			ID:   123,
 			Name: "abc",
-		}, 1, 1)
+		}, 1, 1, 1, 1)
 
 		m.CreateGuild(data, expect)
 
@@ -45,7 +45,7 @@ func TestMocker_CreateGuild(t *testing.T) {
 		expect := sanitize.Guild(discord.Guild{
 			ID:   123,
 			Name: "abc",
-		}, 1, 1)
+		}, 1, 1, 1, 1)
 
 		m.CreateGuild(api.CreateGuildData{
 			Name: "abc",
@@ -67,7 +67,7 @@ func TestMocker_Guild(t *testing.T) {
 	expect := sanitize.Guild(discord.Guild{
 		ID:   123,
 		Name: "abc",
-	}, 1, 1)
+	}, 1, 1, 1, 1)
 
 	m.Guild(expect)
 
@@ -87,7 +87,7 @@ func TestMocker_GuildWithCount(t *testing.T) {
 		Name:                 "abc",
 		ApproximateMembers:   3,
 		ApproximatePresences: 2,
-	}, 1, 1)
+	}, 1, 1, 1, 1)
 
 	m.GuildWithCount(expect)
 
@@ -174,7 +174,7 @@ func TestMocker_Guilds(t *testing.T) {
 				}
 
 				for i, g := range expect {
-					expect[i] = sanitize.Guild(g, 1, 1)
+					expect[i] = sanitize.Guild(g, 1, 1, 1, 1)
 				}
 
 				m.Guilds(c.limit, expect)
@@ -257,7 +257,7 @@ func TestMocker_GuildsBefore(t *testing.T) {
 				}
 
 				for i, g := range expect {
-					expect[i] = sanitize.Guild(g, 1, 1)
+					expect[i] = sanitize.Guild(g, 1, 1, 1, 1)
 				}
 
 				m.GuildsBefore(before, c.limit, expect)
@@ -365,7 +365,7 @@ func TestMocker_GuildsAfter(t *testing.T) {
 				}
 
 				for i, g := range expect {
-					expect[i] = sanitize.Guild(g, 1, 1)
+					expect[i] = sanitize.Guild(g, 1, 1, 1, 1)
 				}
 
 				m.GuildsAfter(after, c.limit, expect)
@@ -438,7 +438,7 @@ func TestMocker_ModifyGuild(t *testing.T) {
 		expect := sanitize.Guild(discord.Guild{
 			ID:   123,
 			Name: "abc",
-		}, 1, 1)
+		}, 1, 1, 1, 1)
 
 		m.ModifyGuild(data, expect)
 
@@ -458,7 +458,7 @@ func TestMocker_ModifyGuild(t *testing.T) {
 		expect := sanitize.Guild(discord.Guild{
 			ID:   123,
 			Name: "abc",
-		}, 1, 1)
+		}, 1, 1, 1, 1)
 
 		m.ModifyGuild(api.ModifyGuildData{
 			Name: "abc",
@@ -846,7 +846,7 @@ func TestMocker_GuildVanityURL(t *testing.T) {
 		InviteMetadata: discord.InviteMetadata{
 			Uses: 3,
 		},
-	}, 1, 1, 1, 1, 1)
+	}, 1, 1, 1, 1, 1, 1, 1)
 
 	m.GuildVanityURL(guildID, expect)
 

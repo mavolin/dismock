@@ -98,7 +98,7 @@ func replaceNullables(val reflect.Value) {
 }
 
 // CheckQuery checks if the passed query contains the values found in except.
-func CheckQuery(t *testing.T, query url.Values, expect map[string]string) {
+func CheckQuery(t *testing.T, query url.Values, expect url.Values) {
 	for name, vals := range query {
 		if len(vals) == 0 {
 			continue
@@ -108,7 +108,7 @@ func CheckQuery(t *testing.T, query url.Values, expect map[string]string) {
 			continue
 		}
 
-		assert.Equal(t, expectVal, vals[0], "query fields for '"+name+"' don't match")
+		assert.Equal(t, expectVal, vals, "query fields for '"+name+"' don't match")
 
 		delete(expect, name)
 	}

@@ -17,32 +17,36 @@ func TestInvite(t *testing.T) {
 			name: "none",
 			in: discord.Invite{
 				Guild: &discord.Guild{
-					ID:      321,
-					OwnerID: 654,
+					ID:                     321,
+					OwnerID:                654,
+					RulesChannelID:         987,
+					PublicUpdatesChannelID: 210,
 				},
 				Channel: discord.Channel{
-					ID: 987,
+					ID: 543,
 				},
 				Inviter: &discord.User{
-					ID: 210,
+					ID: 876,
 				},
 				Target: &discord.User{
-					ID: 543,
+					ID: 109,
 				},
 			},
 			expect: discord.Invite{
 				Guild: &discord.Guild{
-					ID:      321,
-					OwnerID: 654,
+					ID:                     321,
+					OwnerID:                654,
+					RulesChannelID:         987,
+					PublicUpdatesChannelID: 210,
 				},
 				Channel: discord.Channel{
-					ID: 987,
+					ID: 543,
 				},
 				Inviter: &discord.User{
-					ID: 210,
+					ID: 876,
 				},
 				Target: &discord.User{
-					ID: 543,
+					ID: 109,
 				},
 			},
 		},
@@ -51,28 +55,30 @@ func TestInvite(t *testing.T) {
 			in: discord.Invite{
 				Guild: new(discord.Guild),
 				Channel: discord.Channel{
-					ID: 987,
+					ID: 543,
 				},
 				Inviter: &discord.User{
-					ID: 210,
+					ID: 876,
 				},
 				Target: &discord.User{
-					ID: 543,
+					ID: 109,
 				},
 			},
 			expect: discord.Invite{
 				Guild: &discord.Guild{
-					ID:      123,
-					OwnerID: 456,
+					ID:                     123,
+					OwnerID:                456,
+					RulesChannelID:         789,
+					PublicUpdatesChannelID: 012,
 				},
 				Channel: discord.Channel{
-					ID: 987,
+					ID: 543,
 				},
 				Inviter: &discord.User{
-					ID: 210,
+					ID: 876,
 				},
 				Target: &discord.User{
-					ID: 543,
+					ID: 109,
 				},
 			},
 		},
@@ -80,29 +86,33 @@ func TestInvite(t *testing.T) {
 			name: "channel",
 			in: discord.Invite{
 				Guild: &discord.Guild{
-					ID:      321,
-					OwnerID: 654,
+					ID:                     321,
+					OwnerID:                654,
+					RulesChannelID:         987,
+					PublicUpdatesChannelID: 210,
 				},
 				Inviter: &discord.User{
-					ID: 210,
+					ID: 876,
 				},
 				Target: &discord.User{
-					ID: 543,
+					ID: 109,
 				},
 			},
 			expect: discord.Invite{
 				Guild: &discord.Guild{
-					ID:      321,
-					OwnerID: 654,
+					ID:                     321,
+					OwnerID:                654,
+					RulesChannelID:         987,
+					PublicUpdatesChannelID: 210,
 				},
 				Channel: discord.Channel{
-					ID: 789,
+					ID: 345,
 				},
 				Inviter: &discord.User{
-					ID: 210,
+					ID: 876,
 				},
 				Target: &discord.User{
-					ID: 543,
+					ID: 109,
 				},
 			},
 		},
@@ -110,30 +120,34 @@ func TestInvite(t *testing.T) {
 			name: "inviter",
 			in: discord.Invite{
 				Guild: &discord.Guild{
-					ID:      321,
-					OwnerID: 654,
+					ID:                     321,
+					OwnerID:                654,
+					RulesChannelID:         987,
+					PublicUpdatesChannelID: 210,
 				},
 				Channel: discord.Channel{
-					ID: 987,
+					ID: 543,
 				},
 				Inviter: new(discord.User),
 				Target: &discord.User{
-					ID: 543,
+					ID: 109,
 				},
 			},
 			expect: discord.Invite{
 				Guild: &discord.Guild{
-					ID:      321,
-					OwnerID: 654,
+					ID:                     321,
+					OwnerID:                654,
+					RulesChannelID:         987,
+					PublicUpdatesChannelID: 210,
 				},
 				Channel: discord.Channel{
-					ID: 987,
+					ID: 543,
 				},
 				Inviter: &discord.User{
-					ID: 012,
+					ID: 678,
 				},
 				Target: &discord.User{
-					ID: 543,
+					ID: 109,
 				},
 			},
 		},
@@ -141,32 +155,34 @@ func TestInvite(t *testing.T) {
 			name: "target",
 			in: discord.Invite{
 				Guild: &discord.Guild{
-					ID:      321,
-					OwnerID: 654,
+					ID:                     321,
+					OwnerID:                654,
+					RulesChannelID:         987,
+					PublicUpdatesChannelID: 210,
 				},
 				Channel: discord.Channel{
-					ID: 987,
+					ID: 543,
 				},
 				Inviter: &discord.User{
-					ID: 210,
+					ID: 876,
 				},
-				Target: &discord.User{
-					ID: 345,
-				},
+				Target: new(discord.User),
 			},
 			expect: discord.Invite{
 				Guild: &discord.Guild{
-					ID:      321,
-					OwnerID: 654,
+					ID:                     321,
+					OwnerID:                654,
+					RulesChannelID:         987,
+					PublicUpdatesChannelID: 210,
 				},
 				Channel: discord.Channel{
-					ID: 987,
+					ID: 543,
 				},
 				Inviter: &discord.User{
-					ID: 210,
+					ID: 876,
 				},
 				Target: &discord.User{
-					ID: 345,
+					ID: 901,
 				},
 			},
 		},
@@ -174,7 +190,7 @@ func TestInvite(t *testing.T) {
 
 	for _, c := range testCases {
 		t.Run(c.name, func(t *testing.T) {
-			actual := Invite(c.in, 123, 456, 789, 012, 345)
+			actual := Invite(c.in, 123, 456, 789, 012, 345, 678, 901)
 
 			assert.Equal(t, c.expect, actual)
 		})

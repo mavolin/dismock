@@ -5,6 +5,7 @@ import (
 	"io"
 	"math"
 	"net/http"
+	"net/url"
 	"strconv"
 	"testing"
 
@@ -21,7 +22,7 @@ import (
 // This method will sanitize Guild.ID, Guild.OwnerID, Guild.Emojis.ID and
 // Guild.Roles.ID.
 func (m *Mocker) CreateGuild(d api.CreateGuildData, g discord.Guild) {
-	g = sanitize.Guild(g, 1, 1)
+	g = sanitize.Guild(g, 1, 1, 1, 1)
 
 	m.Mock("CreateGuild", http.MethodPost, "/guilds",
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
@@ -37,7 +38,7 @@ func (m *Mocker) CreateGuild(d api.CreateGuildData, g discord.Guild) {
 // This method will sanitize Guild.ID, Guild.OwnerID, Guild.Emojis.ID and
 // Guild.Roles.ID.
 func (m *Mocker) Guild(g discord.Guild) {
-	g = sanitize.Guild(g, 1, 1)
+	g = sanitize.Guild(g, 1, 1, 1, 1)
 
 	m.Mock("Guild", http.MethodGet, "/guilds/"+g.ID.String(),
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
@@ -52,12 +53,12 @@ func (m *Mocker) Guild(g discord.Guild) {
 // This method will sanitize Guild.ID, Guild.OwnerID, Guild.Emojis.ID and
 // Guild.Roles.ID.
 func (m *Mocker) GuildWithCount(g discord.Guild) {
-	g = sanitize.Guild(g, 1, 1)
+	g = sanitize.Guild(g, 1, 1, 1, 1)
 
 	m.Mock("GuildWithCount", http.MethodGet, "/guilds/"+g.ID.String(),
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
-			CheckQuery(t, r.URL.Query(), map[string]string{
-				"with_counts": "true",
+			CheckQuery(t, r.URL.Query(), url.Values{
+				"with_counts": {"true"},
 			})
 			WriteJSON(t, w, g)
 		})
@@ -225,21 +226,21 @@ func (m *Mocker) GuildsAfter(after discord.Snowflake, limit uint, g []discord.Gu
 // Guilds.Roles.ID.
 func (m *Mocker) guildsRange(before, after discord.Snowflake, name string, limit uint, g []discord.Guild) {
 	for i, guild := range g {
-		g[i] = sanitize.Guild(guild, 1, 1)
+		g[i] = sanitize.Guild(guild, 1, 1, 1, 1)
 	}
 
 	m.Mock(name, http.MethodGet, "/users/@me/guilds",
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
-			expect := map[string]string{
-				"limit": strconv.FormatUint(uint64(limit), 10),
+			expect := url.Values{
+				"limit": {strconv.FormatUint(uint64(limit), 10)},
 			}
 
 			if after != 0 {
-				expect["after"] = after.String()
+				expect["after"] = []string{after.String()}
 			}
 
 			if before != 0 {
-				expect["before"] = before.String()
+				expect["before"] = []string{before.String()}
 			}
 
 			CheckQuery(t, r.URL.Query(), expect)
@@ -259,7 +260,7 @@ func (m *Mocker) LeaveGuild(id discord.Snowflake) {
 // This method will sanitize Guild.ID, Guild.OwnerID, Guild.Emojis.ID and
 // Guild.Roles.ID.
 func (m *Mocker) ModifyGuild(d api.ModifyGuildData, g discord.Guild) {
-	g = sanitize.Guild(g, 1, 1)
+	g = sanitize.Guild(g, 1, 1, 1, 1)
 
 	m.Mock("ModifyGuild", http.MethodPatch, "/guilds/"+g.ID.String(),
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
@@ -303,20 +304,20 @@ func (m *Mocker) AuditLog(guildID discord.Snowflake, d api.AuditLogData, al disc
 
 	m.Mock("AuditLog", http.MethodGet, "/guilds/"+guildID.String()+"/audit-logs",
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
-			expect := map[string]string{
-				"limit": strconv.Itoa(int(d.Limit)),
+			expect := url.Values{
+				"limit": {strconv.Itoa(int(d.Limit))},
 			}
 
 			if d.UserID != 0 {
-				expect["user_id"] = d.UserID.String()
+				expect["user_id"] = []string{d.UserID.String()}
 			}
 
 			if d.ActionType != 0 {
-				expect["action_type"] = strconv.FormatUint(uint64(d.ActionType), 10)
+				expect["action_type"] = []string{strconv.FormatUint(uint64(d.ActionType), 10)}
 			}
 
 			if d.Before != 0 {
-				expect["before"] = d.Before.String()
+				expect["before"] = []string{d.Before.String()}
 			}
 
 			CheckQuery(t, r.URL.Query(), expect)
@@ -401,7 +402,7 @@ func (m *Mocker) ModifyGuildWidget(guildID discord.Snowflake, d api.ModifyGuildW
 // Invite.Guild.ID, Invite.Guild.OwnerID, Invite.Guild.Emojis.ID,
 // Invite.Guild.Roles.ID, Invite.Channel.ID, Invite.Inviter.ID.
 func (m *Mocker) GuildVanityURL(guildID discord.Snowflake, i discord.Invite) {
-	i = sanitize.Invite(i, 1, 1, 1, 1, 1)
+	i = sanitize.Invite(i, 1, 1, 1, 1, 1, 1, 1)
 
 	m.Mock("GuildVanityURL", http.MethodGet, "/guilds/"+guildID.String()+"/vanity-url",
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
@@ -413,8 +414,8 @@ func (m *Mocker) GuildVanityURL(guildID discord.Snowflake, i discord.Invite) {
 func (m *Mocker) GuildImage(guildID discord.Snowflake, style api.GuildImageStyle, img io.Reader) {
 	m.Mock("GuildImage", http.MethodGet, "/guilds/"+guildID.String()+"/widget.png",
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
-			CheckQuery(t, r.URL.Query(), map[string]string{
-				"style": string(style),
+			CheckQuery(t, r.URL.Query(), url.Values{
+				"style": {string(style)},
 			})
 
 			_, err := io.Copy(w, img)

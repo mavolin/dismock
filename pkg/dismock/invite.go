@@ -2,6 +2,7 @@ package dismock
 
 import (
 	"net/http"
+	"net/url"
 	"testing"
 
 	"github.com/diamondburned/arikawa/api"
@@ -19,7 +20,7 @@ import (
 // Invite.Guild.Emojis.ID, Invite.Guild.Roles.ID, Invite.Channel.ID and
 // Invite.Inviter.ID.
 func (m *Mocker) Invite(i discord.Invite) {
-	i = sanitize.Invite(i, 1, 1, 1, 1, 1)
+	i = sanitize.Invite(i, 1, 1, 1, 1, 1, 1, 1)
 
 	m.Mock("Invite", http.MethodGet, "/invites/"+i.Code,
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
@@ -35,12 +36,12 @@ func (m *Mocker) Invite(i discord.Invite) {
 // Invite.Guild.Emojis.ID, Invite.Guild.Roles.ID, Invite.Channel.ID and
 // Invite.Inviter.ID.
 func (m *Mocker) InviteWithCounts(i discord.Invite) {
-	i = sanitize.Invite(i, 1, 1, 1, 1, 1)
+	i = sanitize.Invite(i, 1, 1, 1, 1, 1, 1, 1)
 
 	m.Mock("Invite", http.MethodGet, "/invites/"+i.Code,
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
-			CheckQuery(t, r.URL.Query(), map[string]string{
-				"with_counts": "true",
+			CheckQuery(t, r.URL.Query(), url.Values{
+				"with_counts": {"true"},
 			})
 			WriteJSON(t, w, i)
 		})
@@ -57,7 +58,7 @@ func (m *Mocker) ChannelInvites(channelID discord.Snowflake, invites []discord.I
 	}
 
 	for i, invite := range invites {
-		invites[i] = sanitize.Invite(invite, 1, 1, channelID, 1, 1)
+		invites[i] = sanitize.Invite(invite, 1, 1, channelID, 1, 1, 1, 1)
 	}
 
 	m.Mock("ChannelInvites", http.MethodGet, "/channels/"+channelID.String()+"/invites",
@@ -77,7 +78,7 @@ func (m *Mocker) GuildInvites(guildID discord.Snowflake, invites []discord.Invit
 	}
 
 	for i, invite := range invites {
-		invites[i] = sanitize.Invite(invite, guildID, 1, 1, 1, 1)
+		invites[i] = sanitize.Invite(invite, guildID, 1, 1, 1, 1, 1, 1)
 	}
 
 	m.Mock("GuildInvites", http.MethodGet, "/guilds/"+guildID.String()+"/invites",
@@ -93,7 +94,7 @@ func (m *Mocker) GuildInvites(guildID discord.Snowflake, invites []discord.Invit
 // This method will sanitize Invite.Guild.ID, Invite.Guild.OwnerID,
 // Invite.Guild.Emojis.ID, Invite.Guild.Roles.ID, and Invite.Inviter.ID.
 func (m *Mocker) CreateInvite(d api.CreateInviteData, i discord.Invite) {
-	i = sanitize.Invite(i, 1, 1, 1, 1, 1)
+	i = sanitize.Invite(i, 1, 1, 1, 1, 1, 1, 1)
 
 	m.Mock("CreateInvite", http.MethodPost, "/channels/"+i.Channel.ID.String()+"/invites",
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
@@ -110,7 +111,7 @@ func (m *Mocker) CreateInvite(d api.CreateInviteData, i discord.Invite) {
 // Invite.Guild.Emojis.ID, Invite.Guild.Roles.ID, Invite.Channel.ID and
 // Invite.Inviter.ID.
 func (m *Mocker) DeleteInvite(i discord.Invite) {
-	i = sanitize.Invite(i, 1, 1, 1, 1, 1)
+	i = sanitize.Invite(i, 1, 1, 1, 1, 1, 1, 1)
 
 	m.Mock("DeleteInvite", http.MethodDelete, "/invites/"+i.Code,
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {

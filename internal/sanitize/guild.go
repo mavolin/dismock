@@ -4,15 +4,23 @@ import "github.com/diamondburned/arikawa/discord"
 
 // Guild sanitizes a Guild.
 //
-// This function will sanitize Guild.ID, Guild.OwnerID, Guild.Emojis.ID and
-// Guild.Roles.ID.
-func Guild(g discord.Guild, id, ownerID discord.Snowflake) discord.Guild {
+// This function will sanitize Guild.ID, Guild.OwnerID, Guild.RulesChannelID,
+// Guild.PublicUpdatesChannelID, Guild.Emojis.ID and Guild.Roles.ID.
+func Guild(g discord.Guild, id, ownerID, rulesChannelID, publicUpdatesChannelID discord.Snowflake) discord.Guild {
 	if g.ID <= 0 {
 		g.ID = id
 	}
 
 	if g.OwnerID <= 0 {
 		g.OwnerID = ownerID
+	}
+
+	if g.RulesChannelID <= 0 {
+		g.RulesChannelID = rulesChannelID
+	}
+
+	if g.PublicUpdatesChannelID <= 0 {
+		g.PublicUpdatesChannelID = publicUpdatesChannelID
 	}
 
 	for i, emoji := range g.Emojis {
@@ -51,6 +59,26 @@ func Role(r discord.Role, id discord.Snowflake) discord.Role {
 	}
 
 	return r
+}
+
+// Member sanitizes a Member.
+//
+// This function will sanitize Member.User.ID.
+func Member(m discord.Member, userID discord.Snowflake) discord.Member {
+	if m.User.ID <= 0 {
+		m.User.ID = userID
+	}
+
+	return m
+}
+
+// Ban sanitizes a Ban.
+//
+// This function will sanitize Ban.User.ID.
+func Ban(b discord.Ban, userID discord.Snowflake) discord.Ban {
+	b.User = User(b.User, userID)
+
+	return b
 }
 
 // Integration sanitizes an Integration.

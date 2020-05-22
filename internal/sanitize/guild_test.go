@@ -16,39 +16,79 @@ func TestGuild(t *testing.T) {
 		{
 			name: "none",
 			in: discord.Guild{
-				ID:      321,
-				OwnerID: 654,
+				ID:                     321,
+				OwnerID:                654,
+				RulesChannelID:         987,
+				PublicUpdatesChannelID: 210,
 			},
 			expect: discord.Guild{
-				ID:      321,
-				OwnerID: 654,
+				ID:                     321,
+				OwnerID:                654,
+				RulesChannelID:         987,
+				PublicUpdatesChannelID: 210,
 			},
 		},
 		{
 			name: "id",
 			in: discord.Guild{
-				OwnerID: 654,
+				OwnerID:                654,
+				RulesChannelID:         987,
+				PublicUpdatesChannelID: 210,
 			},
 			expect: discord.Guild{
-				ID:      123,
-				OwnerID: 654,
+				ID:                     123,
+				OwnerID:                654,
+				RulesChannelID:         987,
+				PublicUpdatesChannelID: 210,
 			},
 		},
 		{
 			name: "ownerID",
 			in: discord.Guild{
-				ID: 321,
+				ID:                     321,
+				RulesChannelID:         987,
+				PublicUpdatesChannelID: 210,
 			},
 			expect: discord.Guild{
-				ID:      321,
-				OwnerID: 456,
+				ID:                     321,
+				OwnerID:                456,
+				RulesChannelID:         987,
+				PublicUpdatesChannelID: 210,
+			},
+		},
+		{
+			name: "ruleChannelID",
+			in: discord.Guild{
+				ID:                     321,
+				OwnerID:                654,
+				PublicUpdatesChannelID: 210,
+			},
+			expect: discord.Guild{
+				ID:                     321,
+				OwnerID:                654,
+				RulesChannelID:         789,
+				PublicUpdatesChannelID: 210,
+			},
+		},
+		{
+			name: "publicUpdatesChannelID",
+			in: discord.Guild{
+				ID:             321,
+				OwnerID:        654,
+				RulesChannelID: 987,
+			},
+			expect: discord.Guild{
+				ID:                     321,
+				OwnerID:                654,
+				RulesChannelID:         987,
+				PublicUpdatesChannelID: 012,
 			},
 		},
 	}
 
 	for _, c := range testCases {
 		t.Run(c.name, func(t *testing.T) {
-			actual := Guild(c.in, 123, 456)
+			actual := Guild(c.in, 123, 456, 789, 012)
 
 			assert.Equal(t, c.expect, actual)
 		})
@@ -115,6 +155,45 @@ func TestRole(t *testing.T) {
 	for _, c := range testCases {
 		t.Run(c.name, func(t *testing.T) {
 			actual := Role(c.in, 123)
+
+			assert.Equal(t, c.expect, actual)
+		})
+	}
+}
+
+func TestMember(t *testing.T) {
+	testCases := []struct {
+		name   string
+		in     discord.Member
+		expect discord.Member
+	}{
+		{
+			name: "none",
+			in: discord.Member{
+				User: discord.User{
+					ID: 321,
+				},
+			},
+			expect: discord.Member{
+				User: discord.User{
+					ID: 321,
+				},
+			},
+		},
+		{
+			name: "id",
+			in:   discord.Member{},
+			expect: discord.Member{
+				User: discord.User{
+					ID: 123,
+				},
+			},
+		},
+	}
+
+	for _, c := range testCases {
+		t.Run(c.name, func(t *testing.T) {
+			actual := Member(c.in, 123)
 
 			assert.Equal(t, c.expect, actual)
 		})

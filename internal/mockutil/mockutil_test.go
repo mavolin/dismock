@@ -216,40 +216,40 @@ func TestCheckQuery(t *testing.T) {
 	failureCases := []struct {
 		name        string
 		query       url.Values
-		falseExpect map[string]string
+		falseExpect url.Values
 	}{
 		{
 			name: "unequal",
-			query: map[string][]string{
+			query: url.Values{
 				"foo": {"abc"},
 				"bar": {"123"},
 			},
-			falseExpect: map[string]string{
-				"foo": "def",
-				"bar": "456",
+			falseExpect: url.Values{
+				"foo": {"def"},
+				"bar": {"456"},
 			},
 		},
 		{
 			name: "unexpected field",
-			query: map[string][]string{
+			query: url.Values{
 				"foo": {"present"},
 			},
-			falseExpect: map[string]string{},
+			falseExpect: url.Values{},
 		},
 		{
 			name:  "missing field",
-			query: map[string][]string{},
-			falseExpect: map[string]string{
-				"foo": "I expected this to be here",
+			query: url.Values{},
+			falseExpect: url.Values{
+				"foo": {"I expected this to be here"},
 			},
 		},
 		{
 			name: "empty query",
-			query: map[string][]string{
+			query: url.Values{
 				"foo": {},
 			},
-			falseExpect: map[string]string{
-				"foo": "this should be filled",
+			falseExpect: url.Values{
+				"foo": {"this should be filled"},
 			},
 		},
 	}
@@ -258,9 +258,9 @@ func TestCheckQuery(t *testing.T) {
 		CheckQuery(t, url.Values{
 			"foo": {"present"},
 			"bar": {"123"},
-		}, map[string]string{
-			"foo": "present",
-			"bar": "123",
+		}, url.Values{
+			"foo": {"present"},
+			"bar": {"123"},
 		})
 	})
 
