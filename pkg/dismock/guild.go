@@ -81,6 +81,10 @@ func (m *Mocker) GuildPreview(p discord.GuildPreview) {
 // This method will sanitize Guilds.ID, Guilds.OwnerID, Guilds.Emojis.ID and
 // Guilds.Roles.ID.
 func (m *Mocker) Guilds(limit uint, g []discord.Guild) {
+	if g == nil {
+		g = []discord.Guild{}
+	}
+
 	if len(g) > int(limit) && limit != 0 {
 		panic(fmt.Sprintf("limit may not be less than the number of sent guilds (%d vs. %d)", len(g), limit))
 	}
@@ -124,6 +128,10 @@ func (m *Mocker) Guilds(limit uint, g []discord.Guild) {
 // This method will sanitize Guilds.ID, Guilds.OwnerID, Guilds.Emojis.ID and
 // Guilds.Roles.ID.
 func (m *Mocker) GuildsBefore(before discord.Snowflake, limit uint, g []discord.Guild) {
+	if g == nil {
+		g = []discord.Guild{}
+	}
+
 	if len(g) > int(limit) && limit != 0 {
 		panic(fmt.Sprintf("limit may not be less than the number of sent guilds (%d vs. %d)", len(g), limit))
 	}
@@ -170,6 +178,10 @@ func (m *Mocker) GuildsBefore(before discord.Snowflake, limit uint, g []discord.
 // This method will sanitize Guilds.ID, Guilds.OwnerID, Guilds.Emojis.ID and
 // Guilds.Roles.ID.
 func (m *Mocker) GuildsAfter(after discord.Snowflake, limit uint, g []discord.Guild) {
+	if g == nil {
+		g = []discord.Guild{}
+	}
+
 	if len(g) > int(limit) && limit != 0 {
 		panic(fmt.Sprintf("limit may not be less than the number of sent guilds (%d vs. %d)", len(g), limit))
 	}
@@ -263,6 +275,10 @@ func (m *Mocker) DeleteGuild(id discord.Snowflake) {
 
 // VoiceRegionsGuild mocks a VoiceRegionsGuild request.
 func (m *Mocker) VoiceRegionsGuild(guildID discord.Snowflake, vr []discord.VoiceRegion) {
+	if vr == nil {
+		vr = []discord.VoiceRegion{}
+	}
+
 	m.Mock("VoiceRegionsGuild", http.MethodGet, "/guilds/"+guildID.String()+"/regions",
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
 			WriteJSON(t, w, vr)
@@ -313,6 +329,10 @@ func (m *Mocker) AuditLog(guildID discord.Snowflake, d api.AuditLogData, al disc
 // This method will sanitize Integration.ID, Integration.RoleID and
 // Integration.User.ID.
 func (m *Mocker) Integrations(guildID discord.Snowflake, integrations []discord.Integration) {
+	if integrations == nil {
+		integrations = []discord.Integration{}
+	}
+
 	for i, integration := range integrations {
 		integrations[i] = sanitize.Integration(integration, 1, 1, 1)
 	}

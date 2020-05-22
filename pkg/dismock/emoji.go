@@ -15,6 +15,10 @@ import (
 //
 // This method will sanitize Emoji.ID and Emoji.User.ID.
 func (m *Mocker) Emojis(guildID discord.Snowflake, e []discord.Emoji) {
+	if e == nil {
+		e = []discord.Emoji{}
+	}
+
 	for i, emoji := range e {
 		e[i] = sanitize.Emoji(emoji, 1, 1)
 	}

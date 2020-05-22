@@ -15,6 +15,10 @@ import (
 //
 // This method will sanitize Channel.ID.
 func (m *Mocker) Channels(guildID discord.Snowflake, c []discord.Channel) {
+	if c == nil {
+		c = []discord.Channel{}
+	}
+
 	for i, channel := range c {
 		c[i] = sanitize.Channel(channel, 1)
 	}
@@ -106,6 +110,10 @@ func (m *Mocker) Typing(channelID discord.Snowflake) {
 // This method will sanitize Message.ID, Message.ChannelID and
 // Message.Author.ID.
 func (m *Mocker) PinnedMessages(channelID discord.Snowflake, messages []discord.Message) {
+	if messages == nil {
+		messages = []discord.Message{}
+	}
+
 	for i, message := range messages {
 		messages[i] = sanitize.Message(message, 1, channelID, 1)
 	}
