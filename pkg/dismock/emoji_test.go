@@ -12,31 +12,51 @@ import (
 )
 
 func TestMocker_Emojis(t *testing.T) {
-	m, s := NewArikawaSession(t)
+	t.Run("success", func(t *testing.T) {
+		m, s := NewArikawaSession(t)
 
-	var guildID discord.Snowflake = 123
+		var guildID discord.Snowflake = 123
 
-	expect := []discord.Emoji{
-		{
-			ID: 456,
-		},
-		{
-			ID: 789,
-		},
-	}
+		expect := []discord.Emoji{
+			{
+				ID: 456,
+			},
+			{
+				ID: 789,
+			},
+		}
 
-	for i, e := range expect {
-		expect[i] = sanitize.Emoji(e, 1, 1)
-	}
+		for i, e := range expect {
+			expect[i] = sanitize.Emoji(e, 1, 1)
+		}
 
-	m.Emojis(guildID, expect)
+		m.Emojis(guildID, expect)
 
-	actual, err := s.Emojis(guildID)
-	require.NoError(t, err)
+		actual, err := s.Emojis(guildID)
+		require.NoError(t, err)
 
-	assert.Equal(t, expect, actual)
+		assert.Equal(t, expect, actual)
 
-	m.Eval()
+		m.Eval()
+	})
+
+	t.Run("nil emojis", func(t *testing.T) {
+		m, s := NewArikawaSession(t)
+
+		var guildID discord.Snowflake = 123
+
+		//noinspection GoPreferNilSlice
+		expect := []discord.Emoji{}
+
+		m.Emojis(guildID, nil)
+
+		actual, err := s.Emojis(guildID)
+		require.NoError(t, err)
+
+		assert.Equal(t, expect, actual)
+
+		m.Eval()
+	})
 }
 
 func TestMocker_Emoji(t *testing.T) {

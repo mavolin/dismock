@@ -49,59 +49,99 @@ func TestMocker_InviteWithCounts(t *testing.T) {
 }
 
 func TestMocker_ChannelInvites(t *testing.T) {
-	m, s := NewArikawaSession(t)
+	t.Run("success", func(t *testing.T) {
+		m, s := NewArikawaSession(t)
 
-	var channelID discord.Snowflake = 123
+		var channelID discord.Snowflake = 123
 
-	expect := []discord.Invite{
-		{
-			Code: "abc",
-		},
-		{
-			Code: "def",
-		},
-	}
+		expect := []discord.Invite{
+			{
+				Code: "abc",
+			},
+			{
+				Code: "def",
+			},
+		}
 
-	for i, invite := range expect {
-		expect[i] = sanitize.Invite(invite, 1, 1, 1, 1, 1, 1, 1)
-	}
+		for i, invite := range expect {
+			expect[i] = sanitize.Invite(invite, 1, 1, 1, 1, 1, 1, 1)
+		}
 
-	m.ChannelInvites(channelID, expect)
+		m.ChannelInvites(channelID, expect)
 
-	actual, err := s.ChannelInvites(channelID)
-	require.NoError(t, err)
+		actual, err := s.ChannelInvites(channelID)
+		require.NoError(t, err)
 
-	assert.Equal(t, expect, actual)
+		assert.Equal(t, expect, actual)
 
-	m.Eval()
+		m.Eval()
+	})
+
+	t.Run("nil invites", func(t *testing.T) {
+		m, s := NewArikawaSession(t)
+
+		var channelID discord.Snowflake = 123
+
+		//noinspection GoPreferNilSlice
+		expect := []discord.Invite{}
+
+		m.ChannelInvites(channelID, nil)
+
+		actual, err := s.ChannelInvites(channelID)
+		require.NoError(t, err)
+
+		assert.Equal(t, expect, actual)
+
+		m.Eval()
+	})
 }
 
 func TestMocker_GuildInvites(t *testing.T) {
-	m, s := NewArikawaSession(t)
+	t.Run("success", func(t *testing.T) {
+		m, s := NewArikawaSession(t)
 
-	var guildID discord.Snowflake = 123
+		var guildID discord.Snowflake = 123
 
-	expect := []discord.Invite{
-		{
-			Code: "abc",
-		},
-		{
-			Code: "def",
-		},
-	}
+		expect := []discord.Invite{
+			{
+				Code: "abc",
+			},
+			{
+				Code: "def",
+			},
+		}
 
-	for i, invite := range expect {
-		expect[i] = sanitize.Invite(invite, 1, 1, 1, 1, 1, 1, 1)
-	}
+		for i, invite := range expect {
+			expect[i] = sanitize.Invite(invite, 1, 1, 1, 1, 1, 1, 1)
+		}
 
-	m.GuildInvites(guildID, expect)
+		m.GuildInvites(guildID, expect)
 
-	actual, err := s.GuildInvites(guildID)
-	require.NoError(t, err)
+		actual, err := s.GuildInvites(guildID)
+		require.NoError(t, err)
 
-	assert.Equal(t, expect, actual)
+		assert.Equal(t, expect, actual)
 
-	m.Eval()
+		m.Eval()
+	})
+
+	t.Run("nil invites", func(t *testing.T) {
+		m, s := NewArikawaSession(t)
+
+		var guildID discord.Snowflake = 123
+
+		//noinspection GoPreferNilSlice
+		expect := []discord.Invite{}
+
+		m.GuildInvites(guildID, nil)
+
+		actual, err := s.GuildInvites(guildID)
+		require.NoError(t, err)
+
+		assert.Equal(t, expect, actual)
+
+		m.Eval()
+	})
 }
 
 func TestMocker_CreateInvite(t *testing.T) {

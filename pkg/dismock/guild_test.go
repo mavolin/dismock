@@ -189,6 +189,21 @@ func TestMocker_Guilds(t *testing.T) {
 		}
 	})
 
+	t.Run("nil guilds", func(t *testing.T) {
+		m, s := NewArikawaSession(t)
+
+		var expect []discord.Guild
+
+		m.Guilds(100, expect)
+
+		actual, err := s.Guilds(100)
+		require.NoError(t, err)
+
+		assert.Equal(t, expect, actual)
+
+		m.Eval()
+	})
+
 	t.Run("limit smaller than guilds", func(t *testing.T) {
 		m, _ := NewArikawaSession(t)
 
@@ -270,6 +285,22 @@ func TestMocker_GuildsBefore(t *testing.T) {
 				m.Eval()
 			})
 		}
+	})
+
+	t.Run("nil guilds", func(t *testing.T) {
+		m, s := NewArikawaSession(t)
+
+		//noinspection GoPreferNilSlice
+		expect := []discord.Guild{}
+
+		m.GuildsBefore(0, 100, nil)
+
+		actual, err := s.GuildsBefore(0, 100)
+		require.NoError(t, err)
+
+		assert.Equal(t, expect, actual)
+
+		m.Eval()
 	})
 
 	t.Run("failure", func(t *testing.T) {
@@ -380,6 +411,21 @@ func TestMocker_GuildsAfter(t *testing.T) {
 		}
 	})
 
+	t.Run("nil guilds", func(t *testing.T) {
+		m, s := NewArikawaSession(t)
+
+		var expect []discord.Guild
+
+		m.GuildsAfter(0, 100, expect)
+
+		actual, err := s.GuildsAfter(0, 100)
+		require.NoError(t, err)
+
+		assert.Equal(t, expect, actual)
+
+		m.Eval()
+	})
+
 	t.Run("failure", func(t *testing.T) {
 		tMock := new(testing.T)
 
@@ -488,29 +534,49 @@ func TestMocker_DeleteGuild(t *testing.T) {
 }
 
 func TestMocker_VoiceRegionsGuild(t *testing.T) {
-	m, s := NewArikawaSession(t)
+	t.Run("success", func(t *testing.T) {
+		m, s := NewArikawaSession(t)
 
-	var guildID discord.Snowflake = 123
+		var guildID discord.Snowflake = 123
 
-	expect := []discord.VoiceRegion{
-		{
-			ID:   "abc",
-			Name: "ABC",
-		},
-		{
-			ID:   "def",
-			Name: "DEF",
-		},
-	}
+		expect := []discord.VoiceRegion{
+			{
+				ID:   "abc",
+				Name: "ABC",
+			},
+			{
+				ID:   "def",
+				Name: "DEF",
+			},
+		}
 
-	m.VoiceRegionsGuild(guildID, expect)
+		m.VoiceRegionsGuild(guildID, expect)
 
-	actual, err := s.VoiceRegionsGuild(guildID)
-	require.NoError(t, err)
+		actual, err := s.VoiceRegionsGuild(guildID)
+		require.NoError(t, err)
 
-	assert.Equal(t, expect, actual)
+		assert.Equal(t, expect, actual)
 
-	m.Eval()
+		m.Eval()
+	})
+
+	t.Run("nil voice regions", func(t *testing.T) {
+		m, s := NewArikawaSession(t)
+
+		var guildID discord.Snowflake = 123
+
+		//noinspection GoPreferNilSlice
+		expect := []discord.VoiceRegion{}
+
+		m.VoiceRegionsGuild(guildID, nil)
+
+		actual, err := s.VoiceRegionsGuild(guildID)
+		require.NoError(t, err)
+
+		assert.Equal(t, expect, actual)
+
+		m.Eval()
+	})
 }
 
 func TestMocker_AuditLog(t *testing.T) {
@@ -642,33 +708,53 @@ func TestMocker_AuditLog(t *testing.T) {
 }
 
 func TestMocker_Integrations(t *testing.T) {
-	m, s := NewArikawaSession(t)
+	t.Run("success", func(t *testing.T) {
+		m, s := NewArikawaSession(t)
 
-	var guildID discord.Snowflake = 123
+		var guildID discord.Snowflake = 123
 
-	expect := []discord.Integration{
-		{
-			ID:   456,
-			Name: "abc",
-		},
-		{
-			ID:   789,
-			Name: "def",
-		},
-	}
+		expect := []discord.Integration{
+			{
+				ID:   456,
+				Name: "abc",
+			},
+			{
+				ID:   789,
+				Name: "def",
+			},
+		}
 
-	for i, integration := range expect {
-		expect[i] = sanitize.Integration(integration, 1, 1, 1)
-	}
+		for i, integration := range expect {
+			expect[i] = sanitize.Integration(integration, 1, 1, 1)
+		}
 
-	m.Integrations(guildID, expect)
+		m.Integrations(guildID, expect)
 
-	actual, err := s.Integrations(guildID)
-	require.NoError(t, err)
+		actual, err := s.Integrations(guildID)
+		require.NoError(t, err)
 
-	assert.Equal(t, expect, actual)
+		assert.Equal(t, expect, actual)
 
-	m.Eval()
+		m.Eval()
+	})
+
+	t.Run("nil integrations", func(t *testing.T) {
+		m, s := NewArikawaSession(t)
+
+		var guildID discord.Snowflake = 123
+
+		//noinspection GoPreferNilSlice
+		expect := []discord.Integration{}
+
+		m.Integrations(guildID, nil)
+
+		actual, err := s.Integrations(guildID)
+		require.NoError(t, err)
+
+		assert.Equal(t, expect, actual)
+
+		m.Eval()
+	})
 }
 
 func TestMocker_AttachIntegration(t *testing.T) {

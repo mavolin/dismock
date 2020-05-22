@@ -84,6 +84,51 @@ func TestGuild(t *testing.T) {
 				PublicUpdatesChannelID: 012,
 			},
 		},
+		{
+			name: "emojis",
+			in: discord.Guild{
+				ID:                     321,
+				OwnerID:                654,
+				Emojis:                 []discord.Emoji{{}},
+				RulesChannelID:         987,
+				PublicUpdatesChannelID: 210,
+			},
+			expect: discord.Guild{
+				ID:      321,
+				OwnerID: 654,
+				Emojis: []discord.Emoji{
+					{
+						ID: 1,
+						User: discord.User{
+							ID: 1,
+						},
+					},
+				},
+				RulesChannelID:         987,
+				PublicUpdatesChannelID: 210,
+			},
+		},
+		{
+			name: "roles",
+			in: discord.Guild{
+				ID:                     321,
+				OwnerID:                654,
+				Roles:                  []discord.Role{{}},
+				RulesChannelID:         987,
+				PublicUpdatesChannelID: 210,
+			},
+			expect: discord.Guild{
+				ID:      321,
+				OwnerID: 654,
+				Roles: []discord.Role{
+					{
+						ID: 1,
+					},
+				},
+				RulesChannelID:         987,
+				PublicUpdatesChannelID: 210,
+			},
+		},
 	}
 
 	for _, c := range testCases {
@@ -115,6 +160,24 @@ func TestGuildPreview(t *testing.T) {
 			in:   discord.GuildPreview{},
 			expect: discord.GuildPreview{
 				ID: 123,
+			},
+		},
+		{
+			name: "emojis",
+			in: discord.GuildPreview{
+				ID:     321,
+				Emojis: []discord.Emoji{{}},
+			},
+			expect: discord.GuildPreview{
+				ID: 321,
+				Emojis: []discord.Emoji{
+					{
+						ID: 1,
+						User: discord.User{
+							ID: 1,
+						},
+					},
+				},
 			},
 		},
 	}
@@ -198,6 +261,27 @@ func TestMember(t *testing.T) {
 			assert.Equal(t, c.expect, actual)
 		})
 	}
+}
+
+func TestBan(t *testing.T) {
+	var (
+		userID discord.Snowflake = 123
+		ban                      = discord.Ban{
+			User: discord.User{
+				ID: 0,
+			},
+		}
+	)
+
+	expect := discord.Ban{
+		User: discord.User{
+			ID: userID,
+		},
+	}
+
+	actual := Ban(ban, userID)
+
+	assert.Equal(t, expect, actual)
 }
 
 func TestIntegration(t *testing.T) {

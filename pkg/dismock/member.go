@@ -61,9 +61,9 @@ func (m *Mocker) Members(guildID discord.Snowflake, limit uint, members []discor
 			fetch = hardLimit
 		}
 
-		m.membersAfter(guildID, 0, after, fmt.Sprintf("Members #%d", i+1), fetch, members[from:to])
+		m.membersAfter(guildID, after, fmt.Sprintf("Members #%d", i+1), fetch, members[from:to])
 
-		if fetch < hardLimit {
+		if to-from < hardLimit {
 			break
 		}
 
@@ -106,9 +106,9 @@ func (m *Mocker) MembersAfter(guildID, after discord.Snowflake, limit uint, memb
 			fetch = hardLimit
 		}
 
-		m.membersAfter(guildID, 0, after, fmt.Sprintf("MembersAfter #%d", i+1), fetch, members[from:to])
+		m.membersAfter(guildID, after, fmt.Sprintf("MembersAfter #%d", i+1), fetch, members[from:to])
 
-		if fetch < hardLimit {
+		if to-from < hardLimit {
 			break
 		}
 
@@ -119,7 +119,7 @@ func (m *Mocker) MembersAfter(guildID, after discord.Snowflake, limit uint, memb
 // membersAfter mocks a single request to the GET /Members endpoint.
 //
 // This method will sanitize Member.User.ID.
-func (m *Mocker) membersAfter(guildID, before, after discord.Snowflake, name string, limit uint, g []discord.Member) {
+func (m *Mocker) membersAfter(guildID, after discord.Snowflake, name string, limit uint, g []discord.Member) {
 	for i, Member := range g {
 		g[i] = sanitize.Member(Member, 1)
 	}
@@ -132,10 +132,6 @@ func (m *Mocker) membersAfter(guildID, before, after discord.Snowflake, name str
 
 			if after != 0 {
 				expect["after"] = []string{after.String()}
-			}
-
-			if before != 0 {
-				expect["before"] = []string{before.String()}
 			}
 
 			CheckQuery(t, r.URL.Query(), expect)

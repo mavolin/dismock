@@ -116,7 +116,7 @@ func (m *Mocker) Guilds(limit uint, g []discord.Guild) {
 
 		m.guildsRange(0, after, fmt.Sprintf("Guilds #%d", i+1), fetch, g[from:to])
 
-		if fetch < hardLimit {
+		if to-from < hardLimit {
 			break
 		}
 
@@ -166,7 +166,7 @@ func (m *Mocker) GuildsBefore(before discord.Snowflake, limit uint, g []discord.
 
 		m.guildsRange(before, 0, fmt.Sprintf("GuildsBefore #%d", no), fetch, g[from:to])
 
-		if fetch < hardLimit {
+		if to-from < hardLimit {
 			break
 		}
 
@@ -212,7 +212,7 @@ func (m *Mocker) GuildsAfter(after discord.Snowflake, limit uint, g []discord.Gu
 
 		m.guildsRange(0, after, fmt.Sprintf("GuildsAfter #%d", i+1), fetch, g[from:to])
 
-		if fetch < hardLimit {
+		if to-from < hardLimit {
 			break
 		}
 

@@ -13,31 +13,50 @@ import (
 )
 
 func TestMocker_Channels(t *testing.T) {
-	m, s := NewArikawaSession(t)
+	t.Run("success", func(t *testing.T) {
+		m, s := NewArikawaSession(t)
 
-	var guildID discord.Snowflake = 123
+		var guildID discord.Snowflake = 123
 
-	expect := []discord.Channel{
-		{
-			ID: 456,
-		},
-		{
-			ID: 789,
-		},
-	}
+		expect := []discord.Channel{
+			{
+				ID: 456,
+			},
+			{
+				ID: 789,
+			},
+		}
 
-	for i, c := range expect {
-		expect[i] = sanitize.Channel(c, 1)
-	}
+		for i, c := range expect {
+			expect[i] = sanitize.Channel(c, 1)
+		}
 
-	m.Channels(guildID, expect)
+		m.Channels(guildID, expect)
 
-	actual, err := s.Channels(guildID)
-	require.NoError(t, err)
+		actual, err := s.Channels(guildID)
+		require.NoError(t, err)
 
-	assert.Equal(t, expect, actual)
+		assert.Equal(t, expect, actual)
 
-	m.Eval()
+		m.Eval()
+	})
+
+	t.Run("nil channels", func(t *testing.T) {
+		m, s := NewArikawaSession(t)
+
+		var guildID discord.Snowflake = 123
+
+		expect := []discord.Channel{}
+
+		m.Channels(guildID, nil)
+
+		actual, err := s.Channels(guildID)
+		require.NoError(t, err)
+
+		assert.Equal(t, expect, actual)
+
+		m.Eval()
+	})
 }
 
 func TestMocker_CreateChannel(t *testing.T) {
@@ -298,31 +317,51 @@ func TestMocker_Typing(t *testing.T) {
 }
 
 func TestMocker_PinnedMessages(t *testing.T) {
-	m, s := NewArikawaSession(t)
+	t.Run("success", func(t *testing.T) {
+		m, s := NewArikawaSession(t)
 
-	var channelID discord.Snowflake = 123
+		var channelID discord.Snowflake = 123
 
-	expect := []discord.Message{
-		{
-			ID: 456,
-		},
-		{
-			ID: 789,
-		},
-	}
+		expect := []discord.Message{
+			{
+				ID: 456,
+			},
+			{
+				ID: 789,
+			},
+		}
 
-	for i, m := range expect {
-		expect[i] = sanitize.Message(m, 1, channelID, channelID)
-	}
+		for i, m := range expect {
+			expect[i] = sanitize.Message(m, 1, channelID, channelID)
+		}
 
-	m.PinnedMessages(channelID, expect)
+		m.PinnedMessages(channelID, expect)
 
-	actual, err := s.PinnedMessages(channelID)
-	require.NoError(t, err)
+		actual, err := s.PinnedMessages(channelID)
+		require.NoError(t, err)
 
-	assert.Equal(t, expect, actual)
+		assert.Equal(t, expect, actual)
 
-	m.Eval()
+		m.Eval()
+	})
+
+	t.Run("nil messages", func(t *testing.T) {
+		m, s := NewArikawaSession(t)
+
+		var channelID discord.Snowflake = 123
+
+		//noinspection GoPreferNilSlice
+		expect := []discord.Message{}
+
+		m.PinnedMessages(channelID, nil)
+
+		actual, err := s.PinnedMessages(channelID)
+		require.NoError(t, err)
+
+		assert.Equal(t, expect, actual)
+
+		m.Eval()
+	})
 }
 
 func TestMocker_PinMessage(t *testing.T) {
