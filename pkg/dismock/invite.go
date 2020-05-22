@@ -7,7 +7,7 @@ import (
 	"github.com/diamondburned/arikawa/api"
 	"github.com/diamondburned/arikawa/discord"
 
-	"github.com/mavolin/dismock/internal/mockutil"
+	. "github.com/mavolin/dismock/internal/mockutil"
 	"github.com/mavolin/dismock/internal/sanitize"
 )
 
@@ -23,7 +23,7 @@ func (m *Mocker) Invite(i discord.Invite) {
 
 	m.Mock("Invite", http.MethodGet, "/invites/"+i.Code,
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
-			mockutil.WriteJSON(t, w, i)
+			WriteJSON(t, w, i)
 		})
 }
 
@@ -39,10 +39,10 @@ func (m *Mocker) InviteWithCounts(i discord.Invite) {
 
 	m.Mock("Invite", http.MethodGet, "/invites/"+i.Code,
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
-			mockutil.CheckQuery(t, r.URL.Query(), map[string]string{
+			CheckQuery(t, r.URL.Query(), map[string]string{
 				"with_counts": "true",
 			})
-			mockutil.WriteJSON(t, w, i)
+			WriteJSON(t, w, i)
 		})
 }
 
@@ -62,7 +62,7 @@ func (m *Mocker) ChannelInvites(channelID discord.Snowflake, invites []discord.I
 
 	m.Mock("ChannelInvites", http.MethodGet, "/channels/"+channelID.String()+"/invites",
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
-			mockutil.WriteJSON(t, w, invites)
+			WriteJSON(t, w, invites)
 		})
 }
 
@@ -82,7 +82,7 @@ func (m *Mocker) GuildInvites(guildID discord.Snowflake, invites []discord.Invit
 
 	m.Mock("GuildInvites", http.MethodGet, "/guilds/"+guildID.String()+"/invites",
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
-			mockutil.WriteJSON(t, w, invites)
+			WriteJSON(t, w, invites)
 		})
 }
 
@@ -97,8 +97,8 @@ func (m *Mocker) CreateInvite(d api.CreateInviteData, i discord.Invite) {
 
 	m.Mock("CreateInvite", http.MethodPost, "/channels/"+i.Channel.ID.String()+"/invites",
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
-			mockutil.CheckJSON(t, r.Body, new(api.CreateInviteData), &d)
-			mockutil.WriteJSON(t, w, i)
+			CheckJSON(t, r.Body, new(api.CreateInviteData), &d)
+			WriteJSON(t, w, i)
 		})
 }
 
@@ -114,6 +114,6 @@ func (m *Mocker) DeleteInvite(i discord.Invite) {
 
 	m.Mock("DeleteInvite", http.MethodDelete, "/invites/"+i.Code,
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
-			mockutil.WriteJSON(t, w, i)
+			WriteJSON(t, w, i)
 		})
 }
