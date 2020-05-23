@@ -15,6 +15,13 @@
 // However, this shouldn't impose much of a problem as 0 or smaller isn't a
 // valid Snowflake anyway, and all values above 0 will not be sanitized.
 //
+// Mocking Requests for Metadata
+//
+// In order to mock requests for an entity's meta data, such as it's icon, it
+// is required that those requests are made with Mocker.Client, so that
+// the request are correctly redirected.
+//
+//
 // Important notes
 //
 // BUG(mavolin): Due to an inconvenient behavior of json.Unmarshal, where on

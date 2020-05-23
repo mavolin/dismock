@@ -19,7 +19,7 @@ import (
 //
 // The User.ID field of the passed member must be set.
 func (m *Mocker) Member(guildID discord.Snowflake, member discord.Member) {
-	m.Mock("Member", http.MethodGet, "/guilds/"+guildID.String()+"/members/"+member.User.ID.String(),
+	m.MockAPI("Member", http.MethodGet, "/guilds/"+guildID.String()+"/members/"+member.User.ID.String(),
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
 			WriteJSON(t, w, member)
 		})
@@ -124,7 +124,7 @@ func (m *Mocker) membersAfter(guildID, after discord.Snowflake, name string, lim
 		g[i] = sanitize.Member(Member, 1)
 	}
 
-	m.Mock(name, http.MethodGet, "/guilds/"+guildID.String()+"/members",
+	m.MockAPI(name, http.MethodGet, "/guilds/"+guildID.String()+"/members",
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
 			expect := url.Values{
 				"limit": {strconv.FormatUint(uint64(limit), 10)},
@@ -143,7 +143,7 @@ func (m *Mocker) membersAfter(guildID, after discord.Snowflake, name string, lim
 //
 // The User.ID field of the passed member must be set.
 func (m *Mocker) AddMember(guildID discord.Snowflake, d api.AddMemberData, member discord.Member) {
-	m.Mock("AddMember", http.MethodPut, "/guilds/"+guildID.String()+"/members/"+member.User.ID.String(),
+	m.MockAPI("AddMember", http.MethodPut, "/guilds/"+guildID.String()+"/members/"+member.User.ID.String(),
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
 			CheckJSON(t, r.Body, new(api.AddMemberData), &d)
 			WriteJSON(t, w, member)
@@ -152,7 +152,7 @@ func (m *Mocker) AddMember(guildID discord.Snowflake, d api.AddMemberData, membe
 
 // ModifyMember mocks a ModifyMember request.
 func (m *Mocker) ModifyMember(guildID, userID discord.Snowflake, d api.ModifyMemberData) {
-	m.Mock("ModifyMember", http.MethodPatch, "/guilds/"+guildID.String()+"/members/"+userID.String(),
+	m.MockAPI("ModifyMember", http.MethodPatch, "/guilds/"+guildID.String()+"/members/"+userID.String(),
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
 			CheckJSON(t, r.Body, new(api.ModifyMemberData), &d)
 			w.WriteHeader(http.StatusNoContent)
@@ -169,7 +169,7 @@ func (m *Mocker) PruneCount(guildID discord.Snowflake, d api.PruneCountData, pru
 		d.Days = 7
 	}
 
-	m.Mock("PruneCount", http.MethodGet, "/guilds/"+guildID.String()+"/prune",
+	m.MockAPI("PruneCount", http.MethodGet, "/guilds/"+guildID.String()+"/prune",
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
 			expect := url.Values{
 				"days": {strconv.Itoa(int(d.Days))},
@@ -198,7 +198,7 @@ func (m *Mocker) Prune(guildID discord.Snowflake, d api.PruneData, pruned uint) 
 		d.Days = 7
 	}
 
-	m.Mock("Prune", http.MethodPost, "/guilds/"+guildID.String()+"/prune",
+	m.MockAPI("Prune", http.MethodPost, "/guilds/"+guildID.String()+"/prune",
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
 			expect := url.Values{
 				"days":                {strconv.Itoa(int(d.Days))},
@@ -224,7 +224,7 @@ func (m *Mocker) Prune(guildID discord.Snowflake, d api.PruneData, pruned uint) 
 
 // Kick mocks a Kick request.
 func (m *Mocker) Kick(guildID, userID discord.Snowflake) {
-	m.Mock("Kick", http.MethodDelete, "/guilds/"+guildID.String()+"/members/"+userID.String(), nil)
+	m.MockAPI("Kick", http.MethodDelete, "/guilds/"+guildID.String()+"/members/"+userID.String(), nil)
 }
 
 // Bans mocks a Bans request.
@@ -235,7 +235,7 @@ func (m *Mocker) Bans(guildID discord.Snowflake, b []discord.Ban) {
 		b[i] = sanitize.Ban(ban, 1)
 	}
 
-	m.Mock("Bans", http.MethodGet, "/guilds/"+guildID.String()+"/bans",
+	m.MockAPI("Bans", http.MethodGet, "/guilds/"+guildID.String()+"/bans",
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
 			WriteJSON(t, w, b)
 		})
@@ -245,7 +245,7 @@ func (m *Mocker) Bans(guildID discord.Snowflake, b []discord.Ban) {
 //
 // The User.ID field of the passed ban must be set.
 func (m *Mocker) GetBan(guildID discord.Snowflake, b discord.Ban) {
-	m.Mock("GetBan", http.MethodGet, "/guilds/"+guildID.String()+"/bans/"+b.User.ID.String(),
+	m.MockAPI("GetBan", http.MethodGet, "/guilds/"+guildID.String()+"/bans/"+b.User.ID.String(),
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
 			WriteJSON(t, w, b)
 		})
@@ -257,7 +257,7 @@ func (m *Mocker) Ban(guildID, userID discord.Snowflake, d api.BanData) {
 		*d.DeleteDays = 7
 	}
 
-	m.Mock("Ban", http.MethodPut, "/guilds/"+guildID.String()+"/bans/"+userID.String(),
+	m.MockAPI("Ban", http.MethodPut, "/guilds/"+guildID.String()+"/bans/"+userID.String(),
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
 			expect := make(url.Values)
 
@@ -276,5 +276,5 @@ func (m *Mocker) Ban(guildID, userID discord.Snowflake, d api.BanData) {
 
 // Unban mocks a Unban request.
 func (m *Mocker) Unban(guildID, userID discord.Snowflake) {
-	m.Mock("Unban", http.MethodDelete, "/guilds/"+guildID.String()+"/bans/"+userID.String(), nil)
+	m.MockAPI("Unban", http.MethodDelete, "/guilds/"+guildID.String()+"/bans/"+userID.String(), nil)
 }

@@ -14,7 +14,7 @@ import (
 
 func TestMocker_Channels(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
-		m, s := NewArikawaSession(t)
+		m, s := NewSession(t)
 
 		var guildID discord.Snowflake = 123
 
@@ -42,7 +42,7 @@ func TestMocker_Channels(t *testing.T) {
 	})
 
 	t.Run("nil channels", func(t *testing.T) {
-		m, s := NewArikawaSession(t)
+		m, s := NewSession(t)
 
 		var guildID discord.Snowflake = 123
 
@@ -61,7 +61,7 @@ func TestMocker_Channels(t *testing.T) {
 
 func TestMocker_CreateChannel(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
-		m, s := NewArikawaSession(t)
+		m, s := NewSession(t)
 
 		data := api.CreateChannelData{
 			Name: "abc",
@@ -86,7 +86,7 @@ func TestMocker_CreateChannel(t *testing.T) {
 	t.Run("failure", func(t *testing.T) {
 		tMock := new(testing.T)
 
-		m, s := NewArikawaSession(tMock)
+		m, s := NewSession(tMock)
 
 		expect := sanitize.Channel(discord.Channel{
 			ID:      456,
@@ -110,7 +110,7 @@ func TestMocker_CreateChannel(t *testing.T) {
 
 func TestMocker_MoveChannel(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
-		m, s := NewArikawaSession(t)
+		m, s := NewSession(t)
 
 		var (
 			guildID discord.Snowflake = 123
@@ -137,7 +137,7 @@ func TestMocker_MoveChannel(t *testing.T) {
 	t.Run("failure", func(t *testing.T) {
 		tMock := new(testing.T)
 
-		m, s := NewArikawaSession(tMock)
+		m, s := NewSession(tMock)
 
 		var guildID discord.Snowflake = 123
 
@@ -169,7 +169,7 @@ func TestMocker_MoveChannel(t *testing.T) {
 }
 
 func TestMocker_Channel(t *testing.T) {
-	m, s := NewArikawaSession(t)
+	m, s := NewSession(t)
 
 	expect := sanitize.Channel(discord.Channel{
 		ID: 456,
@@ -187,7 +187,7 @@ func TestMocker_Channel(t *testing.T) {
 
 func TestMocker_ModifyChannel(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
-		m, s := NewArikawaSession(t)
+		m, s := NewSession(t)
 
 		var (
 			channelID discord.Snowflake = 123
@@ -207,7 +207,7 @@ func TestMocker_ModifyChannel(t *testing.T) {
 	t.Run("failure", func(t *testing.T) {
 		tMock := new(testing.T)
 
-		m, s := NewArikawaSession(tMock)
+		m, s := NewSession(tMock)
 
 		var channelID discord.Snowflake = 123
 
@@ -225,7 +225,7 @@ func TestMocker_ModifyChannel(t *testing.T) {
 }
 
 func TestMocker_DeleteChannel(t *testing.T) {
-	m, s := NewArikawaSession(t)
+	m, s := NewSession(t)
 
 	var channelID discord.Snowflake = 123
 
@@ -239,7 +239,7 @@ func TestMocker_DeleteChannel(t *testing.T) {
 
 func TestMocker_EditChannelPermission(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
-		m, s := NewArikawaSession(t)
+		m, s := NewSession(t)
 
 		var (
 			channelID discord.Snowflake = 123
@@ -262,7 +262,7 @@ func TestMocker_EditChannelPermission(t *testing.T) {
 	t.Run("failure", func(t *testing.T) {
 		tMock := new(testing.T)
 
-		m, s := NewArikawaSession(tMock)
+		m, s := NewSession(tMock)
 
 		var channelID discord.Snowflake = 123
 
@@ -286,7 +286,7 @@ func TestMocker_EditChannelPermission(t *testing.T) {
 }
 
 func TestMocker_DeleteChannelPermission(t *testing.T) {
-	m, s := NewArikawaSession(t)
+	m, s := NewSession(t)
 
 	var (
 		channelID   discord.Snowflake = 123
@@ -302,7 +302,7 @@ func TestMocker_DeleteChannelPermission(t *testing.T) {
 }
 
 func TestMocker_Typing(t *testing.T) {
-	m, s := NewArikawaSession(t)
+	m, s := NewSession(t)
 
 	var (
 		channelID discord.Snowflake = 123
@@ -318,7 +318,7 @@ func TestMocker_Typing(t *testing.T) {
 
 func TestMocker_PinnedMessages(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
-		m, s := NewArikawaSession(t)
+		m, s := NewSession(t)
 
 		var channelID discord.Snowflake = 123
 
@@ -346,7 +346,7 @@ func TestMocker_PinnedMessages(t *testing.T) {
 	})
 
 	t.Run("nil messages", func(t *testing.T) {
-		m, s := NewArikawaSession(t)
+		m, s := NewSession(t)
 
 		var channelID discord.Snowflake = 123
 
@@ -365,7 +365,7 @@ func TestMocker_PinnedMessages(t *testing.T) {
 }
 
 func TestMocker_PinMessage(t *testing.T) {
-	m, s := NewArikawaSession(t)
+	m, s := NewSession(t)
 
 	var (
 		channelID discord.Snowflake = 123
@@ -382,7 +382,7 @@ func TestMocker_PinMessage(t *testing.T) {
 
 func TestMocker_AddRecipient(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
-		m, s := NewArikawaSession(t)
+		m, s := NewSession(t)
 
 		var (
 			channelID   discord.Snowflake = 123
@@ -402,7 +402,7 @@ func TestMocker_AddRecipient(t *testing.T) {
 	t.Run("failure", func(t *testing.T) {
 		tMock := new(testing.T)
 
-		m, s := NewArikawaSession(tMock)
+		m, s := NewSession(tMock)
 
 		var (
 			channelID discord.Snowflake = 123
@@ -419,7 +419,7 @@ func TestMocker_AddRecipient(t *testing.T) {
 }
 
 func TestMocker_RemoveRecipient(t *testing.T) {
-	m, s := NewArikawaSession(t)
+	m, s := NewSession(t)
 
 	var (
 		channelID discord.Snowflake = 123
@@ -436,7 +436,7 @@ func TestMocker_RemoveRecipient(t *testing.T) {
 
 func TestMocker_Ack(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
-		m, s := NewArikawaSession(t)
+		m, s := NewSession(t)
 
 		var (
 			channelID discord.Snowflake = 123
@@ -465,7 +465,7 @@ func TestMocker_Ack(t *testing.T) {
 	t.Run("failure", func(t *testing.T) {
 		tMock := new(testing.T)
 
-		m, s := NewArikawaSession(tMock)
+		m, s := NewSession(tMock)
 
 		var (
 			channelID discord.Snowflake = 123

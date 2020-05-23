@@ -22,8 +22,8 @@ var testHandler = Handler{
 // tests the Server started in New.
 func TestMocker_Server(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
-		t.Run("arikawa session", func(t *testing.T) {
-			m, s := NewArikawaSession(t)
+		t.Run("session", func(t *testing.T) {
+			m, s := NewSession(t)
 
 			expect := discord.Channel{
 				ID: 123,
@@ -37,8 +37,8 @@ func TestMocker_Server(t *testing.T) {
 			assert.Equal(t, expect, *actual)
 		})
 
-		t.Run("arikawa state", func(t *testing.T) {
-			m, s := NewArikawaState(t)
+		t.Run("state", func(t *testing.T) {
+			m, s := NewState(t)
 
 			expect := discord.Channel{
 				ID: 123,
@@ -101,7 +101,7 @@ func TestMocker_Server(t *testing.T) {
 
 	t.Run("delete", func(t *testing.T) {
 		t.Run("only handler and only method", func(t *testing.T) {
-			m, _ := NewArikawaSession(t)
+			m, _ := NewSession(t)
 
 			m.handlers["/path"] = make(map[string][]Handler)
 
@@ -124,7 +124,7 @@ func TestMocker_Server(t *testing.T) {
 		})
 
 		t.Run("only handler multiple methods", func(t *testing.T) {
-			m, _ := NewArikawaSession(t)
+			m, _ := NewSession(t)
 
 			m.handlers["/path"] = make(map[string][]Handler)
 
@@ -152,7 +152,7 @@ func TestMocker_Server(t *testing.T) {
 		})
 
 		t.Run("multiple handlers", func(t *testing.T) {
-			m, _ := NewArikawaSession(t)
+			m, _ := NewSession(t)
 
 			m.handlers["/path"] = make(map[string][]Handler)
 
@@ -180,7 +180,7 @@ func TestMocker_Server(t *testing.T) {
 
 func TestMocker_Mock(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
-		m, _ := NewArikawaSession(t)
+		m, _ := NewSession(t)
 
 		invoked := false
 
@@ -190,7 +190,7 @@ func TestMocker_Mock(t *testing.T) {
 			invoked = true
 		}
 
-		m.Mock("handler", method, path, f)
+		m.MockAPI("handler", method, path, f)
 
 		h, ok := m.handlers["/api/v6"+path][method]
 		require.True(t, ok)
@@ -200,12 +200,12 @@ func TestMocker_Mock(t *testing.T) {
 	})
 
 	t.Run("nil support", func(t *testing.T) {
-		m, _ := NewArikawaSession(t)
+		m, _ := NewSession(t)
 
 		method := http.MethodPost
 		path := "/path/123"
 
-		m.Mock("handler", method, path, nil)
+		m.MockAPI("handler", method, path, nil)
 
 		h, ok := m.handlers["/api/v6"+path][method]
 		require.True(t, ok)
@@ -218,14 +218,14 @@ func TestMocker_Mock(t *testing.T) {
 	})
 }
 
-func TestMocker_CloneArikawaSession(t *testing.T) {
-	m1, _ := NewArikawaSession(new(testing.T))
+func TestMocker_CloneSession(t *testing.T) {
+	m1, _ := NewSession(new(testing.T))
 
 	m1.handlers["path"] = map[string][]Handler{
 		http.MethodGet: {},
 	}
 
-	m2, _ := m1.CloneArikawaSession(t)
+	m2, _ := m1.CloneSession(t)
 
 	assert.Equal(t, m1.handlers, m2.handlers)
 
@@ -236,14 +236,14 @@ func TestMocker_CloneArikawaSession(t *testing.T) {
 	assert.NotEqual(t, m1.handlers, m2.handlers)
 }
 
-func TestMocker_CloneArikawaState(t *testing.T) {
-	m1, _ := NewArikawaState(new(testing.T))
+func TestMocker_CloneState(t *testing.T) {
+	m1, _ := NewState(new(testing.T))
 
 	m1.handlers["path"] = map[string][]Handler{
 		http.MethodGet: {},
 	}
 
-	m2, _ := m1.CloneArikawaState(t)
+	m2, _ := m1.CloneState(t)
 
 	assert.Equal(t, m1.handlers, m2.handlers)
 
@@ -258,7 +258,7 @@ func TestMocker_Eval(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		tMock := new(testing.T)
 
-		m, _ := NewArikawaSession(tMock)
+		m, _ := NewSession(tMock)
 
 		m.Eval()
 
@@ -269,7 +269,7 @@ func TestMocker_Eval(t *testing.T) {
 	t.Run("failure", func(t *testing.T) {
 		tMock := new(testing.T)
 
-		m, _ := NewArikawaSession(tMock)
+		m, _ := NewSession(tMock)
 
 		m.handlers["path"] = map[string][]Handler{
 			"request0": {},
@@ -288,7 +288,7 @@ func TestMocker_Eval(t *testing.T) {
 
 func TestMocker_genUninvokedMsg(t *testing.T) {
 	t.Run("singular", func(t *testing.T) {
-		m, _ := NewArikawaSession(new(testing.T))
+		m, _ := NewSession(new(testing.T))
 
 		expect := "path:\n\trequest0: 1 uninvoked handler"
 
@@ -305,7 +305,7 @@ func TestMocker_genUninvokedMsg(t *testing.T) {
 	})
 
 	t.Run("plural", func(t *testing.T) {
-		m, _ := NewArikawaSession(new(testing.T))
+		m, _ := NewSession(new(testing.T))
 
 		expect := "path:\n\trequest0: 2 uninvoked handlers"
 

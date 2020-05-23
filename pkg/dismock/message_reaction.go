@@ -17,13 +17,13 @@ import (
 
 // React mocks a React request.
 func (m *Mocker) React(channelID, messageID discord.Snowflake, e api.Emoji) {
-	m.Mock("React", http.MethodPut,
+	m.MockAPI("React", http.MethodPut,
 		"/channels/"+channelID.String()+"/messages/"+messageID.String()+"/reactions/"+url.PathEscape(e)+"/@me", nil)
 }
 
 // Unreact mocks a Unreact request.
 func (m *Mocker) Unreact(channelID, messageID discord.Snowflake, e api.Emoji) {
-	m.Mock("Unreact", http.MethodDelete,
+	m.MockAPI("Unreact", http.MethodDelete,
 		"/channels/"+channelID.String()+"/messages/"+messageID.String()+"/reactions/"+url.PathEscape(e)+"/@me", nil)
 }
 
@@ -181,7 +181,7 @@ func (m *Mocker) reactionsRange(
 		u[i] = sanitize.User(user, 1)
 	}
 
-	m.Mock(name, http.MethodGet,
+	m.MockAPI(name, http.MethodGet,
 		"/channels/"+channelID.String()+"/messages/"+messageID.String()+"/reactions/"+url.PathEscape(e),
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
 			expect := url.Values{
@@ -208,18 +208,18 @@ func (m *Mocker) DeleteUserReaction(channelID, messageID, userID discord.Snowfla
 		user = userID.String()
 	}
 
-	m.Mock("DeleteUserReaction", http.MethodDelete,
+	m.MockAPI("DeleteUserReaction", http.MethodDelete,
 		"/channels/"+channelID.String()+"/messages/"+messageID.String()+"/reactions/"+url.PathEscape(e)+"/"+user, nil)
 }
 
 // DeleteReactions mocks a DeleteReactions request.
 func (m *Mocker) DeleteReactions(channelID, messageID discord.Snowflake, e api.Emoji) {
-	m.Mock("DeleteReactions", http.MethodDelete,
+	m.MockAPI("DeleteReactions", http.MethodDelete,
 		"/channels/"+channelID.String()+"/messages/"+messageID.String()+"/reactions/"+url.PathEscape(e), nil)
 }
 
 // DeleteAllReactions mocks a DeleteAllReactions request.
 func (m *Mocker) DeleteAllReactions(channelID, messageID discord.Snowflake) {
-	m.Mock("DeleteAllReactions", http.MethodDelete,
+	m.MockAPI("DeleteAllReactions", http.MethodDelete,
 		"/channels/"+channelID.String()+"/messages/"+messageID.String()+"/reactions", nil)
 }

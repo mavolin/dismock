@@ -14,7 +14,7 @@ import (
 
 func TestMocker_CreateWebhook(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
-		m, s := NewArikawaSession(t)
+		m, s := NewSession(t)
 
 		data := api.CreateWebhookData{
 			Name: "abc",
@@ -39,7 +39,7 @@ func TestMocker_CreateWebhook(t *testing.T) {
 	t.Run("failure", func(t *testing.T) {
 		tMock := new(testing.T)
 
-		m, s := NewArikawaSession(tMock)
+		m, s := NewSession(tMock)
 
 		expect := sanitize.Webhook(discord.Webhook{
 			ID:        123,
@@ -62,7 +62,7 @@ func TestMocker_CreateWebhook(t *testing.T) {
 }
 
 func TestMocker_ChannelWebhooks(t *testing.T) {
-	m, s := NewArikawaSession(t)
+	m, s := NewSession(t)
 
 	var channelID discord.Snowflake = 123
 
@@ -91,7 +91,7 @@ func TestMocker_ChannelWebhooks(t *testing.T) {
 
 func TestMocker_GuildWebhooks(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
-		m, s := NewArikawaSession(t)
+		m, s := NewSession(t)
 
 		var guildID discord.Snowflake = 123
 
@@ -123,7 +123,7 @@ func TestMocker_GuildWebhooks(t *testing.T) {
 	})
 
 	t.Run("auto guild id", func(t *testing.T) {
-		m, s := NewArikawaSession(t)
+		m, s := NewSession(t)
 
 		var guildID discord.Snowflake = 123
 
@@ -150,7 +150,7 @@ func TestMocker_GuildWebhooks(t *testing.T) {
 }
 
 func TestMocker_Webhook(t *testing.T) {
-	m, s := NewArikawaSession(t)
+	m, s := NewSession(t)
 
 	expect := sanitize.Webhook(discord.Webhook{
 		ID: 456,
@@ -167,7 +167,7 @@ func TestMocker_Webhook(t *testing.T) {
 }
 
 func TestMocker_WebhookWithToken(t *testing.T) {
-	m, s := NewArikawaSession(t)
+	m, s := NewSession(t)
 
 	expect := sanitize.Webhook(discord.Webhook{
 		ID:    456,
@@ -186,7 +186,7 @@ func TestMocker_WebhookWithToken(t *testing.T) {
 
 func TestMocker_ModifyWebhook(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
-		m, s := NewArikawaSession(t)
+		m, s := NewSession(t)
 
 		data := api.ModifyWebhookData{
 			Name: option.NewString("abc"),
@@ -210,7 +210,7 @@ func TestMocker_ModifyWebhook(t *testing.T) {
 	t.Run("failure", func(t *testing.T) {
 		tMock := new(testing.T)
 
-		m, s := NewArikawaSession(tMock)
+		m, s := NewSession(tMock)
 
 		expect := sanitize.Webhook(discord.Webhook{
 			ID:   456,
@@ -233,7 +233,7 @@ func TestMocker_ModifyWebhook(t *testing.T) {
 
 func TestMocker_ModifyWebhookWithTokenWithToken(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
-		m, s := NewArikawaSession(t)
+		m, s := NewSession(t)
 
 		data := api.ModifyWebhookData{
 			Name: option.NewString("abc"),
@@ -258,7 +258,7 @@ func TestMocker_ModifyWebhookWithTokenWithToken(t *testing.T) {
 	t.Run("failure", func(t *testing.T) {
 		tMock := new(testing.T)
 
-		m, s := NewArikawaSession(tMock)
+		m, s := NewSession(tMock)
 
 		expect := sanitize.Webhook(discord.Webhook{
 			ID:    456,
@@ -281,7 +281,7 @@ func TestMocker_ModifyWebhookWithTokenWithToken(t *testing.T) {
 }
 
 func TestMocker_DeleteWebhook(t *testing.T) {
-	m, s := NewArikawaSession(t)
+	m, s := NewSession(t)
 
 	var id discord.Snowflake = 123
 
@@ -294,7 +294,7 @@ func TestMocker_DeleteWebhook(t *testing.T) {
 }
 
 func TestMocker_DeleteWebhookWithToken(t *testing.T) {
-	m, s := NewArikawaSession(t)
+	m, s := NewSession(t)
 
 	var (
 		id    discord.Snowflake = 123

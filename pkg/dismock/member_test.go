@@ -12,7 +12,7 @@ import (
 )
 
 func TestMocker_Member(t *testing.T) {
-	m, s := NewArikawaSession(t)
+	m, s := NewSession(t)
 
 	var guildID discord.Snowflake = 123
 
@@ -53,7 +53,7 @@ func TestMocker_Members(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		for _, c := range successCases {
 			t.Run(c.name, func(t *testing.T) {
-				m, s := NewArikawaSession(t)
+				m, s := NewSession(t)
 
 				var guildID discord.Snowflake = 123
 
@@ -80,7 +80,7 @@ func TestMocker_Members(t *testing.T) {
 	})
 
 	t.Run("nil members", func(t *testing.T) {
-		m, s := NewArikawaSession(t)
+		m, s := NewSession(t)
 
 		var guildID discord.Snowflake = 123
 
@@ -97,7 +97,7 @@ func TestMocker_Members(t *testing.T) {
 	})
 
 	t.Run("limit smaller than members", func(t *testing.T) {
-		m, _ := NewArikawaSession(t)
+		m, _ := NewSession(t)
 
 		assert.Panics(t, func() {
 			m.Members(123, 1, []discord.Member{{}, {}})
@@ -126,7 +126,7 @@ func TestMocker_MembersAfter(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		for _, c := range successCases {
 			t.Run(c.name, func(t *testing.T) {
-				m, s := NewArikawaSession(t)
+				m, s := NewSession(t)
 
 				var (
 					guildID discord.Snowflake = 123
@@ -156,7 +156,7 @@ func TestMocker_MembersAfter(t *testing.T) {
 	})
 
 	t.Run("nil members", func(t *testing.T) {
-		m, s := NewArikawaSession(t)
+		m, s := NewSession(t)
 
 		var guildID discord.Snowflake = 123
 
@@ -175,7 +175,7 @@ func TestMocker_MembersAfter(t *testing.T) {
 	t.Run("failure", func(t *testing.T) {
 		tMock := new(testing.T)
 
-		m, s := NewArikawaSession(tMock)
+		m, s := NewSession(tMock)
 
 		expect := []discord.Member{
 			{
@@ -200,7 +200,7 @@ func TestMocker_MembersAfter(t *testing.T) {
 	})
 
 	t.Run("limit smaller than guilds", func(t *testing.T) {
-		m, _ := NewArikawaSession(t)
+		m, _ := NewSession(t)
 
 		assert.Panics(t, func() {
 			m.MembersAfter(123, 0, 1, []discord.Member{{}, {}})
@@ -210,7 +210,7 @@ func TestMocker_MembersAfter(t *testing.T) {
 
 func TestMocker_AddMember(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
-		m, s := NewArikawaSession(t)
+		m, s := NewSession(t)
 
 		var (
 			guildID discord.Snowflake = 123
@@ -239,7 +239,7 @@ func TestMocker_AddMember(t *testing.T) {
 	t.Run("failure", func(t *testing.T) {
 		tMock := new(testing.T)
 
-		m, s := NewArikawaSession(tMock)
+		m, s := NewSession(tMock)
 
 		var guildID discord.Snowflake = 123
 
@@ -265,7 +265,7 @@ func TestMocker_AddMember(t *testing.T) {
 
 func TestMocker_ModifyMember(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
-		m, s := NewArikawaSession(t)
+		m, s := NewSession(t)
 
 		var (
 			guildID discord.Snowflake = 123
@@ -287,7 +287,7 @@ func TestMocker_ModifyMember(t *testing.T) {
 	t.Run("failure", func(t *testing.T) {
 		tMock := new(testing.T)
 
-		m, s := NewArikawaSession(tMock)
+		m, s := NewSession(tMock)
 
 		var (
 			guildID discord.Snowflake = 123
@@ -344,7 +344,7 @@ func TestMocker_PruneCount(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		for _, c := range successCases {
 			t.Run(c.name, func(t *testing.T) {
-				m, s := NewArikawaSession(t)
+				m, s := NewSession(t)
 
 				var guildID discord.Snowflake = 123
 
@@ -365,7 +365,7 @@ func TestMocker_PruneCount(t *testing.T) {
 	t.Run("failure", func(t *testing.T) {
 		tMock := new(testing.T)
 
-		m, s := NewArikawaSession(tMock)
+		m, s := NewSession(tMock)
 
 		var guildID discord.Snowflake = 123
 
@@ -424,7 +424,7 @@ func TestMocker_Prune(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		for _, c := range successCases {
 			t.Run(c.name, func(t *testing.T) {
-				m, s := NewArikawaSession(t)
+				m, s := NewSession(t)
 
 				var guildID discord.Snowflake = 123
 
@@ -445,7 +445,7 @@ func TestMocker_Prune(t *testing.T) {
 	t.Run("failure", func(t *testing.T) {
 		tMock := new(testing.T)
 
-		m, s := NewArikawaSession(tMock)
+		m, s := NewSession(tMock)
 
 		var guildID discord.Snowflake = 123
 
@@ -470,7 +470,7 @@ func TestMocker_Prune(t *testing.T) {
 }
 
 func TestMocker_Kick(t *testing.T) {
-	m, s := NewArikawaSession(t)
+	m, s := NewSession(t)
 
 	var (
 		guildID discord.Snowflake = 123
@@ -486,7 +486,7 @@ func TestMocker_Kick(t *testing.T) {
 }
 
 func TestMocker_Bans(t *testing.T) {
-	m, s := NewArikawaSession(t)
+	m, s := NewSession(t)
 
 	var guildID discord.Snowflake = 123
 
@@ -514,7 +514,7 @@ func TestMocker_Bans(t *testing.T) {
 }
 
 func TestMocker_GetBan(t *testing.T) {
-	m, s := NewArikawaSession(t)
+	m, s := NewSession(t)
 
 	var guildID discord.Snowflake = 123
 
@@ -563,7 +563,7 @@ func TestMocker_Ban(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		for _, c := range successCases {
 			t.Run(c.name, func(t *testing.T) {
-				m, s := NewArikawaSession(t)
+				m, s := NewSession(t)
 
 				var (
 					guildID discord.Snowflake = 123
@@ -582,7 +582,7 @@ func TestMocker_Ban(t *testing.T) {
 }
 
 func TestMocker_Unban(t *testing.T) {
-	m, s := NewArikawaSession(t)
+	m, s := NewSession(t)
 
 	var (
 		guildID discord.Snowflake = 123

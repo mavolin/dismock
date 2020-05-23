@@ -10,7 +10,7 @@ import (
 
 func TestMocker_Login(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
-		m, s := NewArikawaSession(t)
+		m, s := NewSession(t)
 
 		var (
 			email    = "abc@def.ghi"
@@ -34,7 +34,7 @@ func TestMocker_Login(t *testing.T) {
 	t.Run("failure", func(t *testing.T) {
 		tMock := new(testing.T)
 
-		m, s := NewArikawaSession(tMock)
+		m, s := NewSession(tMock)
 
 		expect := api.LoginResponse{
 			Token: "mno",
@@ -52,7 +52,7 @@ func TestMocker_Login(t *testing.T) {
 
 func TestMocker_TOTP(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
-		m, s := NewArikawaSession(t)
+		m, s := NewSession(t)
 
 		var (
 			code   = "abc"
@@ -76,7 +76,7 @@ func TestMocker_TOTP(t *testing.T) {
 	t.Run("failure", func(t *testing.T) {
 		tMock := new(testing.T)
 
-		m, s := NewArikawaSession(tMock)
+		m, s := NewSession(tMock)
 
 		expect := api.LoginResponse{
 			Token: "ghi",

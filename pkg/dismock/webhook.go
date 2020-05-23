@@ -17,7 +17,7 @@ import (
 func (m *Mocker) CreateWebhook(d api.CreateWebhookData, webhook discord.Webhook) {
 	webhook = sanitize.Webhook(webhook, 1, 1, 1)
 
-	m.Mock("CreateWebhook", http.MethodPost, "/channels/"+webhook.ChannelID.String()+"/webhooks",
+	m.MockAPI("CreateWebhook", http.MethodPost, "/channels/"+webhook.ChannelID.String()+"/webhooks",
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
 			CheckJSON(t, r.Body, new(api.CreateWebhookData), &d)
 			WriteJSON(t, w, webhook)
@@ -32,7 +32,7 @@ func (m *Mocker) ChannelWebhooks(channelID discord.Snowflake, webhooks []discord
 		webhooks[i] = sanitize.Webhook(w, 1, 1, channelID)
 	}
 
-	m.Mock("ChannelWebhooks", http.MethodGet, "/channels/"+channelID.String()+"/webhooks",
+	m.MockAPI("ChannelWebhooks", http.MethodGet, "/channels/"+channelID.String()+"/webhooks",
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
 			WriteJSON(t, w, webhooks)
 		})
@@ -50,7 +50,7 @@ func (m *Mocker) GuildWebhooks(guildID discord.Snowflake, webhooks []discord.Web
 		}
 	}
 
-	m.Mock("GuildWebhooks", http.MethodGet, "/guilds/"+guildID.String()+"/webhooks",
+	m.MockAPI("GuildWebhooks", http.MethodGet, "/guilds/"+guildID.String()+"/webhooks",
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
 			WriteJSON(t, w, webhooks)
 		})
@@ -64,7 +64,7 @@ func (m *Mocker) GuildWebhooks(guildID discord.Snowflake, webhooks []discord.Web
 func (m *Mocker) Webhook(webhook discord.Webhook) {
 	webhook = sanitize.Webhook(webhook, 1, 1, 1)
 
-	m.Mock("Webhook", http.MethodGet, "/webhooks/"+webhook.ID.String(),
+	m.MockAPI("Webhook", http.MethodGet, "/webhooks/"+webhook.ID.String(),
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
 			WriteJSON(t, w, webhook)
 		})
@@ -78,7 +78,7 @@ func (m *Mocker) Webhook(webhook discord.Webhook) {
 func (m *Mocker) WebhookWithToken(webhook discord.Webhook) {
 	webhook = sanitize.Webhook(webhook, 1, 1, 1)
 
-	m.Mock("WebhookWithToken", http.MethodGet, "/webhooks/"+webhook.ID.String()+"/"+webhook.Token,
+	m.MockAPI("WebhookWithToken", http.MethodGet, "/webhooks/"+webhook.ID.String()+"/"+webhook.Token,
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
 			WriteJSON(t, w, webhook)
 		})
@@ -92,7 +92,7 @@ func (m *Mocker) WebhookWithToken(webhook discord.Webhook) {
 func (m *Mocker) ModifyWebhook(d api.ModifyWebhookData, webhook discord.Webhook) {
 	webhook = sanitize.Webhook(webhook, 1, 1, 1)
 
-	m.Mock("ModifyWebhook", http.MethodPatch, "/webhooks/"+webhook.ID.String(),
+	m.MockAPI("ModifyWebhook", http.MethodPatch, "/webhooks/"+webhook.ID.String(),
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
 			CheckJSON(t, r.Body, new(api.ModifyWebhookData), &d)
 			WriteJSON(t, w, webhook)
@@ -107,7 +107,7 @@ func (m *Mocker) ModifyWebhook(d api.ModifyWebhookData, webhook discord.Webhook)
 func (m *Mocker) ModifyWebhookWithToken(d api.ModifyWebhookData, webhook discord.Webhook) {
 	webhook = sanitize.Webhook(webhook, 1, 1, 1)
 
-	m.Mock("ModifyWebhookWithToken", http.MethodPatch, "/webhooks/"+webhook.ID.String()+"/"+webhook.Token,
+	m.MockAPI("ModifyWebhookWithToken", http.MethodPatch, "/webhooks/"+webhook.ID.String()+"/"+webhook.Token,
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
 			CheckJSON(t, r.Body, new(api.ModifyWebhookData), &d)
 			WriteJSON(t, w, webhook)
@@ -116,10 +116,10 @@ func (m *Mocker) ModifyWebhookWithToken(d api.ModifyWebhookData, webhook discord
 
 // DeleteWebhook mocks a DeleteWebhook request.
 func (m *Mocker) DeleteWebhook(id discord.Snowflake) {
-	m.Mock("DeleteWebhook", http.MethodDelete, "/webhooks/"+id.String(), nil)
+	m.MockAPI("DeleteWebhook", http.MethodDelete, "/webhooks/"+id.String(), nil)
 }
 
 // DeleteWebhookWithToken mocks a DeleteWebhookWithToken request.
 func (m *Mocker) DeleteWebhookWithToken(id discord.Snowflake, token string) {
-	m.Mock("DeleteWebhookWithToken", http.MethodDelete, "/webhooks/"+id.String()+"/"+token, nil)
+	m.MockAPI("DeleteWebhookWithToken", http.MethodDelete, "/webhooks/"+id.String()+"/"+token, nil)
 }

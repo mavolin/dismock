@@ -16,7 +16,7 @@ type loginPayload struct {
 
 // Login mocks a Login request.
 func (m *Mocker) Login(email, password string, response api.LoginResponse) {
-	m.Mock("Login", http.MethodPost, "/auth/login",
+	m.MockAPI("Login", http.MethodPost, "/auth/login",
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
 			expect := loginPayload{
 				Email:    email,
@@ -35,7 +35,7 @@ type totpPayload struct {
 
 // TOTP mocks a TOTP request.
 func (m *Mocker) TOTP(code, ticket string, response api.LoginResponse) {
-	m.Mock("TOTP", http.MethodPost, "/auth/mfa/totp",
+	m.MockAPI("TOTP", http.MethodPost, "/auth/mfa/totp",
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
 			expect := totpPayload{
 				Code:   code,

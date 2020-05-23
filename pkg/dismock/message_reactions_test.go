@@ -9,7 +9,7 @@ import (
 )
 
 func TestMocker_React(t *testing.T) {
-	m, s := NewArikawaSession(t)
+	m, s := NewSession(t)
 
 	var (
 		channelID discord.Snowflake = 123
@@ -26,7 +26,7 @@ func TestMocker_React(t *testing.T) {
 }
 
 func TestMocker_Unreact(t *testing.T) {
-	m, s := NewArikawaSession(t)
+	m, s := NewSession(t)
 
 	var (
 		channelID discord.Snowflake = 123
@@ -60,7 +60,7 @@ func TestMocker_Reactions(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		for _, c := range successCases {
 			t.Run(c.name, func(t *testing.T) {
-				m, s := NewArikawaSession(t)
+				m, s := NewSession(t)
 
 				var (
 					channelID discord.Snowflake = 123
@@ -117,7 +117,7 @@ func TestMocker_Reactions(t *testing.T) {
 	})
 
 	t.Run("nil users", func(t *testing.T) {
-		m, s := NewArikawaSession(t)
+		m, s := NewSession(t)
 
 		var (
 			channelID discord.Snowflake = 123
@@ -138,7 +138,7 @@ func TestMocker_Reactions(t *testing.T) {
 	})
 
 	t.Run("limit smaller than guilds", func(t *testing.T) {
-		m, _ := NewArikawaSession(t)
+		m, _ := NewSession(t)
 
 		assert.Panics(t, func() {
 			m.Reactions(123, 456, 1, "abc", []discord.User{{}, {}})
@@ -164,7 +164,7 @@ func TestMocker_ReactionsBefore(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		for _, c := range successCases {
 			t.Run(c.name, func(t *testing.T) {
-				m, s := NewArikawaSession(t)
+				m, s := NewSession(t)
 
 				var (
 					channelID discord.Snowflake = 123
@@ -223,7 +223,7 @@ func TestMocker_ReactionsBefore(t *testing.T) {
 	})
 
 	t.Run("nil users", func(t *testing.T) {
-		m, s := NewArikawaSession(t)
+		m, s := NewSession(t)
 
 		var (
 			channelID discord.Snowflake = 123
@@ -247,7 +247,7 @@ func TestMocker_ReactionsBefore(t *testing.T) {
 	t.Run("failure", func(t *testing.T) {
 		tMock := new(testing.T)
 
-		m, s := NewArikawaSession(tMock)
+		m, s := NewSession(tMock)
 
 		var (
 			channelID discord.Snowflake = 123
@@ -274,7 +274,7 @@ func TestMocker_ReactionsBefore(t *testing.T) {
 	})
 
 	t.Run("limit smaller than guilds", func(t *testing.T) {
-		m, _ := NewArikawaSession(t)
+		m, _ := NewSession(t)
 
 		assert.Panics(t, func() {
 			m.ReactionsBefore(123, 456, 0, 1, "abc", []discord.User{{}, {}})
@@ -300,7 +300,7 @@ func TestMocker_ReactionsAfter(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		for _, c := range successCases {
 			t.Run(c.name, func(t *testing.T) {
-				m, s := NewArikawaSession(t)
+				m, s := NewSession(t)
 
 				var (
 					channelID discord.Snowflake = 123
@@ -359,7 +359,7 @@ func TestMocker_ReactionsAfter(t *testing.T) {
 	})
 
 	t.Run("nil users", func(t *testing.T) {
-		m, s := NewArikawaSession(t)
+		m, s := NewSession(t)
 
 		var (
 			channelID discord.Snowflake = 123
@@ -382,7 +382,7 @@ func TestMocker_ReactionsAfter(t *testing.T) {
 	t.Run("failure", func(t *testing.T) {
 		tMock := new(testing.T)
 
-		m, s := NewArikawaSession(tMock)
+		m, s := NewSession(tMock)
 
 		var (
 			channelID discord.Snowflake = 123
@@ -409,7 +409,7 @@ func TestMocker_ReactionsAfter(t *testing.T) {
 	})
 
 	t.Run("limit smaller than guilds", func(t *testing.T) {
-		m, _ := NewArikawaSession(t)
+		m, _ := NewSession(t)
 
 		assert.Panics(t, func() {
 			m.ReactionsAfter(123, 456, 0, 1, "abc", []discord.User{{}, {}})
@@ -418,7 +418,7 @@ func TestMocker_ReactionsAfter(t *testing.T) {
 }
 
 func TestMocker_DeleteUserReaction(t *testing.T) {
-	m, s := NewArikawaSession(t)
+	m, s := NewSession(t)
 
 	var (
 		channelID discord.Snowflake = 123
@@ -436,7 +436,7 @@ func TestMocker_DeleteUserReaction(t *testing.T) {
 }
 
 func TestMocker_DeleteReactions(t *testing.T) {
-	m, s := NewArikawaSession(t)
+	m, s := NewSession(t)
 
 	var (
 		channelID discord.Snowflake = 123
@@ -453,7 +453,7 @@ func TestMocker_DeleteReactions(t *testing.T) {
 }
 
 func TestMocker_DeleteAllReactions(t *testing.T) {
-	m, s := NewArikawaSession(t)
+	m, s := NewSession(t)
 
 	var (
 		channelID discord.Snowflake = 123

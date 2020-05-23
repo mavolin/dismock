@@ -23,7 +23,7 @@ func (m *Mocker) Emojis(guildID discord.Snowflake, e []discord.Emoji) {
 		e[i] = sanitize.Emoji(emoji, 1, 1)
 	}
 
-	m.Mock("Emojis", http.MethodGet, "/guilds/"+guildID.String()+"/emojis",
+	m.MockAPI("Emojis", http.MethodGet, "/guilds/"+guildID.String()+"/emojis",
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
 			WriteJSON(t, w, e)
 		})
@@ -37,7 +37,7 @@ func (m *Mocker) Emojis(guildID discord.Snowflake, e []discord.Emoji) {
 func (m *Mocker) Emoji(guildID discord.Snowflake, e discord.Emoji) {
 	e = sanitize.Emoji(e, 1, 1)
 
-	m.Mock("Emoji", http.MethodGet, "/guilds/"+guildID.String()+"/emojis/"+e.ID.String(),
+	m.MockAPI("Emoji", http.MethodGet, "/guilds/"+guildID.String()+"/emojis/"+e.ID.String(),
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
 			WriteJSON(t, w, e)
 		})
@@ -51,7 +51,7 @@ func (m *Mocker) Emoji(guildID discord.Snowflake, e discord.Emoji) {
 func (m *Mocker) CreateEmoji(guildID discord.Snowflake, d api.CreateEmojiData, e discord.Emoji) {
 	e = sanitize.Emoji(e, 1, 1)
 
-	m.Mock("CreateEmoji", http.MethodPost, "/guilds/"+guildID.String()+"/emojis",
+	m.MockAPI("CreateEmoji", http.MethodPost, "/guilds/"+guildID.String()+"/emojis",
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
 			CheckJSON(t, r.Body, new(api.CreateEmojiData), &d)
 			WriteJSON(t, w, e)
@@ -60,7 +60,7 @@ func (m *Mocker) CreateEmoji(guildID discord.Snowflake, d api.CreateEmojiData, e
 
 // ModifyEmoji mocks a ModifyEmoji request.
 func (m *Mocker) ModifyEmoji(guildID, emojiID discord.Snowflake, d api.ModifyEmojiData) {
-	m.Mock("ModifyEmoji", http.MethodPatch, "/guilds/"+guildID.String()+"/emojis/"+emojiID.String(),
+	m.MockAPI("ModifyEmoji", http.MethodPatch, "/guilds/"+guildID.String()+"/emojis/"+emojiID.String(),
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
 			CheckJSON(t, r.Body, new(api.ModifyEmojiData), &d)
 			w.WriteHeader(http.StatusNoContent)
@@ -69,5 +69,5 @@ func (m *Mocker) ModifyEmoji(guildID, emojiID discord.Snowflake, d api.ModifyEmo
 
 // DeleteEmoji mocks a DeleteEmoji request.
 func (m *Mocker) DeleteEmoji(guildID, emojiID discord.Snowflake) {
-	m.Mock("DeleteEmoji", http.MethodDelete, "/guilds/"+guildID.String()+"/emojis/"+emojiID.String(), nil)
+	m.MockAPI("DeleteEmoji", http.MethodDelete, "/guilds/"+guildID.String()+"/emojis/"+emojiID.String(), nil)
 }

@@ -13,7 +13,7 @@ import (
 )
 
 func TestMocker_Invite(t *testing.T) {
-	m, s := NewArikawaSession(t)
+	m, s := NewSession(t)
 
 	expect := sanitize.Invite(discord.Invite{
 		Code: "abc",
@@ -30,7 +30,7 @@ func TestMocker_Invite(t *testing.T) {
 }
 
 func TestMocker_InviteWithCounts(t *testing.T) {
-	m, s := NewArikawaSession(t)
+	m, s := NewSession(t)
 
 	expect := sanitize.Invite(discord.Invite{
 		Code:                 "abc",
@@ -50,7 +50,7 @@ func TestMocker_InviteWithCounts(t *testing.T) {
 
 func TestMocker_ChannelInvites(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
-		m, s := NewArikawaSession(t)
+		m, s := NewSession(t)
 
 		var channelID discord.Snowflake = 123
 
@@ -78,7 +78,7 @@ func TestMocker_ChannelInvites(t *testing.T) {
 	})
 
 	t.Run("nil invites", func(t *testing.T) {
-		m, s := NewArikawaSession(t)
+		m, s := NewSession(t)
 
 		var channelID discord.Snowflake = 123
 
@@ -98,7 +98,7 @@ func TestMocker_ChannelInvites(t *testing.T) {
 
 func TestMocker_GuildInvites(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
-		m, s := NewArikawaSession(t)
+		m, s := NewSession(t)
 
 		var guildID discord.Snowflake = 123
 
@@ -126,7 +126,7 @@ func TestMocker_GuildInvites(t *testing.T) {
 	})
 
 	t.Run("nil invites", func(t *testing.T) {
-		m, s := NewArikawaSession(t)
+		m, s := NewSession(t)
 
 		var guildID discord.Snowflake = 123
 
@@ -146,7 +146,7 @@ func TestMocker_GuildInvites(t *testing.T) {
 
 func TestMocker_CreateInvite(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
-		m, s := NewArikawaSession(t)
+		m, s := NewSession(t)
 
 		data := api.CreateInviteData{
 			MaxAge: option.NewUint(12),
@@ -172,7 +172,7 @@ func TestMocker_CreateInvite(t *testing.T) {
 	t.Run("failure", func(t *testing.T) {
 		tMock := new(testing.T)
 
-		m, s := NewArikawaSession(tMock)
+		m, s := NewSession(tMock)
 
 		expect := sanitize.Invite(discord.Invite{
 			Code: "abc",
@@ -196,7 +196,7 @@ func TestMocker_CreateInvite(t *testing.T) {
 }
 
 func TestMocker_DeleteInvite(t *testing.T) {
-	m, s := NewArikawaSession(t)
+	m, s := NewSession(t)
 
 	expect := sanitize.Invite(discord.Invite{
 		Code:                 "abc",

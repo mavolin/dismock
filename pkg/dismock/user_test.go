@@ -11,7 +11,7 @@ import (
 )
 
 func TestMocker_User(t *testing.T) {
-	m, s := NewArikawaSession(t)
+	m, s := NewSession(t)
 
 	expect := discord.User{
 		ID: 123,
@@ -28,7 +28,7 @@ func TestMocker_User(t *testing.T) {
 }
 
 func TestMocker_Me(t *testing.T) {
-	m, s := NewArikawaSession(t)
+	m, s := NewSession(t)
 
 	expect := discord.User{
 		ID: 123,
@@ -46,7 +46,7 @@ func TestMocker_Me(t *testing.T) {
 
 func TestMocker_ModifyMe(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
-		m, s := NewArikawaSession(t)
+		m, s := NewSession(t)
 
 		data := api.ModifySelfData{
 			Username: option.NewString("abc"),
@@ -70,7 +70,7 @@ func TestMocker_ModifyMe(t *testing.T) {
 	t.Run("failure", func(t *testing.T) {
 		tMock := new(testing.T)
 
-		m, s := NewArikawaSession(tMock)
+		m, s := NewSession(tMock)
 
 		expect := discord.User{
 			ID:       123,
@@ -93,7 +93,7 @@ func TestMocker_ModifyMe(t *testing.T) {
 
 func TestMocker_ChangeOwnNickname(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
-		m, s := NewArikawaSession(t)
+		m, s := NewSession(t)
 
 		var (
 			guildID discord.Snowflake = 123
@@ -111,7 +111,7 @@ func TestMocker_ChangeOwnNickname(t *testing.T) {
 	t.Run("failure", func(t *testing.T) {
 		tMock := new(testing.T)
 
-		m, s := NewArikawaSession(tMock)
+		m, s := NewSession(tMock)
 
 		var guildID discord.Snowflake = 123
 
@@ -125,7 +125,7 @@ func TestMocker_ChangeOwnNickname(t *testing.T) {
 }
 
 func TestMocker_PrivateChannels(t *testing.T) {
-	m, s := NewArikawaSession(t)
+	m, s := NewSession(t)
 
 	expect := []discord.Channel{
 		{
@@ -148,7 +148,7 @@ func TestMocker_PrivateChannels(t *testing.T) {
 
 func TestMocker_CreatePrivateChannel(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
-		m, s := NewArikawaSession(t)
+		m, s := NewSession(t)
 
 		expect := discord.Channel{
 			ID: 123,
@@ -172,7 +172,7 @@ func TestMocker_CreatePrivateChannel(t *testing.T) {
 	t.Run("failure", func(t *testing.T) {
 		tMock := new(testing.T)
 
-		m, s := NewArikawaSession(tMock)
+		m, s := NewSession(tMock)
 
 		expect := discord.Channel{
 			ID: 123,
@@ -202,7 +202,7 @@ func TestMocker_CreatePrivateChannel(t *testing.T) {
 }
 
 func TestMocker_UserConnections(t *testing.T) {
-	m, s := NewArikawaSession(t)
+	m, s := NewSession(t)
 
 	expect := []discord.Connection{
 		{

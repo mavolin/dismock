@@ -11,7 +11,7 @@ import (
 
 // Error simulates an error response for the given path using the given method.
 func (m *Mocker) Error(method, path string, e httputil.HTTPError) {
-	m.Mock("Error", method, path, func(w http.ResponseWriter, r *http.Request, t *testing.T) {
+	m.MockAPI("Error", method, path, func(w http.ResponseWriter, r *http.Request, t *testing.T) {
 		w.WriteHeader(e.Status)
 		err := json.NewEncoder(w).Encode(e)
 		require.NoError(t, err)

@@ -11,7 +11,7 @@ import (
 )
 
 func TestMocker_AddRole(t *testing.T) {
-	m, s := NewArikawaSession(t)
+	m, s := NewSession(t)
 
 	var (
 		guildID discord.Snowflake = 123
@@ -28,7 +28,7 @@ func TestMocker_AddRole(t *testing.T) {
 }
 
 func TestMocker_RemoveRole(t *testing.T) {
-	m, s := NewArikawaSession(t)
+	m, s := NewSession(t)
 
 	var (
 		guildID discord.Snowflake = 123
@@ -45,7 +45,7 @@ func TestMocker_RemoveRole(t *testing.T) {
 }
 
 func TestMocker_Roles(t *testing.T) {
-	m, s := NewArikawaSession(t)
+	m, s := NewSession(t)
 
 	var guildID discord.Snowflake = 123
 
@@ -70,7 +70,7 @@ func TestMocker_Roles(t *testing.T) {
 
 func TestMocker_CreateRole(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
-		m, s := NewArikawaSession(t)
+		m, s := NewSession(t)
 
 		var guildID discord.Snowflake = 123
 
@@ -96,7 +96,7 @@ func TestMocker_CreateRole(t *testing.T) {
 	t.Run("failure", func(t *testing.T) {
 		tMock := new(testing.T)
 
-		m, s := NewArikawaSession(tMock)
+		m, s := NewSession(tMock)
 
 		var guildID discord.Snowflake = 123
 
@@ -121,7 +121,7 @@ func TestMocker_CreateRole(t *testing.T) {
 
 func TestMocker_MoveRole(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
-		m, s := NewArikawaSession(t)
+		m, s := NewSession(t)
 
 		var guildID discord.Snowflake = 123
 
@@ -162,7 +162,7 @@ func TestMocker_MoveRole(t *testing.T) {
 	t.Run("failure", func(t *testing.T) {
 		tMock := new(testing.T)
 
-		m, s := NewArikawaSession(tMock)
+		m, s := NewSession(tMock)
 
 		var guildID discord.Snowflake = 123
 
@@ -209,7 +209,7 @@ func TestMocker_MoveRole(t *testing.T) {
 
 func TestMocker_ModifyRole(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
-		m, s := NewArikawaSession(t)
+		m, s := NewSession(t)
 
 		var guildID discord.Snowflake = 123
 
@@ -236,7 +236,7 @@ func TestMocker_ModifyRole(t *testing.T) {
 	t.Run("failure", func(t *testing.T) {
 		tMock := new(testing.T)
 
-		m, s := NewArikawaSession(tMock)
+		m, s := NewSession(tMock)
 
 		var guildID discord.Snowflake = 123
 
@@ -261,7 +261,7 @@ func TestMocker_ModifyRole(t *testing.T) {
 }
 
 func TestMocker_DeleteRole(t *testing.T) {
-	m, s := NewArikawaSession(t)
+	m, s := NewSession(t)
 
 	var (
 		guildID discord.Snowflake = 123

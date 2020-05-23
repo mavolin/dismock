@@ -22,7 +22,7 @@ import (
 func (m *Mocker) Invite(i discord.Invite) {
 	i = sanitize.Invite(i, 1, 1, 1, 1, 1, 1, 1)
 
-	m.Mock("Invite", http.MethodGet, "/invites/"+i.Code,
+	m.MockAPI("Invite", http.MethodGet, "/invites/"+i.Code,
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
 			WriteJSON(t, w, i)
 		})
@@ -38,7 +38,7 @@ func (m *Mocker) Invite(i discord.Invite) {
 func (m *Mocker) InviteWithCounts(i discord.Invite) {
 	i = sanitize.Invite(i, 1, 1, 1, 1, 1, 1, 1)
 
-	m.Mock("Invite", http.MethodGet, "/invites/"+i.Code,
+	m.MockAPI("Invite", http.MethodGet, "/invites/"+i.Code,
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
 			CheckQuery(t, r.URL.Query(), url.Values{
 				"with_counts": {"true"},
@@ -61,7 +61,7 @@ func (m *Mocker) ChannelInvites(channelID discord.Snowflake, invites []discord.I
 		invites[i] = sanitize.Invite(invite, 1, 1, channelID, 1, 1, 1, 1)
 	}
 
-	m.Mock("ChannelInvites", http.MethodGet, "/channels/"+channelID.String()+"/invites",
+	m.MockAPI("ChannelInvites", http.MethodGet, "/channels/"+channelID.String()+"/invites",
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
 			WriteJSON(t, w, invites)
 		})
@@ -81,7 +81,7 @@ func (m *Mocker) GuildInvites(guildID discord.Snowflake, invites []discord.Invit
 		invites[i] = sanitize.Invite(invite, guildID, 1, 1, 1, 1, 1, 1)
 	}
 
-	m.Mock("GuildInvites", http.MethodGet, "/guilds/"+guildID.String()+"/invites",
+	m.MockAPI("GuildInvites", http.MethodGet, "/guilds/"+guildID.String()+"/invites",
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
 			WriteJSON(t, w, invites)
 		})
@@ -96,7 +96,7 @@ func (m *Mocker) GuildInvites(guildID discord.Snowflake, invites []discord.Invit
 func (m *Mocker) CreateInvite(d api.CreateInviteData, i discord.Invite) {
 	i = sanitize.Invite(i, 1, 1, 1, 1, 1, 1, 1)
 
-	m.Mock("CreateInvite", http.MethodPost, "/channels/"+i.Channel.ID.String()+"/invites",
+	m.MockAPI("CreateInvite", http.MethodPost, "/channels/"+i.Channel.ID.String()+"/invites",
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
 			CheckJSON(t, r.Body, new(api.CreateInviteData), &d)
 			WriteJSON(t, w, i)
@@ -113,7 +113,7 @@ func (m *Mocker) CreateInvite(d api.CreateInviteData, i discord.Invite) {
 func (m *Mocker) DeleteInvite(i discord.Invite) {
 	i = sanitize.Invite(i, 1, 1, 1, 1, 1, 1, 1)
 
-	m.Mock("DeleteInvite", http.MethodDelete, "/invites/"+i.Code,
+	m.MockAPI("DeleteInvite", http.MethodDelete, "/invites/"+i.Code,
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
 			WriteJSON(t, w, i)
 		})

@@ -15,7 +15,7 @@ import (
 //
 // The ID field of the passed User must be set.
 func (m *Mocker) User(u discord.User) {
-	m.Mock("User", http.MethodGet, "/users/"+u.ID.String(),
+	m.MockAPI("User", http.MethodGet, "/users/"+u.ID.String(),
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
 			WriteJSON(t, w, u)
 		})
@@ -27,7 +27,7 @@ func (m *Mocker) User(u discord.User) {
 func (m *Mocker) Me(u discord.User) {
 	u = sanitize.User(u, 1)
 
-	m.Mock("Me", http.MethodGet, "/users/@me",
+	m.MockAPI("Me", http.MethodGet, "/users/@me",
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
 			WriteJSON(t, w, u)
 		})
@@ -39,7 +39,7 @@ func (m *Mocker) Me(u discord.User) {
 func (m *Mocker) ModifyMe(d api.ModifySelfData, u discord.User) {
 	u = sanitize.User(u, 1)
 
-	m.Mock("ModifyMe", http.MethodPatch, "/users/@me",
+	m.MockAPI("ModifyMe", http.MethodPatch, "/users/@me",
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
 			CheckJSON(t, r.Body, new(api.ModifySelfData), &d)
 			WriteJSON(t, w, u)
@@ -52,7 +52,7 @@ type changeOwnNicknamePayload struct {
 
 // ChangeOwnNickname mocks a ChangeOwnNickname request.
 func (m *Mocker) ChangeOwnNickname(guildID discord.Snowflake, nick string) {
-	m.Mock("ChangeOwnNickname", http.MethodPatch, "/guilds/"+guildID.String()+"/members/@me/nick",
+	m.MockAPI("ChangeOwnNickname", http.MethodPatch, "/guilds/"+guildID.String()+"/members/@me/nick",
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
 			expect := changeOwnNicknamePayload{
 				Nick: nick,
@@ -71,7 +71,7 @@ func (m *Mocker) PrivateChannels(c []discord.Channel) {
 		c[i] = sanitize.Channel(channel, 1)
 	}
 
-	m.Mock("PrivateChannels", http.MethodGet, "/users/@me/channels",
+	m.MockAPI("PrivateChannels", http.MethodGet, "/users/@me/channels",
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
 			WriteJSON(t, w, c)
 		})
@@ -85,7 +85,7 @@ type createPrivateChannelPayload struct {
 //
 // The c.DMRecipients[0] field of the passed Channel must be set.
 func (m *Mocker) CreatePrivateChannel(c discord.Channel) {
-	m.Mock("CreatePrivateChannel", http.MethodPost, "/users/@me/channels",
+	m.MockAPI("CreatePrivateChannel", http.MethodPost, "/users/@me/channels",
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
 			expect := createPrivateChannelPayload{
 				RecipientID: c.DMRecipients[0].ID,
@@ -98,7 +98,7 @@ func (m *Mocker) CreatePrivateChannel(c discord.Channel) {
 
 // UserConnections mocks a UserConnections request.
 func (m *Mocker) UserConnections(c []discord.Connection) {
-	m.Mock("UserConnections", http.MethodGet, "/users/@me/connections",
+	m.MockAPI("UserConnections", http.MethodGet, "/users/@me/connections",
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
 			WriteJSON(t, w, c)
 		})

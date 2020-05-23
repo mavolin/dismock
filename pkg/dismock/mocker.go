@@ -22,6 +22,10 @@ import (
 type (
 	// Mocker handles the mocking of arikawa's API calls.
 	Mocker struct {
+		// Server is the Server used to mock the requests.
+		Server *httptest.Server
+		// Client is a mocked Client that redirects all requests to the mock-server.
+		Client *http.Client
 		// handlers contains all mock handlers.
 		// The first map is sorted by path, the second by method.
 		// This ensures that different requests don't share the same Handler array, while still
@@ -32,8 +36,6 @@ type (
 		// However, adding handlers is not concurrent safe, as there is no point in it, when
 		// testing in a single method.
 		mut *sync.Mutex
-		// Server is the Server used to mock the requests.
-		Server *httptest.Server
 		// t is the test type called on error.
 		t *testing.T
 	}
@@ -85,18 +87,7 @@ func New(t *testing.T) *Mocker {
 
 	m.Server.StartTLS()
 
-	return m
-}
-
-// NewArikawaSession creates a new Mocker, starts its test Server and returns a
-// manipulated Session using the test Server.
-func NewArikawaSession(t *testing.T) (*Mocker, *session.Session) {
-	m := New(t)
-
-	gw := gateway.NewCustomGateway("", "")
-	s := session.NewWithGateway(gw)
-
-	client := http.Client{
+	m.Client = &http.Client{
 		Transport: &http.Transport{
 			DialContext: func(ctx context.Context, network, _ string) (conn net.Conn, err error) {
 				return net.Dial(network, m.Server.Listener.Addr().String())
@@ -107,18 +98,29 @@ func NewArikawaSession(t *testing.T) (*Mocker, *session.Session) {
 		},
 	}
 
-	s.Client.Client.Client = httpdriver.WrapClient(client)
+	return m
+}
+
+// NewSession creates a new Mocker, starts its test server and returns a
+// manipulated Session using the test Server.
+func NewSession(t *testing.T) (*Mocker, *session.Session) {
+	m := New(t)
+
+	gw := gateway.NewCustomGateway("", "")
+	s := session.NewWithGateway(gw)
+
+	s.Client.Client.Client = httpdriver.WrapClient(*m.Client)
 	s.Client.Retries = 1
 
 	return m, s
 }
 
-// NewArikawaSession creates a new Mocker, starts its test Server and returns a
-// manipulated State using the test Server.
+// NewState creates a new Mocker, starts its test server and returns a
+// manipulated State which's Session uses the test server.
 // In order to allow for successful testing, the State's Store, will always
 // return an error, forcing the use of the (mocked) Session.
-func NewArikawaState(t *testing.T) (*Mocker, *state.State) {
-	m, se := NewArikawaSession(t)
+func NewState(t *testing.T) (*Mocker, *state.State) {
+	m, se := NewSession(t)
 
 	st, err := state.NewFromSession(se, new(state.NoopStore))
 	if err != nil {
@@ -128,16 +130,21 @@ func NewArikawaState(t *testing.T) (*Mocker, *state.State) {
 	return m, st
 }
 
-// Mock uses the passed MockFunc to as handler for the passed path and method.
-// The path is the path with "/api/v6" stripped.
+// Mock uses the passed MockFunc to create a mock on the passed path using the
+// passed method.
 // If there are already handlers for this path with the same method, the
-// handler will be queued up behind the other
-// handlers with the same path and method.
+// handler will be queued up behind the other handlers with the same path and
+// method.
 // Queued up handlers are invoked in the same order they were added in.
+//
+// Trailing '/' will be removed.
+//
+// Names don't need to be unique, and have the sole purpose of aiding in
+// debugging.
 //
 // The MockFunc may be nil, if only testing for invokes is needed.
 func (m *Mocker) Mock(name, method, path string, f MockFunc) {
-	path = "/api/v6" + path
+	path = strings.TrimRight(path, "/")
 
 	if m.handlers[path] == nil {
 		m.handlers[path] = make(map[string][]Handler)
@@ -157,12 +164,31 @@ func (m *Mocker) Mock(name, method, path string, f MockFunc) {
 	m.handlers[path][method] = append(m.handlers[path][method], h)
 }
 
-// CloneArikawaSession clones handlers of the Mocker and returns the cloned Mocker and a new
-// Session.
+// MockAPI uses the passed MockFunc to as handler for the passed path and method.
+// The path is the path with "/api/v6" stripped.
+// If there are already handlers for this path with the same method, the
+// handler will be queued up behind the other handlers with the same path and
+// method.
+// Queued up handlers are invoked in the same order they were added in.
+//
+// Trailing '/' will be removed.
+//
+// Names don't need to be unique, and have the sole purpose of aiding in
+// debugging.
+//
+// The MockFunc may be nil, if only testing for invokes is needed.
+func (m *Mocker) MockAPI(name, method, path string, f MockFunc) {
+	path = "/api/v6" + path
+
+	m.Mock(name, method, path, f)
+}
+
+// CloneSession clones handlers of the Mocker and returns the cloned Mocker and
+// a new, mocked, Session.
 // Useful for multiple tests with the same API calls.
 //
 // Creating a clone will automatically close the current server.
-func (m *Mocker) CloneArikawaSession(t *testing.T) (*Mocker, *session.Session) {
+func (m *Mocker) CloneSession(t *testing.T) (*Mocker, *session.Session) {
 	m.Close()
 
 	handlersCopy := make(map[string]map[string][]Handler, len(m.handlers))
@@ -181,19 +207,19 @@ func (m *Mocker) CloneArikawaSession(t *testing.T) (*Mocker, *session.Session) {
 		handlersCopy[p] = subCopy
 	}
 
-	clone, s := NewArikawaSession(t)
+	clone, s := NewSession(t)
 
 	clone.handlers = handlersCopy
 
 	return clone, s
 }
 
-// CloneArikawaState clones handlers of the Mocker and returns the cloned Mocker and a new
-// State.
+// CloneState clones handlers of the Mocker and returns the cloned Mocker and a
+// new, mocked, State.
 // Useful for multiple tests with the same API calls.
 //
 // Creating a clone will automatically close the current server.
-func (m *Mocker) CloneArikawaState(t *testing.T) (*Mocker, *state.State) {
+func (m *Mocker) CloneState(t *testing.T) (*Mocker, *state.State) {
 	m.Close()
 
 	handlersCopy := make(map[string]map[string][]Handler, len(m.handlers))
@@ -212,7 +238,7 @@ func (m *Mocker) CloneArikawaState(t *testing.T) (*Mocker, *state.State) {
 		handlersCopy[p] = subCopy
 	}
 
-	clone, s := NewArikawaState(t)
+	clone, s := NewState(t)
 
 	clone.handlers = handlersCopy
 
