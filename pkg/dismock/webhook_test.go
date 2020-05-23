@@ -90,35 +90,63 @@ func TestMocker_ChannelWebhooks(t *testing.T) {
 }
 
 func TestMocker_GuildWebhooks(t *testing.T) {
-	m, s := NewArikawaSession(t)
+	t.Run("success", func(t *testing.T) {
+		m, s := NewArikawaSession(t)
 
-	var guildID discord.Snowflake = 123
+		var guildID discord.Snowflake = 123
 
-	expect := []discord.Webhook{
-		{
-			ID: 456,
-		},
-		{
-			ID: 789,
-		},
-	}
-
-	for i, w := range expect {
-		expect[i] = sanitize.Webhook(w, 1, 1, 1)
-
-		if w.GuildID <= 0 {
-			expect[i].GuildID = guildID
+		expect := []discord.Webhook{
+			{
+				ID: 456,
+			},
+			{
+				ID: 789,
+			},
 		}
-	}
 
-	m.GuildWebhooks(guildID, expect)
+		for i, w := range expect {
+			expect[i] = sanitize.Webhook(w, 1, 1, 1)
 
-	actual, err := s.GuildWebhooks(guildID)
-	require.NoError(t, err)
+			if w.GuildID <= 0 {
+				expect[i].GuildID = guildID
+			}
+		}
 
-	assert.Equal(t, expect, actual)
+		m.GuildWebhooks(guildID, expect)
 
-	m.Eval()
+		actual, err := s.GuildWebhooks(guildID)
+		require.NoError(t, err)
+
+		assert.Equal(t, expect, actual)
+
+		m.Eval()
+	})
+
+	t.Run("auto guild id", func(t *testing.T) {
+		m, s := NewArikawaSession(t)
+
+		var guildID discord.Snowflake = 123
+
+		in := []discord.Webhook{
+			{
+				ID: 456,
+			},
+			{
+				ID: 789,
+			},
+		}
+
+		m.GuildWebhooks(guildID, in)
+
+		actual, err := s.GuildWebhooks(guildID)
+		require.NoError(t, err)
+
+		for _, w := range actual {
+			assert.Equal(t, guildID, w.GuildID)
+		}
+
+		m.Eval()
+	})
 }
 
 func TestMocker_Webhook(t *testing.T) {
