@@ -177,7 +177,7 @@ func (m *Mocker) GuildsBefore(before discord.Snowflake, limit uint, g []discord.
 // GuildsAfter mocks a GuildsAfter request.
 //
 // This method will sanitize Guilds.ID, Guilds.OwnerID, Guilds.Emojis.ID and
-// Guilds.Roles.ID.
+// Guilds.Roles.ID.WithToken
 func (m *Mocker) GuildsAfter(after discord.Snowflake, limit uint, g []discord.Guild) {
 	if g == nil {
 		g = []discord.Guild{}

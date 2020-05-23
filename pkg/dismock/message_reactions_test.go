@@ -106,7 +106,7 @@ func TestMocker_Reactions(t *testing.T) {
 
 				m.Reactions(channelID, messageID, c.limit, emoji, expect)
 
-				actual, err := s.Reactions(channelID, messageID, c.limit, emoji)
+				actual, err := s.Reactions(channelID, messageID, emoji, c.limit)
 				require.NoError(t, err)
 
 				assert.Equal(t, expect, actual)
@@ -129,7 +129,7 @@ func TestMocker_Reactions(t *testing.T) {
 
 		m.Reactions(channelID, messageID, 100, emoji, expect)
 
-		actual, err := s.Reactions(channelID, messageID, 100, emoji)
+		actual, err := s.Reactions(channelID, messageID, emoji, 100)
 		require.NoError(t, err)
 
 		assert.Equal(t, expect, actual)
@@ -212,7 +212,7 @@ func TestMocker_ReactionsBefore(t *testing.T) {
 
 				m.ReactionsBefore(channelID, messageID, before, c.limit, emoji, expect)
 
-				actual, err := s.ReactionsBefore(channelID, messageID, before, c.limit, emoji)
+				actual, err := s.ReactionsBefore(channelID, messageID, before, emoji, c.limit)
 				require.NoError(t, err)
 
 				assert.Equal(t, expect, actual)
@@ -232,11 +232,11 @@ func TestMocker_ReactionsBefore(t *testing.T) {
 		)
 
 		//noinspection GoPreferNilSlice
-		var expect []discord.User
+		expect := []discord.User{}
 
-		m.ReactionsBefore(channelID, messageID, 0, 100, emoji, expect)
+		m.ReactionsBefore(channelID, messageID, 0, 100, emoji, nil)
 
-		actual, err := s.ReactionsBefore(channelID, messageID, 0, 100, emoji)
+		actual, err := s.ReactionsBefore(channelID, messageID, 0, emoji, 100)
 		require.NoError(t, err)
 
 		assert.Equal(t, expect, actual)
@@ -266,7 +266,7 @@ func TestMocker_ReactionsBefore(t *testing.T) {
 
 		m.ReactionsBefore(channelID, messageID, 890, 100, emoji, expect)
 
-		actual, err := s.ReactionsBefore(channelID, messageID, 789, 100, emoji)
+		actual, err := s.ReactionsBefore(channelID, messageID, 789, emoji, 100)
 		require.NoError(t, err)
 
 		assert.Equal(t, expect, actual)
@@ -348,7 +348,7 @@ func TestMocker_ReactionsAfter(t *testing.T) {
 
 				m.ReactionsAfter(channelID, messageID, after, c.limit, emoji, expect)
 
-				actual, err := s.ReactionsAfter(channelID, messageID, after, c.limit, emoji)
+				actual, err := s.ReactionsAfter(channelID, messageID, after, emoji, c.limit)
 				require.NoError(t, err)
 
 				assert.Equal(t, expect, actual)
@@ -371,7 +371,7 @@ func TestMocker_ReactionsAfter(t *testing.T) {
 
 		m.ReactionsAfter(channelID, messageID, 0, 100, emoji, expect)
 
-		actual, err := s.ReactionsAfter(channelID, messageID, 0, 100, emoji)
+		actual, err := s.ReactionsAfter(channelID, messageID, 0, emoji, 100)
 		require.NoError(t, err)
 
 		assert.Equal(t, expect, actual)
@@ -401,7 +401,7 @@ func TestMocker_ReactionsAfter(t *testing.T) {
 
 		m.ReactionsAfter(channelID, messageID, 123, 100, emoji, expect)
 
-		actual, err := s.ReactionsAfter(channelID, messageID, 321, 100, emoji)
+		actual, err := s.ReactionsAfter(channelID, messageID, 321, emoji, 100)
 		require.NoError(t, err)
 
 		assert.Equal(t, expect, actual)

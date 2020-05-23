@@ -22,6 +22,7 @@ func TestAuditLog(t *testing.T) {
 						User: discord.User{
 							ID: 456,
 						},
+						ChannelID: 1,
 					},
 				},
 				Users: []discord.User{
@@ -52,6 +53,7 @@ func TestAuditLog(t *testing.T) {
 						User: discord.User{
 							ID: 456,
 						},
+						ChannelID: 1,
 					},
 				},
 				Users: []discord.User{
@@ -88,6 +90,7 @@ func TestAuditLog(t *testing.T) {
 						User: discord.User{
 							ID: 1,
 						},
+						ChannelID: 1,
 					},
 				},
 			},

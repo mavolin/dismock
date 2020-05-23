@@ -12,7 +12,7 @@ import (
 // AuditLog.Integrations.User.ID.
 func AuditLog(al discord.AuditLog) discord.AuditLog {
 	for i, w := range al.Webhooks {
-		al.Webhooks[i] = Webhook(w, 1, 1)
+		al.Webhooks[i] = Webhook(w, 1, 1, 1)
 	}
 
 	for i, u := range al.Users {
