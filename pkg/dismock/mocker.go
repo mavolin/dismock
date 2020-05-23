@@ -62,22 +62,24 @@ func New(t *testing.T) *Mocker {
 		m.mut.Lock()
 		defer m.mut.Unlock()
 
-		methHandlers, ok := m.handlers[r.URL.Path]
-		require.True(t, ok, "unhandled path '"+r.URL.Path+"'")
+		path := strings.TrimRight(r.URL.Path, "/")
+
+		methHandlers, ok := m.handlers[path]
+		require.True(t, ok, "unhandled path '"+path+"'")
 
 		h, ok := methHandlers[r.Method]
-		require.True(t, ok, "unhandled method '"+r.Method+"' on path '"+r.URL.Path+"'")
+		require.True(t, ok, "unhandled method '"+r.Method+"' on path '"+path+"'")
 
 		h[0].ServeHTTP(w, r)
 
 		if len(h) == 1 { // this is the only handler for this method
 			if len(methHandlers) == 1 { // the current method is the only method for this path
-				delete(m.handlers, r.URL.Path)
+				delete(m.handlers, path)
 			} else { // there are other methods for this path
-				delete(m.handlers[r.URL.Path], r.Method)
+				delete(m.handlers[path], r.Method)
 			}
 		} else { // there are multiple handlers for this method
-			m.handlers[r.URL.Path][r.Method] = m.handlers[r.URL.Path][r.Method][1:]
+			m.handlers[path][r.Method] = m.handlers[path][r.Method][1:]
 		}
 	}))
 
