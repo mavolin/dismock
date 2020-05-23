@@ -4,7 +4,7 @@ import "github.com/diamondburned/arikawa/discord"
 
 // User sanitizes a User.
 //
-// This method will sanitize User.ID.
+// This function will sanitize User.ID.
 func User(u discord.User, id discord.Snowflake) discord.User {
 	if u.ID <= 0 {
 		u.ID = id
