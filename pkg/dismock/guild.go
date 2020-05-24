@@ -13,7 +13,7 @@ import (
 	"github.com/diamondburned/arikawa/discord"
 	"github.com/stretchr/testify/require"
 
-	. "github.com/mavolin/dismock/internal/mockutil"
+	"github.com/mavolin/dismock/internal/mockutil"
 	"github.com/mavolin/dismock/internal/sanitize"
 )
 
@@ -26,8 +26,8 @@ func (m *Mocker) CreateGuild(d api.CreateGuildData, g discord.Guild) {
 
 	m.MockAPI("CreateGuild", http.MethodPost, "/guilds",
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
-			CheckJSON(t, r.Body, new(api.CreateGuildData), &d)
-			WriteJSON(t, w, g)
+			mockutil.CheckJSON(t, r.Body, new(api.CreateGuildData), &d)
+			mockutil.WriteJSON(t, w, g)
 		})
 }
 
@@ -42,7 +42,7 @@ func (m *Mocker) Guild(g discord.Guild) {
 
 	m.MockAPI("Guild", http.MethodGet, "/guilds/"+g.ID.String(),
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
-			WriteJSON(t, w, g)
+			mockutil.WriteJSON(t, w, g)
 		})
 }
 
@@ -57,10 +57,10 @@ func (m *Mocker) GuildWithCount(g discord.Guild) {
 
 	m.MockAPI("GuildWithCount", http.MethodGet, "/guilds/"+g.ID.String(),
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
-			CheckQuery(t, r.URL.Query(), url.Values{
+			mockutil.CheckQuery(t, r.URL.Query(), url.Values{
 				"with_counts": {"true"},
 			})
-			WriteJSON(t, w, g)
+			mockutil.WriteJSON(t, w, g)
 		})
 }
 
@@ -73,7 +73,7 @@ func (m *Mocker) GuildPreview(p discord.GuildPreview) {
 
 	m.MockAPI("GuildPreview", http.MethodGet, "/guilds/"+p.ID.String()+"/preview",
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
-			WriteJSON(t, w, p)
+			mockutil.WriteJSON(t, w, p)
 		})
 }
 
@@ -91,6 +91,7 @@ func (m *Mocker) Guilds(limit uint, g []discord.Guild) {
 	}
 
 	const hardLimit uint = 100
+
 	var after discord.Snowflake = 0
 
 	for i := 0; i <= len(g)/int(hardLimit); i++ {
@@ -243,8 +244,8 @@ func (m *Mocker) guildsRange(before, after discord.Snowflake, name string, limit
 				expect["before"] = []string{before.String()}
 			}
 
-			CheckQuery(t, r.URL.Query(), expect)
-			WriteJSON(t, w, g)
+			mockutil.CheckQuery(t, r.URL.Query(), expect)
+			mockutil.WriteJSON(t, w, g)
 		})
 }
 
@@ -264,8 +265,8 @@ func (m *Mocker) ModifyGuild(d api.ModifyGuildData, g discord.Guild) {
 
 	m.MockAPI("ModifyGuild", http.MethodPatch, "/guilds/"+g.ID.String(),
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
-			CheckJSON(t, r.Body, new(api.ModifyGuildData), &d)
-			WriteJSON(t, w, g)
+			mockutil.CheckJSON(t, r.Body, new(api.ModifyGuildData), &d)
+			mockutil.WriteJSON(t, w, g)
 		})
 }
 
@@ -282,7 +283,7 @@ func (m *Mocker) VoiceRegionsGuild(guildID discord.Snowflake, vr []discord.Voice
 
 	m.MockAPI("VoiceRegionsGuild", http.MethodGet, "/guilds/"+guildID.String()+"/regions",
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
-			WriteJSON(t, w, vr)
+			mockutil.WriteJSON(t, w, vr)
 		})
 }
 
@@ -320,8 +321,8 @@ func (m *Mocker) AuditLog(guildID discord.Snowflake, d api.AuditLogData, al disc
 				expect["before"] = []string{d.Before.String()}
 			}
 
-			CheckQuery(t, r.URL.Query(), expect)
-			WriteJSON(t, w, al)
+			mockutil.CheckQuery(t, r.URL.Query(), expect)
+			mockutil.WriteJSON(t, w, al)
 		})
 }
 
@@ -340,7 +341,7 @@ func (m *Mocker) Integrations(guildID discord.Snowflake, integrations []discord.
 
 	m.MockAPI("Integrations", http.MethodGet, "/guilds/"+guildID.String()+"/integrations",
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
-			WriteJSON(t, w, integrations)
+			mockutil.WriteJSON(t, w, integrations)
 		})
 }
 
@@ -358,7 +359,7 @@ func (m *Mocker) AttachIntegration(guildID, integrationID discord.Snowflake, int
 				ID:   integrationID,
 			}
 
-			CheckJSON(t, r.Body, new(attachIntegrationPayload), expect)
+			mockutil.CheckJSON(t, r.Body, new(attachIntegrationPayload), expect)
 			w.WriteHeader(http.StatusNoContent)
 		})
 }
@@ -368,7 +369,7 @@ func (m *Mocker) ModifyIntegration(guildID, integrationID discord.Snowflake, d a
 	m.MockAPI("ModifyIntegration", http.MethodPatch,
 		"/guilds/"+guildID.String()+"/integrations/"+integrationID.String(),
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
-			CheckJSON(t, r.Body, new(api.ModifyIntegrationData), &d)
+			mockutil.CheckJSON(t, r.Body, new(api.ModifyIntegrationData), &d)
 			w.WriteHeader(http.StatusNoContent)
 		})
 }
@@ -383,7 +384,7 @@ func (m *Mocker) SyncIntegration(guildID, integrationID discord.Snowflake) {
 func (m *Mocker) GuildWidget(guildID discord.Snowflake, e discord.GuildWidget) {
 	m.MockAPI("GuildWidget", http.MethodGet, "/guilds/"+guildID.String()+"/widget",
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
-			WriteJSON(t, w, e)
+			mockutil.WriteJSON(t, w, e)
 		})
 }
 
@@ -391,8 +392,8 @@ func (m *Mocker) GuildWidget(guildID discord.Snowflake, e discord.GuildWidget) {
 func (m *Mocker) ModifyGuildWidget(guildID discord.Snowflake, d api.ModifyGuildWidgetData, e discord.GuildWidget) {
 	m.MockAPI("ModifyGuild", http.MethodPatch, "/guilds/"+guildID.String()+"/widget",
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
-			CheckJSON(t, r.Body, new(api.ModifyGuildWidgetData), &d)
-			WriteJSON(t, w, e)
+			mockutil.CheckJSON(t, r.Body, new(api.ModifyGuildWidgetData), &d)
+			mockutil.WriteJSON(t, w, e)
 		})
 }
 
@@ -406,7 +407,7 @@ func (m *Mocker) GuildVanityURL(guildID discord.Snowflake, i discord.Invite) {
 
 	m.MockAPI("GuildVanityURL", http.MethodGet, "/guilds/"+guildID.String()+"/vanity-url",
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
-			WriteJSON(t, w, i)
+			mockutil.WriteJSON(t, w, i)
 		})
 }
 
@@ -414,7 +415,7 @@ func (m *Mocker) GuildVanityURL(guildID discord.Snowflake, i discord.Invite) {
 func (m *Mocker) GuildImage(guildID discord.Snowflake, style api.GuildImageStyle, img io.Reader) {
 	m.MockAPI("GuildImage", http.MethodGet, "/guilds/"+guildID.String()+"/widget.png",
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
-			CheckQuery(t, r.URL.Query(), url.Values{
+			mockutil.CheckQuery(t, r.URL.Query(), url.Values{
 				"style": {string(style)},
 			})
 

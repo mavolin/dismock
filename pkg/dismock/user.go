@@ -7,7 +7,7 @@ import (
 	"github.com/diamondburned/arikawa/api"
 	"github.com/diamondburned/arikawa/discord"
 
-	. "github.com/mavolin/dismock/internal/mockutil"
+	"github.com/mavolin/dismock/internal/mockutil"
 	"github.com/mavolin/dismock/internal/sanitize"
 )
 
@@ -17,7 +17,7 @@ import (
 func (m *Mocker) User(u discord.User) {
 	m.MockAPI("User", http.MethodGet, "/users/"+u.ID.String(),
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
-			WriteJSON(t, w, u)
+			mockutil.WriteJSON(t, w, u)
 		})
 }
 
@@ -29,7 +29,7 @@ func (m *Mocker) Me(u discord.User) {
 
 	m.MockAPI("Me", http.MethodGet, "/users/@me",
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
-			WriteJSON(t, w, u)
+			mockutil.WriteJSON(t, w, u)
 		})
 }
 
@@ -41,8 +41,8 @@ func (m *Mocker) ModifyMe(d api.ModifySelfData, u discord.User) {
 
 	m.MockAPI("ModifyMe", http.MethodPatch, "/users/@me",
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
-			CheckJSON(t, r.Body, new(api.ModifySelfData), &d)
-			WriteJSON(t, w, u)
+			mockutil.CheckJSON(t, r.Body, new(api.ModifySelfData), &d)
+			mockutil.WriteJSON(t, w, u)
 		})
 }
 
@@ -58,7 +58,7 @@ func (m *Mocker) ChangeOwnNickname(guildID discord.Snowflake, nick string) {
 				Nick: nick,
 			}
 
-			CheckJSON(t, r.Body, new(changeOwnNicknamePayload), &expect)
+			mockutil.CheckJSON(t, r.Body, new(changeOwnNicknamePayload), &expect)
 			w.WriteHeader(http.StatusNoContent)
 		})
 }
@@ -73,7 +73,7 @@ func (m *Mocker) PrivateChannels(c []discord.Channel) {
 
 	m.MockAPI("PrivateChannels", http.MethodGet, "/users/@me/channels",
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
-			WriteJSON(t, w, c)
+			mockutil.WriteJSON(t, w, c)
 		})
 }
 
@@ -91,8 +91,8 @@ func (m *Mocker) CreatePrivateChannel(c discord.Channel) {
 				RecipientID: c.DMRecipients[0].ID,
 			}
 
-			CheckJSON(t, r.Body, new(createPrivateChannelPayload), &expect)
-			WriteJSON(t, w, c)
+			mockutil.CheckJSON(t, r.Body, new(createPrivateChannelPayload), &expect)
+			mockutil.WriteJSON(t, w, c)
 		})
 }
 
@@ -100,6 +100,6 @@ func (m *Mocker) CreatePrivateChannel(c discord.Channel) {
 func (m *Mocker) UserConnections(c []discord.Connection) {
 	m.MockAPI("UserConnections", http.MethodGet, "/users/@me/connections",
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
-			WriteJSON(t, w, c)
+			mockutil.WriteJSON(t, w, c)
 		})
 }

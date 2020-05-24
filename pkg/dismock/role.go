@@ -7,7 +7,7 @@ import (
 	"github.com/diamondburned/arikawa/api"
 	"github.com/diamondburned/arikawa/discord"
 
-	. "github.com/mavolin/dismock/internal/mockutil"
+	"github.com/mavolin/dismock/internal/mockutil"
 	"github.com/mavolin/dismock/internal/sanitize"
 )
 
@@ -33,7 +33,7 @@ func (m *Mocker) Roles(guildID discord.Snowflake, roles []discord.Role) {
 
 	m.MockAPI("Roles", http.MethodGet, "/guilds/"+guildID.String()+"/roles",
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
-			WriteJSON(t, w, roles)
+			mockutil.WriteJSON(t, w, roles)
 		})
 }
 
@@ -45,8 +45,8 @@ func (m *Mocker) CreateRole(guildID discord.Snowflake, d api.CreateRoleData, rol
 
 	m.MockAPI("CreateRole", http.MethodPost, "/guilds/"+guildID.String()+"/roles",
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
-			CheckJSON(t, r.Body, new(api.CreateRoleData), &d)
-			WriteJSON(t, w, role)
+			mockutil.CheckJSON(t, r.Body, new(api.CreateRoleData), &d)
+			mockutil.WriteJSON(t, w, role)
 		})
 }
 
@@ -60,8 +60,8 @@ func (m *Mocker) MoveRole(guildID discord.Snowflake, d []api.MoveRoleData, roles
 
 	m.MockAPI("MoveRole", http.MethodPatch, "/guilds/"+guildID.String()+"/roles",
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
-			CheckJSON(t, r.Body, &[]api.MoveRoleData{}, &d)
-			WriteJSON(t, w, roles)
+			mockutil.CheckJSON(t, r.Body, &[]api.MoveRoleData{}, &d)
+			mockutil.WriteJSON(t, w, roles)
 		})
 }
 
@@ -73,8 +73,8 @@ func (m *Mocker) ModifyRole(guildID discord.Snowflake, d api.ModifyRoleData, rol
 
 	m.MockAPI("ModifyRole", http.MethodPatch, "/guilds/"+guildID.String()+"/roles/"+role.ID.String(),
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
-			CheckJSON(t, r.Body, new(api.ModifyRoleData), &d)
-			WriteJSON(t, w, role)
+			mockutil.CheckJSON(t, r.Body, new(api.ModifyRoleData), &d)
+			mockutil.WriteJSON(t, w, role)
 		})
 }
 

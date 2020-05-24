@@ -36,6 +36,10 @@ linters:
     - funlen
     - whitespace
 
+linters-settings:
+  funlen:
+    lines: 65
+
 issues:
   exclude-rules:
     - path: _test\.go$
@@ -56,3 +60,7 @@ issues:
       text: ^`\w+` can be `fmt.Stringer`$
       linters:
         - interfacer
+    - path: ^internal/mockutil/mockutil.go$ # the function cannot be split into smaller parts
+      text: cognitive complexity 40 of func `replaceNullables` is high \(> 30\)
+      linters:
+        - gocognit

@@ -7,7 +7,7 @@ import (
 	"github.com/diamondburned/arikawa/api"
 	"github.com/diamondburned/arikawa/discord"
 
-	. "github.com/mavolin/dismock/internal/mockutil"
+	"github.com/mavolin/dismock/internal/mockutil"
 	"github.com/mavolin/dismock/internal/sanitize"
 )
 
@@ -25,7 +25,7 @@ func (m *Mocker) Emojis(guildID discord.Snowflake, e []discord.Emoji) {
 
 	m.MockAPI("Emojis", http.MethodGet, "/guilds/"+guildID.String()+"/emojis",
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
-			WriteJSON(t, w, e)
+			mockutil.WriteJSON(t, w, e)
 		})
 }
 
@@ -39,7 +39,7 @@ func (m *Mocker) Emoji(guildID discord.Snowflake, e discord.Emoji) {
 
 	m.MockAPI("Emoji", http.MethodGet, "/guilds/"+guildID.String()+"/emojis/"+e.ID.String(),
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
-			WriteJSON(t, w, e)
+			mockutil.WriteJSON(t, w, e)
 		})
 }
 
@@ -53,8 +53,8 @@ func (m *Mocker) CreateEmoji(guildID discord.Snowflake, d api.CreateEmojiData, e
 
 	m.MockAPI("CreateEmoji", http.MethodPost, "/guilds/"+guildID.String()+"/emojis",
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
-			CheckJSON(t, r.Body, new(api.CreateEmojiData), &d)
-			WriteJSON(t, w, e)
+			mockutil.CheckJSON(t, r.Body, new(api.CreateEmojiData), &d)
+			mockutil.WriteJSON(t, w, e)
 		})
 }
 
@@ -62,7 +62,7 @@ func (m *Mocker) CreateEmoji(guildID discord.Snowflake, d api.CreateEmojiData, e
 func (m *Mocker) ModifyEmoji(guildID, emojiID discord.Snowflake, d api.ModifyEmojiData) {
 	m.MockAPI("ModifyEmoji", http.MethodPatch, "/guilds/"+guildID.String()+"/emojis/"+emojiID.String(),
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
-			CheckJSON(t, r.Body, new(api.ModifyEmojiData), &d)
+			mockutil.CheckJSON(t, r.Body, new(api.ModifyEmojiData), &d)
 			w.WriteHeader(http.StatusNoContent)
 		})
 }

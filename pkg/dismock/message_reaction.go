@@ -11,7 +11,7 @@ import (
 	"github.com/diamondburned/arikawa/api"
 	"github.com/diamondburned/arikawa/discord"
 
-	. "github.com/mavolin/dismock/internal/mockutil"
+	"github.com/mavolin/dismock/internal/mockutil"
 	"github.com/mavolin/dismock/internal/sanitize"
 )
 
@@ -40,6 +40,7 @@ func (m *Mocker) Reactions(channelID, messageID discord.Snowflake, limit uint, e
 	}
 
 	const hardLimit uint = 100
+
 	var after discord.Snowflake = 0
 
 	for i := 0; i <= len(u)/int(hardLimit); i++ {
@@ -196,8 +197,8 @@ func (m *Mocker) reactionsRange(
 				expect["before"] = []string{before.String()}
 			}
 
-			CheckQuery(t, r.URL.Query(), expect)
-			WriteJSON(t, w, u)
+			mockutil.CheckQuery(t, r.URL.Query(), expect)
+			mockutil.WriteJSON(t, w, u)
 		})
 }
 
