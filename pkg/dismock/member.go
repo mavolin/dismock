@@ -39,7 +39,7 @@ func (m *Mocker) Members(guildID discord.Snowflake, limit uint, members []discor
 
 	const hardLimit uint = 1000
 
-	var after discord.Snowflake = 0
+	var after discord.Snowflake
 
 	for i := 0; i <= len(members)/int(hardLimit); i++ {
 		var (

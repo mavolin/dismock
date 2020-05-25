@@ -92,7 +92,7 @@ func (m *Mocker) Guilds(limit uint, g []discord.Guild) {
 
 	const hardLimit uint = 100
 
-	var after discord.Snowflake = 0
+	var after discord.Snowflake
 
 	for i := 0; i <= len(g)/int(hardLimit); i++ {
 		var (

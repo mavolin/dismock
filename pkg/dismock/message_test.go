@@ -688,6 +688,37 @@ func TestMocker_SendMessage(t *testing.T) {
 				m.Eval()
 			})
 		}
+
+		t.Run("param embed", func(t *testing.T) {
+			m, s := NewSession(t)
+
+			var (
+				msg = sanitize.Message(discord.Message{
+					ID:        123,
+					ChannelID: 456,
+					Content:   "abc",
+				}, 1, 1, 1)
+
+				embed = discord.Embed{
+					Title:       "def",
+					Description: "ghi",
+				}
+			)
+
+			require.NoError(t, embed.Validate())
+
+			expect := msg
+			expect.Embeds = append(expect.Embeds, embed)
+
+			m.SendMessage(&embed, msg)
+
+			actual, err := s.SendMessage(expect.ChannelID, expect.Content, &embed)
+			require.NoError(t, err)
+
+			assert.Equal(t, expect, *actual)
+
+			m.Eval()
+		})
 	})
 
 	t.Run("failure", func(t *testing.T) {
