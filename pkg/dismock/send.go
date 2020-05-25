@@ -16,16 +16,40 @@ import (
 //
 // The ChannelID field of the passed Message must be set.
 //
-// This method will sanitize Message.ID and Message.Author.ID.
+// This method will sanitize Message.ID, Message.Author.ID, Message.Embeds.Type
+// and Message.Embeds.Color.
 func (m *Mocker) SendMessageComplex(d api.SendMessageData, msg discord.Message) {
 	m.sendMessageComplex("SendMessageComplex", d, msg)
 }
 
 // sendMessageComplex mocks a SendMessageComplex request.
 //
-// This method will sanitize Message.ID and Message.Author.ID.
+// The ChannelID field of the passed Message must be set.
+//
+// This method will sanitize Message.ID, Message.Author.ID, Message.Embeds.Type
+// and Message.Embeds.Color.
 func (m *Mocker) sendMessageComplex(name string, d api.SendMessageData, msg discord.Message) {
 	msg = sanitize.Message(msg, 1, 1, 1)
+
+	if d.Embed != nil {
+		if d.Embed.Type == "" {
+			d.Embed.Type = discord.NormalEmbed
+		}
+
+		if d.Embed.Color == 0 {
+			d.Embed.Color = discord.DefaultEmbedColor
+		}
+	}
+
+	for i, e := range msg.Embeds {
+		if e.Type == "" {
+			msg.Embeds[i].Type = discord.NormalEmbed
+		}
+
+		if e.Color == 0 {
+			msg.Embeds[i].Color = discord.DefaultEmbedColor
+		}
+	}
 
 	m.MockAPI(name, http.MethodPost, "/channels/"+msg.ChannelID.String()+"/messages",
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
