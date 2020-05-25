@@ -104,13 +104,13 @@ func TestBot_Ping(t *testing.T) {
         // of the mocker in every sub-test you have.
         // Cloned mockers have a copy of it's parents request, but run their
         // own mock server and have a dedicated Session/State.
-        m, s = m.CloneState(t)
+        m, s := m.CloneState(t)
 
         ...
     })
 
     t.Run("test2", func(t *testing.T) {
-        m, s = m.CloneState(t)
+        m, s := m.CloneState(t)
         
         ...
     })
