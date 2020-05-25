@@ -377,6 +377,26 @@ func TestCheckMultipart(t *testing.T) {
 			assert.True(t, tMock.Failed())
 		})
 	}
+
+	t.Run("unexpected part", func(t *testing.T) {
+		p := new(pipe)
+		mw := multipart.NewWriter(p)
+
+		_, err := mw.CreateFormField("unexpected")
+		require.NoError(t, err)
+
+		require.NoError(t, mw.Close())
+
+		h := http.Header{
+			"Content-Type": {mw.FormDataContentType()},
+		}
+
+		tMock := new(testing.T)
+
+		CheckMultipart(tMock, p, h, nil, nil, []api.SendMessageFile{})
+
+		assert.True(t, tMock.Failed())
+	})
 }
 
 func TestCheckQuery(t *testing.T) {
