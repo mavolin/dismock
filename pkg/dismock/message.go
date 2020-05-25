@@ -31,7 +31,7 @@ func (m *Mocker) Messages(channelID discord.Snowflake, limit uint, messages []di
 
 	const hardLimit uint = 100
 
-	var after discord.Snowflake = 0
+	var after discord.Snowflake
 
 	for i := 0; i <= len(messages)/int(hardLimit); i++ {
 		var (
@@ -233,7 +233,7 @@ func (m *Mocker) Message(msg discord.Message) {
 
 // SendText mocks a SendText request.
 //
-// The ChannelID field of the passed Message must be set.
+// The ChannelID field and the Content field of the passed Message must be set.
 //
 // This method will sanitize Message.ID, Message.Author.ID, Message.Embeds.Type
 // and Message.Embeds.Color.
@@ -245,7 +245,7 @@ func (m *Mocker) SendText(msg discord.Message) {
 
 // SendEmbed mocks a SendEmbed request.
 //
-// The ChannelID field of the passed Message must be set.
+// The ChannelID field and the Embed field of the passed Message must be set.
 //
 // This method will sanitize Message.ID, Message.Author.ID, Message.Embeds.Type
 // and Message.Embeds.Color.
@@ -257,7 +257,7 @@ func (m *Mocker) SendEmbed(msg discord.Message) {
 
 // SendMessage mocks a SendMessage request.
 //
-// The ChannelID field of the passed Message must be set.
+// The ChannelID field and the Content field of the passed Message must be set.
 //
 // This method will sanitize Message.ID, Message.Author.ID, Message.Embeds.Type
 // and Message.Embeds.Color.
@@ -268,6 +268,10 @@ func (m *Mocker) SendMessage(embed *discord.Embed, msg discord.Message) {
 
 	if embed != nil {
 		d.Embed = embed
+
+		if len(msg.Embeds) == 0 {
+			msg.Embeds = append(msg.Embeds, *d.Embed)
+		}
 	}
 
 	m.sendMessageComplex("SendMessage", d, msg)
@@ -318,7 +322,7 @@ func (m *Mocker) EditMessage(embed *discord.Embed, msg discord.Message, suppress
 	m.editMessageComplex("EditMessage", d, msg)
 }
 
-// EditMessage mocks a EditMessage request.
+// EditMessageComplex mocks a EditMessageComplex request.
 //
 // The ID field and the ChannelID field of the passed Message must be set.
 //
