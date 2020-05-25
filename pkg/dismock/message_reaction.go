@@ -41,7 +41,7 @@ func (m *Mocker) Reactions(channelID, messageID discord.Snowflake, limit uint, e
 
 	const hardLimit uint = 100
 
-	var after discord.Snowflake = 0
+	var after discord.Snowflake
 
 	for i := 0; i <= len(u)/int(hardLimit); i++ {
 		var (

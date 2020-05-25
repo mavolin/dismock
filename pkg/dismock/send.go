@@ -68,7 +68,7 @@ func (m *Mocker) sendMessageComplex(name string, d api.SendMessageData, msg disc
 		})
 }
 
-// ExecuteWebhookAndWait mocks a ExecuteWebhook request and doesn't "wait" for the message to be delivered.
+// ExecuteWebhook mocks a ExecuteWebhook request and doesn't "wait" for the message to be delivered.
 //
 // This method will sanitize Message.ID and Message.Author.ID.
 func (m *Mocker) ExecuteWebhook(webhookID discord.Snowflake, token string, d api.ExecuteWebhookData) {
