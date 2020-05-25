@@ -8,8 +8,10 @@
 
 -----
 
-Dismock is a library that aims to aid in mocking Discord's API requests.
-It is not limited to any discord library, although it uses [arikawa](https://github.com/diamondburned/arikawa) as a foundation for its datatypes, as well as it's function names.
+Dismock is a library that aims to make mocking Discord's API requests as easy as winking.
+No more huge integration tests, that require a bot on some private server with little to no debug information.
+
+Dismock is not limited to a specific Discord library, although it uses [arikawa](https://github.com/diamondburned/arikawa) as a foundation for its datatypes.
 
 ## Getting Started
 
@@ -18,7 +20,9 @@ It is not limited to any discord library, although it uses [arikawa](https://git
 Using dismock is fairly easy and few steps are necessary to create a mocker and a manipulated `Sessions` or `State`.
 
 #### Basic Testing
-Below is a method of a simple ping command and it's unit test.
+
+Creating a mock is done, by simply calling the respective mock method of the Mocker, that belongs to the API request you made in your code.
+Below is a pretty basic example of a ping command and it's unit test.
 
 ```go
 func (b *Bot) Ping(e *gateway.MessageCreateEvent) (error) {
@@ -72,7 +76,7 @@ func TestBot_Ping(t *testing.T) {
 
 #### Advanced Testing
 
-Imagine a bit more complicated command:
+Now imagine a bit more complicated command, that has variable messages and uses sub tests instead of a single test:
 
 ```go
 func (b *Bot) Ping(e *gateway.MessageCreateEvent) (error) {
@@ -119,7 +123,7 @@ func TestBot_Ping(t *testing.T) {
 
 ### Using a Different Discord Library
 
-If you use another Discord API library than arikawa, you can use it with an extra step:
+If you use another Discord API library than arikawa, there is a small additional step required:
 Instead of using `NewSession` or `NewState` use `New`.
 You can then use the `http.Client` of the `Mocker` as the client of your favorite lib.
 For discordgo that would look like this:
