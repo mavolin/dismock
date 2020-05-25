@@ -242,18 +242,18 @@ func TestMocker_EditChannelPermission(t *testing.T) {
 		m, s := NewSession(t)
 
 		var (
-			channelID discord.Snowflake = 123
-			overwrite                   = discord.Overwrite{
-				ID:    5,
+			channelID   discord.Snowflake = 123
+			overwriteID discord.Snowflake = 456
+			data                          = api.EditChannelPermissionData{
 				Type:  discord.OverwriteMember,
 				Allow: 1,
 				Deny:  0,
 			}
 		)
 
-		m.EditChannelPermission(channelID, overwrite)
+		m.EditChannelPermission(channelID, overwriteID, data)
 
-		err := s.EditChannelPermission(channelID, overwrite)
+		err := s.EditChannelPermission(channelID, overwriteID, data)
 		require.NoError(t, err)
 
 		m.Eval()
@@ -264,17 +264,18 @@ func TestMocker_EditChannelPermission(t *testing.T) {
 
 		m, s := NewSession(tMock)
 
-		var channelID discord.Snowflake = 123
+		var (
+			channelID   discord.Snowflake = 123
+			overwriteID discord.Snowflake = 456
+		)
 
-		m.EditChannelPermission(channelID, discord.Overwrite{
-			ID:    5,
+		m.EditChannelPermission(channelID, overwriteID, api.EditChannelPermissionData{
 			Type:  discord.OverwriteMember,
 			Allow: 1,
 			Deny:  0,
 		})
 
-		err := s.EditChannelPermission(channelID, discord.Overwrite{
-			ID:    5,
+		err := s.EditChannelPermission(channelID, overwriteID, api.EditChannelPermissionData{
 			Type:  discord.OverwriteMember,
 			Allow: 0,
 			Deny:  0,

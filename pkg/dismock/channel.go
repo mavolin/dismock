@@ -82,14 +82,11 @@ func (m *Mocker) DeleteChannel(id discord.Snowflake) {
 }
 
 // EditChannelPermission mocks a EditChannelPermission request.
-//
-// The ID field of the Overwrite must be set.
-func (m *Mocker) EditChannelPermission(channelID discord.Snowflake, o discord.Overwrite) {
-	m.MockAPI("EditChannelPermission", http.MethodPut, "/channels/"+channelID.String()+"/permissions/"+o.ID.String(),
+func (m *Mocker) EditChannelPermission(channelID, overwriteID discord.Snowflake, d api.EditChannelPermissionData) {
+	m.MockAPI("EditChannelPermission", http.MethodPut,
+		"/channels/"+channelID.String()+"/permissions/"+overwriteID.String(),
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
-			o.ID = 0
-
-			mockutil.CheckJSON(t, r.Body, new(discord.Overwrite), &o)
+			mockutil.CheckJSON(t, r.Body, new(api.EditChannelPermissionData), &d)
 			w.WriteHeader(http.StatusNoContent)
 		})
 }
