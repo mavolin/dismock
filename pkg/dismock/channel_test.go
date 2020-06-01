@@ -381,6 +381,22 @@ func TestMocker_PinMessage(t *testing.T) {
 	m.Eval()
 }
 
+func TestMocker_UnpinMessage(t *testing.T) {
+	m, s := NewSession(t)
+
+	var (
+		channelID discord.Snowflake = 123
+		messageID discord.Snowflake = 456
+	)
+
+	m.UnpinMessage(channelID, messageID)
+
+	err := s.UnpinMessage(channelID, messageID)
+	require.NoError(t, err)
+
+	m.Eval()
+}
+
 func TestMocker_AddRecipient(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		m, s := NewSession(t)

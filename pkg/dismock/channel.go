@@ -126,6 +126,11 @@ func (m *Mocker) PinMessage(channelID, messageID discord.Snowflake) {
 	m.MockAPI("PinMessage", http.MethodPut, "/channels/"+channelID.String()+"/pins/"+messageID.String(), nil)
 }
 
+// UnpinMessage mocks a UnpinMessage request.
+func (m *Mocker) UnpinMessage(channelID, messageID discord.Snowflake) {
+	m.MockAPI("UnpinMessage", http.MethodDelete, "/channels/"+channelID.String()+"/pins/"+messageID.String(), nil)
+}
+
 type addRecipientPayload struct {
 	AccessToken string `json:"access_token"`
 	Nickname    string `json:"nickname"`
