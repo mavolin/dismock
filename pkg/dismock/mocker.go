@@ -16,7 +16,7 @@ import (
 	"github.com/diamondburned/arikawa/session"
 	"github.com/diamondburned/arikawa/state"
 	"github.com/diamondburned/arikawa/utils/httputil/httpdriver"
-	"github.com/stretchr/testify/require"
+	"github.com/stretchr/testify/assert"
 )
 
 type (
@@ -68,10 +68,16 @@ func New(t *testing.T) *Mocker {
 		path := strings.TrimRight(r.URL.Path, "/")
 
 		methHandlers, ok := m.handlers[path]
-		require.True(t, ok, "unhandled path '"+path+"'")
+		if !assert.True(t, ok, "unhandled path '"+path+"'") {
+			w.WriteHeader(http.StatusNoContent)
+			return
+		}
 
 		h, ok := methHandlers[r.Method]
-		require.True(t, ok, "unhandled method '"+r.Method+"' on path '"+path+"'")
+		if !assert.True(t, ok, "unhandled method '"+r.Method+"' on path '"+path+"'") {
+			w.WriteHeader(http.StatusNoContent)
+			return
+		}
 
 		h[0].ServeHTTP(w, r)
 
