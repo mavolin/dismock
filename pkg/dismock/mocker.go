@@ -69,13 +69,13 @@ func New(t *testing.T) *Mocker {
 
 		methHandlers, ok := m.handlers[path]
 		if !assert.True(t, ok, "unhandled path '"+path+"'") {
-			w.WriteHeader(http.StatusNoContent)
+			w.WriteHeader(http.StatusNotFound)
 			return
 		}
 
 		h, ok := methHandlers[r.Method]
 		if !assert.True(t, ok, "unhandled method '"+r.Method+"' on path '"+path+"'") {
-			w.WriteHeader(http.StatusNoContent)
+			w.WriteHeader(http.StatusNotFound)
 			return
 		}
 
