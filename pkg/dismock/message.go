@@ -219,7 +219,8 @@ func (m *Mocker) messagesRange(
 
 // Message mocks a Message request.
 //
-// The ID field and the ChannelID field of the passed Message must be set.
+// The ID field and the ChannelID field of the passed discord.Message must be
+// set.
 //
 // This method will sanitize Message.Author.ID.
 func (m *Mocker) Message(msg discord.Message) {
@@ -233,7 +234,8 @@ func (m *Mocker) Message(msg discord.Message) {
 
 // SendText mocks a SendText request.
 //
-// The ChannelID field and the Content field of the passed Message must be set.
+// The ChannelID field and the Content field of the passed discord.Message must
+// be set.
 //
 // This method will sanitize Message.ID, Message.Author.ID, Message.Embeds.Type
 // and Message.Embeds.Color.
@@ -245,7 +247,8 @@ func (m *Mocker) SendText(msg discord.Message) {
 
 // SendEmbed mocks a SendEmbed request.
 //
-// The ChannelID field and the Embed field of the passed Message must be set.
+// The ChannelID field and the Embed field of the passed discord.Message must
+// be set.
 //
 // This method will sanitize Message.ID, Message.Author.ID, Message.Embeds.Type
 // and Message.Embeds.Color.
@@ -257,7 +260,8 @@ func (m *Mocker) SendEmbed(msg discord.Message) {
 
 // SendMessage mocks a SendMessage request.
 //
-// The ChannelID field and the Content field of the passed Message must be set.
+// The ChannelID field and the Content field of the passed discord.Message must
+// be set.
 //
 // This method will sanitize Message.ID, Message.Author.ID, Message.Embeds.Type
 // and Message.Embeds.Color.
@@ -292,7 +296,7 @@ func (m *Mocker) EditText(msg discord.Message) {
 // EditEmbed mocks a EditEmbed request.
 //
 // The ID field, the ChannelID field and the Embed[0] field of the passed
-// Message must be set.
+// discord.Message must be set.
 //
 // This method will sanitize Message.Author.ID, Message.Embed.Type and
 // Message.Embed.Color.
@@ -304,8 +308,8 @@ func (m *Mocker) EditEmbed(msg discord.Message) {
 
 // EditMessage mocks a EditMessage request.
 //
-// The ID field, the ChannelID field, the Content field of the passed Message
-// must be set.
+// The ID field, the ChannelID field, the Content field of the passed
+// discord.Message must be set.
 //
 // This method will sanitize Message.Author.ID, Message.Embed.Type and
 // Message.Embed.Color.
@@ -324,7 +328,8 @@ func (m *Mocker) EditMessage(embed *discord.Embed, msg discord.Message, suppress
 
 // EditMessageComplex mocks a EditMessageComplex request.
 //
-// The ID field and the ChannelID field of the passed Message must be set.
+// The ID field and the ChannelID field of the passed discord.Message must be
+// set.
 //
 // This method will sanitize Message.Author.ID, Message.Embed.Type and
 // Message.Embed.Color.
@@ -334,7 +339,8 @@ func (m *Mocker) EditMessageComplex(d api.EditMessageData, msg discord.Message) 
 
 // editMessageComplex mocks a EditMessageComplex request.
 //
-// The ID field and the ChannelID field of the passed Message must be set.
+// The ID field and the ChannelID field of the passed discord.Message must be
+// set.
 //
 // This method will sanitize Message.Author.ID, Message.Embed.Type and
 // Message.Embed.Color.

@@ -31,7 +31,7 @@ func (m *Mocker) Emojis(guildID discord.Snowflake, e []discord.Emoji) {
 
 // Emoji mocks a Emoji request.
 //
-// The ID field of the passed Emoji is required.
+// The ID field of the passed discord.Emoji is required.
 //
 // This method will sanitize Emoji.ID and Emoji.User.ID.
 func (m *Mocker) Emoji(guildID discord.Snowflake, e discord.Emoji) {
@@ -45,7 +45,7 @@ func (m *Mocker) Emoji(guildID discord.Snowflake, e discord.Emoji) {
 
 // CreateEmoji mocks a CreateEmoji request.
 //
-// The fields Name and RoleIDs of the passed Emoji must be set.
+// The fields Name and RoleIDs of the passed discord.Emoji must be set.
 //
 // This method will sanitize Emoji.ID and Emoji.User.ID.
 func (m *Mocker) CreateEmoji(guildID discord.Snowflake, d api.CreateEmojiData, e discord.Emoji) {

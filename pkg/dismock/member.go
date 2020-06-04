@@ -142,7 +142,7 @@ func (m *Mocker) membersAfter(guildID, after discord.Snowflake, name string, lim
 
 // AddMember mocks a AddMember request.
 //
-// The User.ID field of the passed member must be set.
+// The User.ID field of the passed discord.Member must be set.
 func (m *Mocker) AddMember(guildID discord.Snowflake, d api.AddMemberData, member discord.Member) {
 	m.MockAPI("AddMember", http.MethodPut, "/guilds/"+guildID.String()+"/members/"+member.User.ID.String(),
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
@@ -244,7 +244,7 @@ func (m *Mocker) Bans(guildID discord.Snowflake, b []discord.Ban) {
 
 // GetBan mocks a GetBan request.
 //
-// The User.ID field of the passed ban must be set.
+// The User.ID field of the passed discord.Ban must be set.
 func (m *Mocker) GetBan(guildID discord.Snowflake, b discord.Ban) {
 	m.MockAPI("GetBan", http.MethodGet, "/guilds/"+guildID.String()+"/bans/"+b.User.ID.String(),
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {

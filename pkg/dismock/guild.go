@@ -33,7 +33,7 @@ func (m *Mocker) CreateGuild(d api.CreateGuildData, g discord.Guild) {
 
 // Guild mocks a Guild request.
 //
-// The ID field of the passed Guild must be set.
+// The ID field of the passed discord.Guild must be set.
 //
 // This method will sanitize Guild.ID, Guild.OwnerID, Guild.Emojis.ID and
 // Guild.Roles.ID.
@@ -48,7 +48,7 @@ func (m *Mocker) Guild(g discord.Guild) {
 
 // GuildWithCount mocks a GuildWithCount request.
 //
-// The ID field of the passed Guild must be set.
+// The ID field of the passed discord.Guild must be set.
 //
 // This method will sanitize Guild.ID, Guild.OwnerID, Guild.Emojis.ID and
 // Guild.Roles.ID.
@@ -256,7 +256,7 @@ func (m *Mocker) LeaveGuild(id discord.Snowflake) {
 
 // ModifyGuild mocks a ModifyGuild request.
 //
-// The ID field of the passed guild must be set.
+// The ID field of the passed discord.Guild must be set.
 //
 // This method will sanitize Guild.ID, Guild.OwnerID, Guild.Emojis.ID and
 // Guild.Roles.ID.

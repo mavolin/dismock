@@ -2,7 +2,7 @@ package sanitize
 
 import "github.com/diamondburned/arikawa/discord"
 
-// User sanitizes a User.
+// User sanitizes a discord.User.
 //
 // This function will sanitize User.ID.
 func User(u discord.User, id discord.Snowflake) discord.User {

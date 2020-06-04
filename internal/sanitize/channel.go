@@ -2,7 +2,7 @@ package sanitize
 
 import "github.com/diamondburned/arikawa/discord"
 
-// Channel sanitizes a Channel.
+// Channel sanitizes a discord.Channel.
 //
 // This function will sanitize Channel.ID.
 func Channel(c discord.Channel, id discord.Snowflake) discord.Channel {
@@ -13,7 +13,7 @@ func Channel(c discord.Channel, id discord.Snowflake) discord.Channel {
 	return c
 }
 
-// Message sanitizes a message.
+// Message sanitizes a discord.Message.
 //
 // This function will sanitize Message.ID, Message.ChannelID and
 // Message.Author.ID.

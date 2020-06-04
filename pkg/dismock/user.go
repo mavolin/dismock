@@ -83,7 +83,7 @@ type createPrivateChannelPayload struct {
 
 // CreatePrivateChannel mocks a CreatePrivateChannel request.
 //
-// The c.DMRecipients[0] field of the passed Channel must be set.
+// The c.DMRecipients[0] field of the passed discord.Channel must be set.
 func (m *Mocker) CreatePrivateChannel(c discord.Channel) {
 	m.MockAPI("CreatePrivateChannel", http.MethodPost, "/users/@me/channels",
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {

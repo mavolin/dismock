@@ -58,7 +58,7 @@ func (m *Mocker) GuildWebhooks(guildID discord.Snowflake, webhooks []discord.Web
 
 // Webhook mocks a Webhook request.
 //
-// The ID field of the passed webhook must be set.
+// The ID field of the passed discord.Webhook must be set.
 //
 // This method will sanitize Webhook.User.ID and Webhook.ChannelID.
 func (m *Mocker) Webhook(webhook discord.Webhook) {
@@ -72,7 +72,7 @@ func (m *Mocker) Webhook(webhook discord.Webhook) {
 
 // WebhookWithToken mocks a WebhookWithToken request.
 //
-// The ID field and the Token field of the passed webhook must be set.
+// The ID field and the Token field of the passed discord.Webhook must be set.
 //
 // This method will sanitize Webhook.User.ID and Webhook.ChannelID.
 func (m *Mocker) WebhookWithToken(webhook discord.Webhook) {
@@ -86,7 +86,7 @@ func (m *Mocker) WebhookWithToken(webhook discord.Webhook) {
 
 // ModifyWebhook mocks a ModifyWebhook request.
 //
-// The ID field of the passed Webhook must be set.
+// The ID field of the passed discord.Webhook must be set.
 //
 // This method will sanitize Webhook.User.ID and Webhook.ChannelID.
 func (m *Mocker) ModifyWebhook(d api.ModifyWebhookData, webhook discord.Webhook) {
@@ -101,7 +101,7 @@ func (m *Mocker) ModifyWebhook(d api.ModifyWebhookData, webhook discord.Webhook)
 
 // ModifyWebhookWithToken mocks a ModifyWebhookWithToken request.
 //
-// The ID field and the Token field of the passed Webhook must be set.
+// The ID field and the Token field of the passed discord.Webhook must be set.
 //
 // This method will sanitize Webhook.User.ID and Webhook.ChannelID.
 func (m *Mocker) ModifyWebhookWithToken(d api.ModifyWebhookData, webhook discord.Webhook) {

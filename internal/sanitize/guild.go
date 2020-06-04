@@ -2,7 +2,7 @@ package sanitize
 
 import "github.com/diamondburned/arikawa/discord"
 
-// Guild sanitizes a Guild.
+// Guild sanitizes a discord.Guild.
 //
 // This function will sanitize Guild.ID, Guild.OwnerID, Guild.RulesChannelID,
 // Guild.PublicUpdatesChannelID, Guild.Emojis.ID and Guild.Roles.ID.
@@ -34,7 +34,7 @@ func Guild(g discord.Guild, id, ownerID, rulesChannelID, publicUpdatesChannelID 
 	return g
 }
 
-// GuildPreview sanitizes a GuildPreview.
+// GuildPreview sanitizes a discord.GuildPreview.
 //
 // This function will sanitize GuildPreview.ID, GuildPreview.Emojis.ID and
 // GuildPreview.Emojis.User.ID.
@@ -50,7 +50,7 @@ func GuildPreview(p discord.GuildPreview, id discord.Snowflake) discord.GuildPre
 	return p
 }
 
-// Role sanitizes a Role.
+// Role sanitizes a discord.Role.
 //
 // This function will sanitize Role.ID.
 func Role(r discord.Role, id discord.Snowflake) discord.Role {
@@ -61,7 +61,7 @@ func Role(r discord.Role, id discord.Snowflake) discord.Role {
 	return r
 }
 
-// Member sanitizes a Member.
+// Member sanitizes a discord.Member.
 //
 // This function will sanitize Member.User.ID.
 func Member(m discord.Member, userID discord.Snowflake) discord.Member {
@@ -72,7 +72,7 @@ func Member(m discord.Member, userID discord.Snowflake) discord.Member {
 	return m
 }
 
-// Ban sanitizes a Ban.
+// Ban sanitizes a discord.Ban.
 //
 // This function will sanitize Ban.User.ID.
 func Ban(b discord.Ban, userID discord.Snowflake) discord.Ban {
@@ -81,7 +81,7 @@ func Ban(b discord.Ban, userID discord.Snowflake) discord.Ban {
 	return b
 }
 
-// Integration sanitizes an Integration.
+// Integration sanitizes an discord.Integration.
 //
 // This function will sanitize Integration.ID, Integration.RoleID and
 // Integration.User.ID.

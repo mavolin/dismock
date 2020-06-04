@@ -31,7 +31,7 @@ func (m *Mocker) Channels(guildID discord.Snowflake, c []discord.Channel) {
 
 // CreateChannel mocks a CreateChannel request.
 //
-// The GuildID field of the passed Channel must be set.
+// The GuildID field of the passed discord.Channel must be set.
 //
 // This method will sanitize Channel.ID.
 func (m *Mocker) CreateChannel(d api.CreateChannelData, c discord.Channel) {
@@ -55,7 +55,7 @@ func (m *Mocker) MoveChannel(guildID discord.Snowflake, d []api.MoveChannelData)
 
 // Channel mocks a Channel request.
 //
-// The ID field of the passed Channel must be set.
+// The ID field of the passed discord.Channel must be set.
 //
 // This method will sanitize Channel.ID.
 func (m *Mocker) Channel(c discord.Channel) {

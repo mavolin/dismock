@@ -2,7 +2,7 @@ package sanitize
 
 import "github.com/diamondburned/arikawa/discord"
 
-// Invite sanitizes an Invite.
+// Invite sanitizes an discord.Invite.
 //
 // This function will sanitizeInvite. Guild.ID, Invite.Guild.OwnerID,
 // Invite.Guild.RulesChannelID, Invite.Guild.PublicUpdatesChannelID,
