@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
-	"time"
 
 	"github.com/diamondburned/arikawa/discord"
 	"github.com/stretchr/testify/assert"
@@ -314,12 +313,14 @@ func TestMocker_Eval(t *testing.T) {
 			"request0": {},
 		}
 
+		c := make(chan struct{})
+
 		go func() { // prevent failure caused by t.Fatal's runtime.Goexit
+			defer func() { c <- struct{}{} }()
 			m.Eval()
 		}()
 
-		// as the started goroutine is terminated, this is necessary to ensure execution
-		time.Sleep(500 * time.Microsecond)
+		<-c
 
 		assert.True(t, tMock.Failed())
 	})
