@@ -100,7 +100,7 @@ func TestMocker_Server(t *testing.T) {
 
 	t.Run("delete", func(t *testing.T) {
 		t.Run("only handler and only method", func(t *testing.T) {
-			m, _ := NewSession(t)
+			m := New(t)
 
 			m.handlers["/path"] = make(map[string][]Handler)
 
@@ -123,7 +123,7 @@ func TestMocker_Server(t *testing.T) {
 		})
 
 		t.Run("only handler multiple methods", func(t *testing.T) {
-			m, _ := NewSession(t)
+			m := New(t)
 
 			m.handlers["/path"] = make(map[string][]Handler)
 
@@ -151,7 +151,7 @@ func TestMocker_Server(t *testing.T) {
 		})
 
 		t.Run("multiple handlers", func(t *testing.T) {
-			m, _ := NewSession(t)
+			m := New(t)
 
 			m.handlers["/path"] = make(map[string][]Handler)
 
@@ -179,7 +179,7 @@ func TestMocker_Server(t *testing.T) {
 
 func TestMocker_Mock(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
-		m, _ := NewSession(t)
+		m := New(t)
 
 		invoked := false
 
@@ -199,7 +199,7 @@ func TestMocker_Mock(t *testing.T) {
 	})
 
 	t.Run("nil support", func(t *testing.T) {
-		m, _ := NewSession(t)
+		m := New(t)
 
 		method := http.MethodPost
 		path := "/path/123"
@@ -237,7 +237,7 @@ func TestMocker_Clone(t *testing.T) {
 }
 
 func TestMocker_CloneSession(t *testing.T) {
-	m1, _ := NewSession(new(testing.T))
+	m1 := New(new(testing.T))
 
 	m1.handlers["path"] = map[string][]Handler{
 		http.MethodGet: {},
@@ -256,7 +256,7 @@ func TestMocker_CloneSession(t *testing.T) {
 }
 
 func TestMocker_CloneState(t *testing.T) {
-	m1, _ := NewState(new(testing.T))
+	m1 := New(new(testing.T))
 
 	m1.handlers["path"] = map[string][]Handler{
 		http.MethodGet: {},
@@ -296,7 +296,7 @@ func TestMocker_Eval(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		tMock := new(testing.T)
 
-		m, _ := NewSession(tMock)
+		m := New(tMock)
 
 		m.Eval()
 
@@ -307,7 +307,7 @@ func TestMocker_Eval(t *testing.T) {
 	t.Run("failure", func(t *testing.T) {
 		tMock := new(testing.T)
 
-		m, _ := NewSession(tMock)
+		m := New(tMock)
 
 		m.handlers["path"] = map[string][]Handler{
 			"request0": {},
@@ -328,7 +328,7 @@ func TestMocker_Eval(t *testing.T) {
 
 func TestMocker_genUninvokedMsg(t *testing.T) {
 	t.Run("singular", func(t *testing.T) {
-		m, _ := NewSession(new(testing.T))
+		m := New(new(testing.T))
 
 		expect := "path:\n\trequest0: 1 uninvoked handler"
 
@@ -345,7 +345,7 @@ func TestMocker_genUninvokedMsg(t *testing.T) {
 	})
 
 	t.Run("plural", func(t *testing.T) {
-		m, _ := NewSession(new(testing.T))
+		m := New(new(testing.T))
 
 		expect := "path:\n\trequest0: 2 uninvoked handlers"
 

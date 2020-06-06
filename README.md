@@ -76,7 +76,7 @@ func TestBot_Ping(t *testing.T) {
 
 #### Advanced Testing
 
-Now imagine a bit more complicated command, that has variable messages and uses sub tests instead of a single test:
+Now imagine a bit more complicated test, that has multiple sub-tests:
 
 ```go
 func (b *Bot) Ping(e *gateway.MessageCreateEvent) (error) {
@@ -93,7 +93,7 @@ func (b *Bot) Ping(e *gateway.MessageCreateEvent) (error) {
 
 ```go
 func TestBot_Ping(t *testing.T) {
-    m, s := dismock.NewState(t)
+    m := dismock.New(t)
 
     var channelID discord.Snowflake = 123
 
