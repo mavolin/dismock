@@ -9,20 +9,16 @@
 -----
 
 Dismock is a library that aims to make mocking Discord's API requests as easy as winking.
-No more huge integration tests, that require a bot on some private server with little to no debug information.
+No more huge integration tests that require a bot on some private server with little to no debug information.
 
 Dismock is not limited to a specific Discord library, although it uses [arikawa](https://github.com/diamondburned/arikawa) as a foundation for its datatypes.
 
 ## Getting Started
 
-### arikawa
-
-Using dismock is fairly easy and few steps are necessary to create a mocker and a manipulated `Sessions` or `State`.
-
 #### Basic Testing
 
-Creating a mock is done, by simply calling the respective mock method of the Mocker, that belongs to the API request you made in your code.
-Below is a pretty basic example of a ping command and it's unit test.
+Creating a mock is done, by calling the respective mock method, that belongs to the API request you made in your code.
+Below is a basic example of a ping command and it's unit test.
 
 ```go
 func (b *Bot) Ping(e *gateway.MessageCreateEvent) (error) {
@@ -43,7 +39,7 @@ func TestBot_Ping(t *testing.T) {
     // if you want to use a Session and no State write:
     // m, s := dismock.NewSession(t)
 
-    var channelID discord.Snowflake = 123
+    var channelID discord.ChannelID = 123
 
     m.SendText(discord.Message{
         // from the doc of Mocker.SendText we know, that ChannelID and Content
@@ -95,7 +91,7 @@ func (b *Bot) Ping(e *gateway.MessageCreateEvent) (error) {
 func TestBot_Ping(t *testing.T) {
     m := dismock.New(t)
 
-    var channelID discord.Snowflake = 123
+    var channelID discord.ChannelID = 123
 
     m.SendText(discord.Message{
         ChannelID: channelID,
@@ -123,10 +119,8 @@ func TestBot_Ping(t *testing.T) {
 
 ### Using a Different Discord Library
 
-If you use another Discord API library than arikawa, there is a small additional step required:
-Instead of using `NewSession` or `NewState` use `New`.
-You can then use the `http.Client` of the `Mocker` as the client of your favorite lib.
-For discordgo that would look like this:
+Because the mocking is done on a network level, you are not limited to arikawa for mocking.
+When creating a `Mocker` just use `dismock.New` and use the `http.Client` of the mocker as client for a library of your choice.
 
 ```go
 m := dismock.New(t)
