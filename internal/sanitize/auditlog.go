@@ -33,12 +33,12 @@ func AuditLog(al discord.AuditLog) discord.AuditLog {
 // AuditLogEntry sanitizes an discord.AuditLogEntry.
 //
 // This function will sanitize AuditLogEntry.ID and AuditLogEntry.UserID.
-func AuditLogEntry(e discord.AuditLogEntry, id, userID discord.Snowflake) discord.AuditLogEntry {
-	if e.ID <= 0 {
+func AuditLogEntry(e discord.AuditLogEntry, id discord.AuditLogEntryID, userID discord.UserID) discord.AuditLogEntry {
+	if e.ID == 0 {
 		e.ID = id
 	}
 
-	if e.UserID <= 0 {
+	if e.UserID == 0 {
 		e.UserID = userID
 	}
 
