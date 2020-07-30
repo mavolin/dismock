@@ -139,5 +139,5 @@ That's it!
 
 ### Meta Requests
 
-Besides, regular calls to the API, you can also mock requests for metadata, i.e. images such as guild icons (`Mocker.GuildIconUrl`).
-In order for this to work, you must use the `http.Client` found in the `Mocker` struct, so that the mock server will be called, instead of Discord.
+Besides regular calls to the API you can also mock requests for metadata, i.e. images such as guild icons (`Mocker.GuildIcon`).
+In order for this to work, you need to use the `http.Client` found in the `Mocker` struct, so that the mock server will be called, instead of Discord.
