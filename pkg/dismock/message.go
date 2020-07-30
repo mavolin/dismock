@@ -20,7 +20,7 @@ import (
 //
 // This method will sanitize Message.ID, Message.ChannelID and
 // Message.Author.ID.
-func (m *Mocker) Messages(channelID discord.Snowflake, limit uint, messages []discord.Message) {
+func (m *Mocker) Messages(channelID discord.ChannelID, limit uint, messages []discord.Message) {
 	if messages == nil {
 		messages = []discord.Message{}
 	}
@@ -31,7 +31,7 @@ func (m *Mocker) Messages(channelID discord.Snowflake, limit uint, messages []di
 
 	const hardLimit uint = 100
 
-	var after discord.Snowflake
+	var after discord.MessageID
 
 	for i := 0; i <= len(messages)/int(hardLimit); i++ {
 		var (
@@ -68,7 +68,9 @@ func (m *Mocker) Messages(channelID discord.Snowflake, limit uint, messages []di
 //
 // This method will sanitize Message.ID, Message.ChannelID and
 // Message.Author.ID.
-func (m *Mocker) MessagesAround(channelID, around discord.Snowflake, limit uint, messages []discord.Message) {
+func (m *Mocker) MessagesAround(
+	channelID discord.ChannelID, around discord.MessageID, limit uint, messages []discord.Message,
+) {
 	switch {
 	case limit == 0:
 		limit = 50
@@ -91,7 +93,9 @@ func (m *Mocker) MessagesAround(channelID, around discord.Snowflake, limit uint,
 //
 // This method will sanitize Message.ID, Message.ChannelID and
 // Message.Author.ID.
-func (m *Mocker) MessagesBefore(channelID, before discord.Snowflake, limit uint, messages []discord.Message) {
+func (m *Mocker) MessagesBefore(
+	channelID discord.ChannelID, before discord.MessageID, limit uint, messages []discord.Message,
+) {
 	if messages == nil {
 		messages = []discord.Message{}
 	}
@@ -141,7 +145,9 @@ func (m *Mocker) MessagesBefore(channelID, before discord.Snowflake, limit uint,
 //
 // This method will sanitize Message.ID, Message.ChannelID and
 // Message.Author.ID.
-func (m *Mocker) MessagesAfter(channelID, after discord.Snowflake, limit uint, messages []discord.Message) {
+func (m *Mocker) MessagesAfter(
+	channelID discord.ChannelID, after discord.MessageID, limit uint, messages []discord.Message,
+) {
 	if messages == nil {
 		messages = []discord.Message{}
 	}
@@ -188,7 +194,8 @@ func (m *Mocker) MessagesAfter(channelID, after discord.Snowflake, limit uint, m
 // This method will sanitize Message.ID, Message.ChannelID and
 // Message.Author.ID.
 func (m *Mocker) messagesRange(
-	channelID, before, after, around discord.Snowflake, name string, limit uint, messages []discord.Message,
+	channelID discord.ChannelID, before, after, around discord.MessageID, name string, limit uint,
+	messages []discord.Message,
 ) {
 	for i, m := range messages {
 		messages[i] = sanitize.Message(m, 1, channelID, 1)
@@ -365,16 +372,16 @@ func (m *Mocker) editMessageComplex(name string, d api.EditMessageData, msg disc
 }
 
 // DeleteMessage mocks a DeleteMessage request.
-func (m *Mocker) DeleteMessage(channelID, messageID discord.Snowflake) {
+func (m *Mocker) DeleteMessage(channelID discord.ChannelID, messageID discord.MessageID) {
 	m.MockAPI("DeleteMessage", http.MethodDelete, "/channels/"+channelID.String()+"/messages/"+messageID.String(), nil)
 }
 
 type deleteMessagesPayload struct {
-	Messages []discord.Snowflake `json:"messages"`
+	Messages []discord.MessageID `json:"messages"`
 }
 
 // DeleteMessages mocks a DeleteMessages request.
-func (m *Mocker) DeleteMessages(channelID discord.Snowflake, messageIDs []discord.Snowflake) {
+func (m *Mocker) DeleteMessages(channelID discord.ChannelID, messageIDs []discord.MessageID) {
 	m.MockAPI("DeleteMessages", http.MethodPost, "/channels/"+channelID.String()+"/messages/bulk-delete",
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
 			expect := deleteMessagesPayload{

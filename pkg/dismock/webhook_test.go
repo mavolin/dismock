@@ -6,6 +6,7 @@ import (
 	"github.com/diamondburned/arikawa/api"
 	"github.com/diamondburned/arikawa/discord"
 	"github.com/diamondburned/arikawa/utils/json/option"
+	"github.com/diamondburned/arikawa/webhook"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
@@ -64,7 +65,7 @@ func TestMocker_CreateWebhook(t *testing.T) {
 func TestMocker_ChannelWebhooks(t *testing.T) {
 	m, s := NewSession(t)
 
-	var channelID discord.Snowflake = 123
+	var channelID discord.ChannelID = 123
 
 	expect := []discord.Webhook{
 		{
@@ -93,7 +94,7 @@ func TestMocker_GuildWebhooks(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		m, s := NewSession(t)
 
-		var guildID discord.Snowflake = 123
+		var guildID discord.GuildID = 123
 
 		expect := []discord.Webhook{
 			{
@@ -107,7 +108,7 @@ func TestMocker_GuildWebhooks(t *testing.T) {
 		for i, w := range expect {
 			expect[i] = sanitize.Webhook(w, 1, 1, 1)
 
-			if w.GuildID <= 0 {
+			if w.GuildID == 0 {
 				expect[i].GuildID = guildID
 			}
 		}
@@ -125,7 +126,7 @@ func TestMocker_GuildWebhooks(t *testing.T) {
 	t.Run("auto guild id", func(t *testing.T) {
 		m, s := NewSession(t)
 
-		var guildID discord.Snowflake = 123
+		var guildID discord.GuildID = 123
 
 		in := []discord.Webhook{
 			{
@@ -167,7 +168,7 @@ func TestMocker_Webhook(t *testing.T) {
 }
 
 func TestMocker_WebhookWithToken(t *testing.T) {
-	m, s := NewSession(t)
+	m := New(t)
 
 	expect := sanitize.Webhook(discord.Webhook{
 		ID:    456,
@@ -176,7 +177,7 @@ func TestMocker_WebhookWithToken(t *testing.T) {
 
 	m.WebhookWithToken(expect)
 
-	actual, err := s.WebhookWithToken(expect.ID, expect.Token)
+	actual, err := webhook.Get(expect.ID, expect.Token)
 	require.NoError(t, err)
 
 	assert.Equal(t, expect, *actual)
@@ -233,7 +234,7 @@ func TestMocker_ModifyWebhook(t *testing.T) {
 
 func TestMocker_ModifyWebhookWithTokenWithToken(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
-		m, s := NewSession(t)
+		m := New(t)
 
 		data := api.ModifyWebhookData{
 			Name: option.NewString("abc"),
@@ -247,7 +248,7 @@ func TestMocker_ModifyWebhookWithTokenWithToken(t *testing.T) {
 
 		m.ModifyWebhookWithToken(data, expect)
 
-		actual, err := s.ModifyWebhookWithToken(expect.ID, expect.Token, data)
+		actual, err := webhook.Modify(expect.ID, expect.Token, data)
 		require.NoError(t, err)
 
 		assert.Equal(t, expect, *actual)
@@ -258,7 +259,7 @@ func TestMocker_ModifyWebhookWithTokenWithToken(t *testing.T) {
 	t.Run("failure", func(t *testing.T) {
 		tMock := new(testing.T)
 
-		m, s := NewSession(tMock)
+		m := New(tMock)
 
 		expect := sanitize.Webhook(discord.Webhook{
 			ID:    456,
@@ -270,7 +271,7 @@ func TestMocker_ModifyWebhookWithTokenWithToken(t *testing.T) {
 			Name: option.NewString("abc"),
 		}, expect)
 
-		actual, err := s.ModifyWebhookWithToken(expect.ID, expect.Token, api.ModifyWebhookData{
+		actual, err := webhook.Modify(expect.ID, expect.Token, api.ModifyWebhookData{
 			Name: option.NewString("cba"),
 		})
 		require.NoError(t, err)
@@ -283,7 +284,7 @@ func TestMocker_ModifyWebhookWithTokenWithToken(t *testing.T) {
 func TestMocker_DeleteWebhook(t *testing.T) {
 	m, s := NewSession(t)
 
-	var id discord.Snowflake = 123
+	var id discord.WebhookID = 123
 
 	m.DeleteWebhook(id)
 
@@ -294,16 +295,16 @@ func TestMocker_DeleteWebhook(t *testing.T) {
 }
 
 func TestMocker_DeleteWebhookWithToken(t *testing.T) {
-	m, s := NewSession(t)
+	m := New(t)
 
 	var (
-		id    discord.Snowflake = 123
+		id    discord.WebhookID = 123
 		token                   = "abc"
 	)
 
 	m.DeleteWebhookWithToken(id, token)
 
-	err := s.DeleteWebhookWithToken(id, token)
+	err := webhook.Delete(id, token)
 	require.NoError(t, err)
 
 	m.Eval()

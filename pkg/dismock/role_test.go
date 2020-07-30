@@ -14,9 +14,9 @@ func TestMocker_AddRole(t *testing.T) {
 	m, s := NewSession(t)
 
 	var (
-		guildID discord.Snowflake = 123
-		userID  discord.Snowflake = 456
-		roleID  discord.Snowflake = 789
+		guildID discord.GuildID = 123
+		userID  discord.UserID  = 456
+		roleID  discord.RoleID  = 789
 	)
 
 	m.AddRole(guildID, userID, roleID)
@@ -31,9 +31,9 @@ func TestMocker_RemoveRole(t *testing.T) {
 	m, s := NewSession(t)
 
 	var (
-		guildID discord.Snowflake = 123
-		userID  discord.Snowflake = 456
-		roleID  discord.Snowflake = 789
+		guildID discord.GuildID = 123
+		userID  discord.UserID  = 456
+		roleID  discord.RoleID  = 789
 	)
 
 	m.RemoveRole(guildID, userID, roleID)
@@ -47,7 +47,7 @@ func TestMocker_RemoveRole(t *testing.T) {
 func TestMocker_Roles(t *testing.T) {
 	m, s := NewSession(t)
 
-	var guildID discord.Snowflake = 123
+	var guildID discord.GuildID = 123
 
 	expect := []discord.Role{
 		{
@@ -72,7 +72,7 @@ func TestMocker_CreateRole(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		m, s := NewSession(t)
 
-		var guildID discord.Snowflake = 123
+		var guildID discord.GuildID = 123
 
 		data := api.CreateRoleData{
 			Name: "abc",
@@ -98,7 +98,7 @@ func TestMocker_CreateRole(t *testing.T) {
 
 		m, s := NewSession(tMock)
 
-		var guildID discord.Snowflake = 123
+		var guildID discord.GuildID = 123
 
 		expect := discord.Role{
 			ID:   456,
@@ -123,7 +123,7 @@ func TestMocker_MoveRole(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		m, s := NewSession(t)
 
-		var guildID discord.Snowflake = 123
+		var guildID discord.GuildID = 123
 
 		data := []api.MoveRoleData{
 			{
@@ -164,7 +164,7 @@ func TestMocker_MoveRole(t *testing.T) {
 
 		m, s := NewSession(tMock)
 
-		var guildID discord.Snowflake = 123
+		var guildID discord.GuildID = 123
 
 		expect := []discord.Role{
 			{
@@ -211,7 +211,7 @@ func TestMocker_ModifyRole(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		m, s := NewSession(t)
 
-		var guildID discord.Snowflake = 123
+		var guildID discord.GuildID = 123
 
 		data := api.ModifyRoleData{
 			Name: option.NewNullableString("abc"),
@@ -238,7 +238,7 @@ func TestMocker_ModifyRole(t *testing.T) {
 
 		m, s := NewSession(tMock)
 
-		var guildID discord.Snowflake = 123
+		var guildID discord.GuildID = 123
 
 		expect := discord.Role{
 			ID:       456,
@@ -264,8 +264,8 @@ func TestMocker_DeleteRole(t *testing.T) {
 	m, s := NewSession(t)
 
 	var (
-		guildID discord.Snowflake = 123
-		roleID  discord.Snowflake = 456
+		guildID discord.GuildID = 123
+		roleID  discord.RoleID  = 456
 	)
 
 	m.DeleteRole(guildID, roleID)

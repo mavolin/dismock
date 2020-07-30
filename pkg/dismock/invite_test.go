@@ -52,7 +52,7 @@ func TestMocker_ChannelInvites(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		m, s := NewSession(t)
 
-		var channelID discord.Snowflake = 123
+		var channelID discord.ChannelID = 123
 
 		expect := []discord.Invite{
 			{
@@ -80,7 +80,7 @@ func TestMocker_ChannelInvites(t *testing.T) {
 	t.Run("nil invites", func(t *testing.T) {
 		m, s := NewSession(t)
 
-		var channelID discord.Snowflake = 123
+		var channelID discord.ChannelID = 123
 
 		//noinspection GoPreferNilSlice
 		expect := []discord.Invite{}
@@ -100,7 +100,7 @@ func TestMocker_GuildInvites(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		m, s := NewSession(t)
 
-		var guildID discord.Snowflake = 123
+		var guildID discord.GuildID = 123
 
 		expect := []discord.Invite{
 			{
@@ -128,7 +128,7 @@ func TestMocker_GuildInvites(t *testing.T) {
 	t.Run("nil invites", func(t *testing.T) {
 		m, s := NewSession(t)
 
-		var guildID discord.Snowflake = 123
+		var guildID discord.GuildID = 123
 
 		//noinspection GoPreferNilSlice
 		expect := []discord.Invite{}

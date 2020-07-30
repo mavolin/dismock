@@ -7,6 +7,8 @@ import (
 
 	"github.com/diamondburned/arikawa/api"
 	"github.com/diamondburned/arikawa/discord"
+	"github.com/diamondburned/arikawa/utils/httputil/httpdriver"
+	"github.com/diamondburned/arikawa/webhook"
 
 	"github.com/mavolin/dismock/internal/mockutil"
 	"github.com/mavolin/dismock/internal/sanitize"
@@ -72,7 +74,7 @@ func (m *Mocker) sendMessageComplex(name string, d api.SendMessageData, msg disc
 // message to be delivered.
 //
 // This method will sanitize Message.ID and Message.Author.ID.
-func (m *Mocker) ExecuteWebhook(webhookID discord.Snowflake, token string, d api.ExecuteWebhookData) {
+func (m *Mocker) ExecuteWebhook(webhookID discord.WebhookID, token string, d api.ExecuteWebhookData) {
 	m.executeWebhook(webhookID, token, false, d, discord.Message{})
 }
 
@@ -81,7 +83,7 @@ func (m *Mocker) ExecuteWebhook(webhookID discord.Snowflake, token string, d api
 //
 // This method will sanitize Message.ID and Message.Author.ID.
 func (m *Mocker) ExecuteWebhookAndWait(
-	webhookID discord.Snowflake, token string, d api.ExecuteWebhookData, msg discord.Message,
+	webhookID discord.WebhookID, token string, d api.ExecuteWebhookData, msg discord.Message,
 ) {
 	m.executeWebhook(webhookID, token, true, d, msg)
 }
@@ -90,9 +92,11 @@ func (m *Mocker) ExecuteWebhookAndWait(
 //
 // This method will sanitize Message.ID and Message.Author.ID.
 func (m *Mocker) executeWebhook(
-	webhookID discord.Snowflake, token string, wait bool, d api.ExecuteWebhookData, msg discord.Message,
+	webhookID discord.WebhookID, token string, wait bool, d api.ExecuteWebhookData, msg discord.Message,
 ) {
 	msg = sanitize.Message(msg, 1, 1, 1)
+
+	webhook.DefaultHTTPClient.Client = httpdriver.WrapClient(*m.Client)
 
 	m.MockAPI("ExecuteWebhook", http.MethodPost, "/webhooks/"+webhookID.String()+"/"+token,
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {

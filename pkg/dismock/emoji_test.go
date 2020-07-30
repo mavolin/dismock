@@ -15,7 +15,7 @@ func TestMocker_Emojis(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		m, s := NewSession(t)
 
-		var guildID discord.Snowflake = 123
+		var guildID discord.GuildID = 123
 
 		expect := []discord.Emoji{
 			{
@@ -43,7 +43,7 @@ func TestMocker_Emojis(t *testing.T) {
 	t.Run("nil emojis", func(t *testing.T) {
 		m, s := NewSession(t)
 
-		var guildID discord.Snowflake = 123
+		var guildID discord.GuildID = 123
 
 		//noinspection GoPreferNilSlice
 		expect := []discord.Emoji{}
@@ -62,7 +62,7 @@ func TestMocker_Emojis(t *testing.T) {
 func TestMocker_Emoji(t *testing.T) {
 	m, s := NewSession(t)
 
-	var guildID discord.Snowflake = 123
+	var guildID discord.GuildID = 123
 
 	expect := sanitize.Emoji(discord.Emoji{
 		ID:   456,
@@ -84,8 +84,8 @@ func TestMocker_CreateEmoji(t *testing.T) {
 		m, s := NewSession(t)
 
 		var (
-			guildID discord.Snowflake = 123
-			data                      = api.CreateEmojiData{
+			guildID discord.GuildID = 123
+			data                    = api.CreateEmojiData{
 				Name: "dismock",
 				Image: api.Image{
 					ContentType: "image/png",
@@ -97,7 +97,7 @@ func TestMocker_CreateEmoji(t *testing.T) {
 		expect := sanitize.Emoji(discord.Emoji{
 			ID:      456,
 			Name:    data.Name,
-			RoleIDs: []discord.Snowflake{789},
+			RoleIDs: []discord.RoleID{789},
 		}, 1, 1)
 
 		m.CreateEmoji(guildID, data, expect)
@@ -115,7 +115,7 @@ func TestMocker_CreateEmoji(t *testing.T) {
 
 		m, s := NewSession(tMock)
 
-		var guildID discord.Snowflake = 123
+		var guildID discord.GuildID = 123
 
 		expect := sanitize.Emoji(discord.Emoji{
 			ID:   456,
@@ -149,9 +149,9 @@ func TestMocker_ModifyEmoji(t *testing.T) {
 		m, s := NewSession(t)
 
 		var (
-			guildID discord.Snowflake = 123
-			emojiID discord.Snowflake = 456
-			data                      = api.ModifyEmojiData{
+			guildID discord.GuildID = 123
+			emojiID discord.EmojiID = 456
+			data                    = api.ModifyEmojiData{
 				Name: "abc",
 			}
 		)
@@ -170,16 +170,16 @@ func TestMocker_ModifyEmoji(t *testing.T) {
 		m, s := NewSession(tMock)
 
 		var (
-			guildID discord.Snowflake = 123
-			emojiID discord.Snowflake = 456
+			guildID discord.GuildID = 123
+			emojiID discord.EmojiID = 456
 		)
 
 		m.ModifyEmoji(guildID, emojiID, api.ModifyEmojiData{
-			Roles: &[]discord.Snowflake{789, 012},
+			Roles: &[]discord.RoleID{789, 012},
 		})
 
 		err := s.ModifyEmoji(guildID, emojiID, api.ModifyEmojiData{
-			Roles: &[]discord.Snowflake{345, 678},
+			Roles: &[]discord.RoleID{345, 678},
 		})
 		require.NoError(t, err)
 
@@ -191,8 +191,8 @@ func TestMocker_DeleteEmoji(t *testing.T) {
 	m, s := NewSession(t)
 
 	var (
-		guildID discord.Snowflake = 123
-		emojiID discord.Snowflake = 456
+		guildID discord.GuildID = 123
+		emojiID discord.EmojiID = 456
 	)
 
 	m.DeleteEmoji(guildID, emojiID)

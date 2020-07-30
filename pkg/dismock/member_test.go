@@ -14,7 +14,7 @@ import (
 func TestMocker_Member(t *testing.T) {
 	m, s := NewSession(t)
 
-	var guildID discord.Snowflake = 123
+	var guildID discord.GuildID = 123
 
 	expect := discord.Member{
 		User: discord.User{
@@ -55,14 +55,14 @@ func TestMocker_Members(t *testing.T) {
 			t.Run(c.name, func(t *testing.T) {
 				m, s := NewSession(t)
 
-				var guildID discord.Snowflake = 123
+				var guildID discord.GuildID = 123
 
 				expect := make([]discord.Member, c.members)
 
 				for i := 0; i < c.members; i++ {
 					expect[i] = discord.Member{
 						User: discord.User{
-							ID: discord.Snowflake(rand.Int63()),
+							ID: discord.UserID(rand.Int63()),
 						},
 					}
 				}
@@ -82,7 +82,7 @@ func TestMocker_Members(t *testing.T) {
 	t.Run("nil members", func(t *testing.T) {
 		m, s := NewSession(t)
 
-		var guildID discord.Snowflake = 123
+		var guildID discord.GuildID = 123
 
 		var expect []discord.Member
 
@@ -129,8 +129,8 @@ func TestMocker_MembersAfter(t *testing.T) {
 				m, s := NewSession(t)
 
 				var (
-					guildID discord.Snowflake = 123
-					after   discord.Snowflake = 456
+					guildID discord.GuildID = 123
+					after   discord.UserID  = 456
 				)
 
 				expect := make([]discord.Member, c.members)
@@ -138,7 +138,7 @@ func TestMocker_MembersAfter(t *testing.T) {
 				for i := 0; i < c.members; i++ {
 					expect[i] = discord.Member{
 						User: discord.User{
-							ID: discord.Snowflake(rand.Int63()),
+							ID: discord.UserID(rand.Int63()),
 						},
 					}
 				}
@@ -158,7 +158,7 @@ func TestMocker_MembersAfter(t *testing.T) {
 	t.Run("nil members", func(t *testing.T) {
 		m, s := NewSession(t)
 
-		var guildID discord.Snowflake = 123
+		var guildID discord.GuildID = 123
 
 		var expect []discord.Member
 
@@ -213,7 +213,7 @@ func TestMocker_AddMember(t *testing.T) {
 		m, s := NewSession(t)
 
 		var (
-			guildID discord.Snowflake = 123
+			guildID discord.GuildID = 123
 
 			data = api.AddMemberData{
 				Token: "abc",
@@ -241,7 +241,7 @@ func TestMocker_AddMember(t *testing.T) {
 
 		m, s := NewSession(tMock)
 
-		var guildID discord.Snowflake = 123
+		var guildID discord.GuildID = 123
 
 		expect := discord.Member{
 			User: discord.User{
@@ -268,8 +268,8 @@ func TestMocker_ModifyMember(t *testing.T) {
 		m, s := NewSession(t)
 
 		var (
-			guildID discord.Snowflake = 123
-			userID  discord.Snowflake = 456
+			guildID discord.GuildID = 123
+			userID  discord.UserID  = 456
 
 			data = api.ModifyMemberData{
 				Nick: option.NewString("abc"),
@@ -290,8 +290,8 @@ func TestMocker_ModifyMember(t *testing.T) {
 		m, s := NewSession(tMock)
 
 		var (
-			guildID discord.Snowflake = 123
-			userID  discord.Snowflake = 465
+			guildID discord.GuildID = 123
+			userID  discord.UserID  = 465
 		)
 
 		m.ModifyMember(guildID, userID, api.ModifyMemberData{
@@ -329,14 +329,14 @@ func TestMocker_PruneCount(t *testing.T) {
 			name: "empty roles",
 			data: api.PruneCountData{
 				Days:          5,
-				IncludedRoles: []discord.Snowflake{},
+				IncludedRoles: []discord.RoleID{},
 			},
 		},
 		{
 			name: "roles",
 			data: api.PruneCountData{
 				Days:          5,
-				IncludedRoles: []discord.Snowflake{123, 456},
+				IncludedRoles: []discord.RoleID{123, 456},
 			},
 		},
 	}
@@ -346,7 +346,7 @@ func TestMocker_PruneCount(t *testing.T) {
 			t.Run(c.name, func(t *testing.T) {
 				m, s := NewSession(t)
 
-				var guildID discord.Snowflake = 123
+				var guildID discord.GuildID = 123
 
 				var expect uint = 25
 
@@ -367,18 +367,18 @@ func TestMocker_PruneCount(t *testing.T) {
 
 		m, s := NewSession(tMock)
 
-		var guildID discord.Snowflake = 123
+		var guildID discord.GuildID = 123
 
 		var expect uint = 25
 
 		m.PruneCount(guildID, api.PruneCountData{
 			Days:          5,
-			IncludedRoles: []discord.Snowflake{},
+			IncludedRoles: []discord.RoleID{},
 		}, expect)
 
 		actual, err := s.PruneCount(guildID, api.PruneCountData{
 			Days:          7,
-			IncludedRoles: []discord.Snowflake{},
+			IncludedRoles: []discord.RoleID{},
 		})
 		require.NoError(t, err)
 
@@ -409,14 +409,14 @@ func TestMocker_Prune(t *testing.T) {
 			name: "empty roles",
 			data: api.PruneData{
 				Days:          5,
-				IncludedRoles: []discord.Snowflake{},
+				IncludedRoles: []discord.RoleID{},
 			},
 		},
 		{
 			name: "roles",
 			data: api.PruneData{
 				Days:          5,
-				IncludedRoles: []discord.Snowflake{123, 456},
+				IncludedRoles: []discord.RoleID{123, 456},
 			},
 		},
 	}
@@ -426,7 +426,7 @@ func TestMocker_Prune(t *testing.T) {
 			t.Run(c.name, func(t *testing.T) {
 				m, s := NewSession(t)
 
-				var guildID discord.Snowflake = 123
+				var guildID discord.GuildID = 123
 
 				var expect uint = 25
 
@@ -447,20 +447,20 @@ func TestMocker_Prune(t *testing.T) {
 
 		m, s := NewSession(tMock)
 
-		var guildID discord.Snowflake = 123
+		var guildID discord.GuildID = 123
 
 		var expect uint = 25
 
 		m.Prune(guildID, api.PruneData{
 			Days:          5,
 			ReturnCount:   true,
-			IncludedRoles: []discord.Snowflake{},
+			IncludedRoles: []discord.RoleID{},
 		}, expect)
 
 		actual, err := s.Prune(guildID, api.PruneData{
 			Days:          7,
 			ReturnCount:   true,
-			IncludedRoles: []discord.Snowflake{},
+			IncludedRoles: []discord.RoleID{},
 		})
 		require.NoError(t, err)
 
@@ -473,8 +473,8 @@ func TestMocker_Kick(t *testing.T) {
 	m, s := NewSession(t)
 
 	var (
-		guildID discord.Snowflake = 123
-		userID  discord.Snowflake = 456
+		guildID discord.GuildID = 123
+		userID  discord.UserID  = 456
 	)
 
 	m.Kick(guildID, userID)
@@ -488,7 +488,7 @@ func TestMocker_Kick(t *testing.T) {
 func TestMocker_Bans(t *testing.T) {
 	m, s := NewSession(t)
 
-	var guildID discord.Snowflake = 123
+	var guildID discord.GuildID = 123
 
 	expect := []discord.Ban{
 		{
@@ -516,7 +516,7 @@ func TestMocker_Bans(t *testing.T) {
 func TestMocker_GetBan(t *testing.T) {
 	m, s := NewSession(t)
 
-	var guildID discord.Snowflake = 123
+	var guildID discord.GuildID = 123
 
 	expect := discord.Ban{
 		User: discord.User{
@@ -566,8 +566,8 @@ func TestMocker_Ban(t *testing.T) {
 				m, s := NewSession(t)
 
 				var (
-					guildID discord.Snowflake = 123
-					userID  discord.Snowflake = 456
+					guildID discord.GuildID = 123
+					userID  discord.UserID  = 456
 				)
 
 				m.Ban(guildID, userID, c.data)
@@ -585,8 +585,8 @@ func TestMocker_Unban(t *testing.T) {
 	m, s := NewSession(t)
 
 	var (
-		guildID discord.Snowflake = 123
-		userID  discord.Snowflake = 456
+		guildID discord.GuildID = 123
+		userID  discord.UserID  = 456
 	)
 
 	m.Unban(guildID, userID)

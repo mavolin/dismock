@@ -14,7 +14,7 @@ import (
 // Channels mocks a channels request.
 //
 // This method will sanitize Channel.ID.
-func (m *Mocker) Channels(guildID discord.Snowflake, c []discord.Channel) {
+func (m *Mocker) Channels(guildID discord.GuildID, c []discord.Channel) {
 	if c == nil {
 		c = []discord.Channel{}
 	}
@@ -45,7 +45,7 @@ func (m *Mocker) CreateChannel(d api.CreateChannelData, c discord.Channel) {
 }
 
 // MoveChannel mocks a MoveChannel request.
-func (m *Mocker) MoveChannel(guildID discord.Snowflake, d []api.MoveChannelData) {
+func (m *Mocker) MoveChannel(guildID discord.GuildID, d []api.MoveChannelData) {
 	m.MockAPI("CreateChannel", http.MethodPatch, "/guilds/"+guildID.String()+"/channels",
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
 			mockutil.CheckJSON(t, r.Body, &[]api.MoveChannelData{}, &d)
@@ -68,7 +68,7 @@ func (m *Mocker) Channel(c discord.Channel) {
 }
 
 // ModifyChannel mocks a ModifyChannel request.
-func (m *Mocker) ModifyChannel(id discord.Snowflake, d api.ModifyChannelData) {
+func (m *Mocker) ModifyChannel(id discord.ChannelID, d api.ModifyChannelData) {
 	m.MockAPI("ModifyChannel", http.MethodPatch, "/channels/"+id.String(),
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
 			mockutil.CheckJSON(t, r.Body, new(api.ModifyChannelData), &d)
@@ -77,12 +77,14 @@ func (m *Mocker) ModifyChannel(id discord.Snowflake, d api.ModifyChannelData) {
 }
 
 // DeleteChannel mocks a DeleteChannel request.
-func (m *Mocker) DeleteChannel(id discord.Snowflake) {
+func (m *Mocker) DeleteChannel(id discord.ChannelID) {
 	m.MockAPI("DeleteChannel", http.MethodDelete, "/channels/"+id.String(), nil)
 }
 
 // EditChannelPermission mocks a EditChannelPermission request.
-func (m *Mocker) EditChannelPermission(channelID, overwriteID discord.Snowflake, d api.EditChannelPermissionData) {
+func (m *Mocker) EditChannelPermission(
+	channelID discord.ChannelID, overwriteID discord.Snowflake, d api.EditChannelPermissionData,
+) {
 	m.MockAPI("EditChannelPermission", http.MethodPut,
 		"/channels/"+channelID.String()+"/permissions/"+overwriteID.String(),
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
@@ -92,13 +94,13 @@ func (m *Mocker) EditChannelPermission(channelID, overwriteID discord.Snowflake,
 }
 
 // DeleteChannelPermission mocks a DeleteChannelPermission request.
-func (m *Mocker) DeleteChannelPermission(channelID, overwriteID discord.Snowflake) {
+func (m *Mocker) DeleteChannelPermission(channelID discord.ChannelID, overwriteID discord.Snowflake) {
 	m.MockAPI("DeleteChannelPermission", http.MethodDelete,
 		"/channels/"+channelID.String()+"/permissions/"+overwriteID.String(), nil)
 }
 
 // Typing mocks a Typing request.
-func (m *Mocker) Typing(channelID discord.Snowflake) {
+func (m *Mocker) Typing(channelID discord.ChannelID) {
 	m.MockAPI("Typing", http.MethodPost, "/channels/"+channelID.String()+"/typing", nil)
 }
 
@@ -106,7 +108,7 @@ func (m *Mocker) Typing(channelID discord.Snowflake) {
 //
 // This method will sanitize Message.ID, Message.ChannelID and
 // Message.Author.ID.
-func (m *Mocker) PinnedMessages(channelID discord.Snowflake, messages []discord.Message) {
+func (m *Mocker) PinnedMessages(channelID discord.ChannelID, messages []discord.Message) {
 	if messages == nil {
 		messages = []discord.Message{}
 	}
@@ -122,12 +124,12 @@ func (m *Mocker) PinnedMessages(channelID discord.Snowflake, messages []discord.
 }
 
 // PinMessage mocks a PinMessage request.
-func (m *Mocker) PinMessage(channelID, messageID discord.Snowflake) {
+func (m *Mocker) PinMessage(channelID discord.ChannelID, messageID discord.MessageID) {
 	m.MockAPI("PinMessage", http.MethodPut, "/channels/"+channelID.String()+"/pins/"+messageID.String(), nil)
 }
 
 // UnpinMessage mocks a UnpinMessage request.
-func (m *Mocker) UnpinMessage(channelID, messageID discord.Snowflake) {
+func (m *Mocker) UnpinMessage(channelID discord.ChannelID, messageID discord.MessageID) {
 	m.MockAPI("UnpinMessage", http.MethodDelete, "/channels/"+channelID.String()+"/pins/"+messageID.String(), nil)
 }
 
@@ -137,7 +139,7 @@ type addRecipientPayload struct {
 }
 
 // AddRecipient mocks a AddRecipient request.
-func (m *Mocker) AddRecipient(channelID, userID discord.Snowflake, accessToken, nickname string) {
+func (m *Mocker) AddRecipient(channelID discord.ChannelID, userID discord.UserID, accessToken, nickname string) {
 	m.MockAPI("PinMessage", http.MethodPut, "/channels/"+channelID.String()+"/recipients/"+userID.String(),
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
 			expect := addRecipientPayload{
@@ -152,12 +154,12 @@ func (m *Mocker) AddRecipient(channelID, userID discord.Snowflake, accessToken, 
 }
 
 // RemoveRecipient mocks a RemoveRecipient request.
-func (m *Mocker) RemoveRecipient(channelID, userID discord.Snowflake) {
+func (m *Mocker) RemoveRecipient(channelID discord.ChannelID, userID discord.UserID) {
 	m.MockAPI("RemoveRecipient", http.MethodDelete, "/channels/"+channelID.String()+"/recipients/"+userID.String(), nil)
 }
 
 // Ack mocks a Ack request.
-func (m *Mocker) Ack(channelID, messageID discord.Snowflake, send, ret api.Ack) {
+func (m *Mocker) Ack(channelID discord.ChannelID, messageID discord.MessageID, send, ret api.Ack) {
 	m.MockAPI("Ack", http.MethodPost, "/channels/"+channelID.String()+"/messages/"+messageID.String()+"/ack",
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
 			mockutil.CheckJSON(t, r.Body, new(api.Ack), &send)
