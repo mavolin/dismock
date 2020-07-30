@@ -12,8 +12,8 @@ func TestMocker_React(t *testing.T) {
 	m, s := NewSession(t)
 
 	var (
-		channelID discord.Snowflake = 123
-		messageID discord.Snowflake = 456
+		channelID discord.ChannelID = 123
+		messageID discord.MessageID = 456
 		emoji                       = "abc"
 	)
 
@@ -29,8 +29,8 @@ func TestMocker_Unreact(t *testing.T) {
 	m, s := NewSession(t)
 
 	var (
-		channelID discord.Snowflake = 123
-		messageID discord.Snowflake = 456
+		channelID discord.ChannelID = 123
+		messageID discord.MessageID = 456
 		emoji                       = "abc"
 	)
 
@@ -63,8 +63,8 @@ func TestMocker_Reactions(t *testing.T) {
 				m, s := NewSession(t)
 
 				var (
-					channelID discord.Snowflake = 123
-					messageID discord.Snowflake = 456
+					channelID discord.ChannelID = 123
+					messageID discord.MessageID = 456
 					emoji                       = "abc"
 				)
 
@@ -120,8 +120,8 @@ func TestMocker_Reactions(t *testing.T) {
 		m, s := NewSession(t)
 
 		var (
-			channelID discord.Snowflake = 123
-			messageID discord.Snowflake = 456
+			channelID discord.ChannelID = 123
+			messageID discord.MessageID = 456
 			emoji                       = "abc"
 		)
 
@@ -167,11 +167,11 @@ func TestMocker_ReactionsBefore(t *testing.T) {
 				m, s := NewSession(t)
 
 				var (
-					channelID discord.Snowflake = 123
-					messageID discord.Snowflake = 456
+					channelID discord.ChannelID = 123
+					messageID discord.MessageID = 456
 					emoji                       = "abc"
 
-					before discord.Snowflake = 999999999999
+					before discord.UserID = 999999999999
 				)
 
 				expect := []discord.User{ // more than 100 entries so multiple requests are mocked
@@ -226,8 +226,8 @@ func TestMocker_ReactionsBefore(t *testing.T) {
 		m, s := NewSession(t)
 
 		var (
-			channelID discord.Snowflake = 123
-			messageID discord.Snowflake = 456
+			channelID discord.ChannelID = 123
+			messageID discord.MessageID = 456
 			emoji                       = "abc"
 		)
 
@@ -250,8 +250,8 @@ func TestMocker_ReactionsBefore(t *testing.T) {
 		m, s := NewSession(tMock)
 
 		var (
-			channelID discord.Snowflake = 123
-			messageID discord.Snowflake = 456
+			channelID discord.ChannelID = 123
+			messageID discord.MessageID = 456
 			emoji                       = "abc"
 		)
 
@@ -303,11 +303,11 @@ func TestMocker_ReactionsAfter(t *testing.T) {
 				m, s := NewSession(t)
 
 				var (
-					channelID discord.Snowflake = 123
-					messageID discord.Snowflake = 456
+					channelID discord.ChannelID = 123
+					messageID discord.MessageID = 456
 					emoji                       = "abc"
 
-					after discord.Snowflake = 123
+					after discord.UserID = 123
 				)
 
 				expect := []discord.User{ // more than 100 entries so multiple requests are mocked
@@ -362,8 +362,8 @@ func TestMocker_ReactionsAfter(t *testing.T) {
 		m, s := NewSession(t)
 
 		var (
-			channelID discord.Snowflake = 123
-			messageID discord.Snowflake = 456
+			channelID discord.ChannelID = 123
+			messageID discord.MessageID = 456
 			emoji                       = "abc"
 		)
 
@@ -385,8 +385,8 @@ func TestMocker_ReactionsAfter(t *testing.T) {
 		m, s := NewSession(tMock)
 
 		var (
-			channelID discord.Snowflake = 123
-			messageID discord.Snowflake = 456
+			channelID discord.ChannelID = 123
+			messageID discord.MessageID = 456
 			emoji                       = "abc"
 		)
 
@@ -421,9 +421,9 @@ func TestMocker_DeleteUserReaction(t *testing.T) {
 	m, s := NewSession(t)
 
 	var (
-		channelID discord.Snowflake = 123
-		messageID discord.Snowflake = 456
-		userID    discord.Snowflake = 789
+		channelID discord.ChannelID = 123
+		messageID discord.MessageID = 456
+		userID    discord.UserID    = 789
 		emoji                       = "abc"
 	)
 
@@ -439,8 +439,8 @@ func TestMocker_DeleteReactions(t *testing.T) {
 	m, s := NewSession(t)
 
 	var (
-		channelID discord.Snowflake = 123
-		messageID discord.Snowflake = 456
+		channelID discord.ChannelID = 123
+		messageID discord.MessageID = 456
 		emoji                       = "abc"
 	)
 
@@ -456,8 +456,8 @@ func TestMocker_DeleteAllReactions(t *testing.T) {
 	m, s := NewSession(t)
 
 	var (
-		channelID discord.Snowflake = 123
-		messageID discord.Snowflake = 456
+		channelID discord.ChannelID = 123
+		messageID discord.MessageID = 456
 	)
 
 	m.DeleteAllReactions(channelID, messageID)

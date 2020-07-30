@@ -32,7 +32,7 @@ func TestMocker_Messages(t *testing.T) {
 			t.Run(c.name, func(t *testing.T) {
 				m, s := NewSession(t)
 
-				var channelID discord.Snowflake = 123
+				var channelID discord.ChannelID = 123
 
 				expect := []discord.Message{ // more than 100 entries so multiple requests are mocked
 					{ID: 1234567890}, {ID: 2345678901}, {ID: 3456789012},
@@ -89,7 +89,7 @@ func TestMocker_Messages(t *testing.T) {
 	t.Run("nil messages", func(t *testing.T) {
 		m, s := NewSession(t)
 
-		var channelID discord.Snowflake = 123
+		var channelID discord.ChannelID = 123
 
 		var expect []discord.Message
 
@@ -117,8 +117,8 @@ func TestMocker_MessagesAround(t *testing.T) {
 		m, s := NewSession(t)
 
 		var (
-			channelID discord.Snowflake = 123
-			around    discord.Snowflake = 456
+			channelID discord.ChannelID = 123
+			around    discord.MessageID = 456
 		)
 
 		expect := []discord.Message{
@@ -174,8 +174,8 @@ func TestMocker_MessagesAround(t *testing.T) {
 			m, s := NewSession(t)
 
 			var (
-				channelID discord.Snowflake = 123
-				around    discord.Snowflake = 456
+				channelID discord.ChannelID = 123
+				around    discord.MessageID = 456
 			)
 
 			expect := []discord.Message{
@@ -206,7 +206,7 @@ func TestMocker_MessagesAround(t *testing.T) {
 	t.Run("nil messages", func(t *testing.T) {
 		m, s := NewSession(t)
 
-		var channelID discord.Snowflake = 123
+		var channelID discord.ChannelID = 123
 
 		//noinspection GoPreferNilSlice
 		expect := []discord.Message{}
@@ -226,7 +226,7 @@ func TestMocker_MessagesAround(t *testing.T) {
 
 		m, s := NewSession(tMock)
 
-		var channelID discord.Snowflake = 123
+		var channelID discord.ChannelID = 123
 
 		expect := []discord.Message{
 			{
@@ -280,8 +280,8 @@ func TestMocker_MessagesBefore(t *testing.T) {
 				m, s := NewSession(t)
 
 				var (
-					channelID discord.Snowflake = 123
-					before    discord.Snowflake = 999999999999
+					channelID discord.ChannelID = 123
+					before    discord.MessageID = 999999999999
 				)
 
 				expect := []discord.Message{ // more than 100 entries so multiple requests are mocked
@@ -339,7 +339,7 @@ func TestMocker_MessagesBefore(t *testing.T) {
 	t.Run("nil messages", func(t *testing.T) {
 		m, s := NewSession(t)
 
-		var channelID discord.Snowflake = 123
+		var channelID discord.ChannelID = 123
 
 		//noinspection GoPreferNilSlice
 		expect := []discord.Message{}
@@ -359,7 +359,7 @@ func TestMocker_MessagesBefore(t *testing.T) {
 
 		m, s := NewSession(tMock)
 
-		var channelID discord.Snowflake = 123
+		var channelID discord.ChannelID = 123
 
 		expect := []discord.Message{
 			{
@@ -413,8 +413,8 @@ func TestMocker_MessagesAfter(t *testing.T) {
 				m, s := NewSession(t)
 
 				var (
-					channelID discord.Snowflake = 123
-					after     discord.Snowflake = 456
+					channelID discord.ChannelID = 123
+					after     discord.MessageID = 456
 				)
 
 				expect := []discord.Message{ // more than 100 entries so multiple requests are mocked
@@ -471,7 +471,7 @@ func TestMocker_MessagesAfter(t *testing.T) {
 	t.Run("nil guilds", func(t *testing.T) {
 		m, s := NewSession(t)
 
-		var channelID discord.Snowflake = 123
+		var channelID discord.ChannelID = 123
 
 		var expect []discord.Message
 
@@ -490,7 +490,7 @@ func TestMocker_MessagesAfter(t *testing.T) {
 
 		m, s := NewSession(tMock)
 
-		var channelID discord.Snowflake = 123
+		var channelID discord.ChannelID = 123
 
 		expect := []discord.Message{
 			{
@@ -566,7 +566,7 @@ func TestMocker_SendText(t *testing.T) {
 
 		m, s := NewSession(tMock)
 
-		var channelID discord.Snowflake = 123
+		var channelID discord.ChannelID = 123
 
 		m.SendText(sanitize.Message(discord.Message{
 			ChannelID: channelID,
@@ -611,8 +611,8 @@ func TestMocker_SendEmbed(t *testing.T) {
 		m, s := NewSession(tMock)
 
 		var (
-			channelID discord.Snowflake = 123
-			messageID discord.Snowflake = 456
+			channelID discord.ChannelID = 123
+			messageID discord.MessageID = 456
 		)
 
 		m.SendEmbed(sanitize.Message(discord.Message{
@@ -727,8 +727,8 @@ func TestMocker_SendMessage(t *testing.T) {
 		m, s := NewSession(tMock)
 
 		var (
-			channelID discord.Snowflake = 123
-			messageID discord.Snowflake = 456
+			channelID discord.ChannelID = 123
+			messageID discord.MessageID = 456
 			embed                       = discord.Embed{
 				Title:       "def",
 				Description: "ghi",
@@ -775,8 +775,8 @@ func TestMocker_EditText(t *testing.T) {
 		m, s := NewSession(tMock)
 
 		var (
-			channelID discord.Snowflake = 123
-			messageID discord.Snowflake = 456
+			channelID discord.ChannelID = 123
+			messageID discord.MessageID = 456
 			embed                       = discord.Embed{
 				Title:       "def",
 				Description: "ghi",
@@ -828,8 +828,8 @@ func TestMocker_EditEmbed(t *testing.T) {
 		m, s := NewSession(tMock)
 
 		var (
-			channelID discord.Snowflake = 123
-			messageID discord.Snowflake = 456
+			channelID discord.ChannelID = 123
+			messageID discord.MessageID = 456
 		)
 
 		m.EditEmbed(sanitize.Message(discord.Message{
@@ -932,8 +932,8 @@ func TestMocker_EditMessage(t *testing.T) {
 		m, s := NewSession(tMock)
 
 		var (
-			channelID discord.Snowflake = 123
-			messageID discord.Snowflake = 456
+			channelID discord.ChannelID = 123
+			messageID discord.MessageID = 456
 			embed                       = discord.Embed{
 				Title:       "def",
 				Description: "ghi",
@@ -1007,8 +1007,8 @@ func TestMocker_DeleteMessage(t *testing.T) {
 	m, s := NewSession(t)
 
 	var (
-		channelID discord.Snowflake = 123
-		messageID discord.Snowflake = 456
+		channelID discord.ChannelID = 123
+		messageID discord.MessageID = 456
 	)
 
 	m.DeleteMessage(channelID, messageID)
@@ -1024,8 +1024,8 @@ func TestMocker_DeleteMessages(t *testing.T) {
 		m, s := NewSession(t)
 
 		var (
-			channelID  discord.Snowflake = 123
-			messageIDs                   = []discord.Snowflake{456, 789}
+			channelID  discord.ChannelID = 123
+			messageIDs                   = []discord.MessageID{456, 789}
 		)
 
 		m.DeleteMessages(channelID, messageIDs)
@@ -1041,11 +1041,11 @@ func TestMocker_DeleteMessages(t *testing.T) {
 
 		m, s := NewSession(tMock)
 
-		var channelID discord.Snowflake = 123
+		var channelID discord.ChannelID = 123
 
-		m.DeleteMessages(channelID, []discord.Snowflake{456, 789})
+		m.DeleteMessages(channelID, []discord.MessageID{456, 789})
 
-		err := s.DeleteMessages(channelID, []discord.Snowflake{654, 987})
+		err := s.DeleteMessages(channelID, []discord.MessageID{654, 987})
 		require.NoError(t, err)
 
 		assert.True(t, tMock.Failed())

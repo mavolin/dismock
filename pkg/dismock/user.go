@@ -51,7 +51,7 @@ type changeOwnNicknamePayload struct {
 }
 
 // ChangeOwnNickname mocks a ChangeOwnNickname request.
-func (m *Mocker) ChangeOwnNickname(guildID discord.Snowflake, nick string) {
+func (m *Mocker) ChangeOwnNickname(guildID discord.GuildID, nick string) {
 	m.MockAPI("ChangeOwnNickname", http.MethodPatch, "/guilds/"+guildID.String()+"/members/@me/nick",
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
 			expect := changeOwnNicknamePayload{
@@ -78,7 +78,7 @@ func (m *Mocker) PrivateChannels(c []discord.Channel) {
 }
 
 type createPrivateChannelPayload struct {
-	RecipientID discord.Snowflake `json:"recipient_id"`
+	RecipientID discord.UserID `json:"recipient_id"`
 }
 
 // CreatePrivateChannel mocks a CreatePrivateChannel request.

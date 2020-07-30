@@ -25,7 +25,7 @@ func TestMocker_ChannelIconURL(t *testing.T) {
 
 	img := bytes.NewBuffer(expect)
 
-	m.ChannelIconURL(channel.ID, channel.Icon, img)
+	m.ChannelIcon(channel.ID, channel.Icon, img)
 
 	resp, err := m.Client.Get(channel.IconURL())
 	require.NoError(t, err)
@@ -53,7 +53,7 @@ func TestMocker_ChannelIconURLWithType(t *testing.T) {
 
 	img := bytes.NewBuffer(expect)
 
-	m.ChannelIconURLWithType(channel.ID, channel.Icon, imgType, img)
+	m.ChannelIconWithType(channel.ID, channel.Icon, imgType, img)
 
 	resp, err := m.Client.Get(channel.IconURLWithType(imgType))
 	require.NoError(t, err)
@@ -96,7 +96,7 @@ func TestMocker_EmojiURL(t *testing.T) {
 
 			img := bytes.NewBuffer(expect)
 
-			m.EmojiURL(emoji.ID, emoji.Animated, img)
+			m.EmojiPicture(emoji.ID, emoji.Animated, img)
 
 			resp, err := m.Client.Get(emoji.EmojiURL())
 			require.NoError(t, err)
@@ -147,7 +147,7 @@ func TestMocker_EmojiURLWithType(t *testing.T) {
 
 			img := bytes.NewBuffer(expect)
 
-			m.EmojiURLWithType(emoji.ID, emoji.Animated, c.imgType, img)
+			m.EmojiPictureWithType(emoji.ID, emoji.Animated, c.imgType, img)
 
 			resp, err := m.Client.Get(emoji.EmojiURLWithType(c.imgType))
 			require.NoError(t, err)
@@ -176,7 +176,7 @@ func TestMocker_GuildIconURL(t *testing.T) {
 
 	img := bytes.NewBuffer(expect)
 
-	m.GuildIconURL(guild.ID, guild.Icon, img)
+	m.GuildIcon(guild.ID, guild.Icon, img)
 
 	resp, err := m.Client.Get(guild.IconURL())
 	require.NoError(t, err)
@@ -204,7 +204,7 @@ func TestMocker_GuildIconURLWithType(t *testing.T) {
 
 	img := bytes.NewBuffer(expect)
 
-	m.GuildIconURLWithType(guild.ID, guild.Icon, imgType, img)
+	m.GuildIconWithType(guild.ID, guild.Icon, imgType, img)
 
 	resp, err := m.Client.Get(guild.IconURLWithType(imgType))
 	require.NoError(t, err)
@@ -229,7 +229,7 @@ func TestMocker_BannerURL(t *testing.T) {
 
 	img := bytes.NewBuffer(expect)
 
-	m.BannerURL(guild.ID, guild.Banner, img)
+	m.Banner(guild.ID, guild.Banner, img)
 
 	resp, err := m.Client.Get(guild.BannerURL())
 	require.NoError(t, err)
@@ -257,7 +257,7 @@ func TestMocker_BannerURLWithType(t *testing.T) {
 
 	img := bytes.NewBuffer(expect)
 
-	m.BannerURLWithType(guild.ID, guild.Banner, imgType, img)
+	m.BannerWithType(guild.ID, guild.Banner, imgType, img)
 
 	resp, err := m.Client.Get(guild.BannerURLWithType(imgType))
 	require.NoError(t, err)
@@ -282,7 +282,7 @@ func TestMocker_SplashURL(t *testing.T) {
 
 	img := bytes.NewBuffer(expect)
 
-	m.SplashURL(guild.ID, guild.Splash, img)
+	m.Splash(guild.ID, guild.Splash, img)
 
 	resp, err := m.Client.Get(guild.SplashURL())
 	require.NoError(t, err)
@@ -310,7 +310,7 @@ func TestMocker_SplashURLWithType(t *testing.T) {
 
 	img := bytes.NewBuffer(expect)
 
-	m.SplashURLWithType(guild.ID, guild.Splash, imgType, img)
+	m.SplashWithType(guild.ID, guild.Splash, imgType, img)
 
 	resp, err := m.Client.Get(guild.SplashURLWithType(imgType))
 	require.NoError(t, err)
@@ -335,7 +335,7 @@ func TestMocker_DiscoverySplashURL(t *testing.T) {
 
 	img := bytes.NewBuffer(expect)
 
-	m.DiscoverySplashURL(guild.ID, guild.DiscoverySplash, img)
+	m.DiscoverySplash(guild.ID, guild.DiscoverySplash, img)
 
 	resp, err := m.Client.Get(guild.DiscoverySplashURL())
 	require.NoError(t, err)
@@ -363,7 +363,7 @@ func TestMocker_DiscoverySplashURLWithType(t *testing.T) {
 
 	img := bytes.NewBuffer(expect)
 
-	m.DiscoverySplashURLWithType(guild.ID, guild.DiscoverySplash, imgType, img)
+	m.DiscoverySplashWithType(guild.ID, guild.DiscoverySplash, imgType, img)
 
 	resp, err := m.Client.Get(guild.DiscoverySplashURLWithType(imgType))
 	require.NoError(t, err)

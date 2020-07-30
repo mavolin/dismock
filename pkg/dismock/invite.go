@@ -52,7 +52,7 @@ func (m *Mocker) InviteWithCounts(i discord.Invite) {
 // This method will sanitize Invite.Guild.ID, Invite.Guild.OwnerID,
 // Invite.Guild.Emojis.ID, Invite.Guild.Roles.ID, Invite.Channel.ID and
 // Invite.Inviter.ID.
-func (m *Mocker) ChannelInvites(channelID discord.Snowflake, invites []discord.Invite) {
+func (m *Mocker) ChannelInvites(channelID discord.ChannelID, invites []discord.Invite) {
 	if invites == nil {
 		invites = []discord.Invite{}
 	}
@@ -72,7 +72,7 @@ func (m *Mocker) ChannelInvites(channelID discord.Snowflake, invites []discord.I
 // This method will sanitize Invite.Guild.ID, Invite.Guild.OwnerID,
 // Invite.Guild.Emojis.ID, Invite.Guild.Roles.ID, Invite.Channel.ID and
 // Invite.Inviter.ID.
-func (m *Mocker) GuildInvites(guildID discord.Snowflake, invites []discord.Invite) {
+func (m *Mocker) GuildInvites(guildID discord.GuildID, invites []discord.Invite) {
 	if invites == nil {
 		invites = []discord.Invite{}
 	}

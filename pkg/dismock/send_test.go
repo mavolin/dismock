@@ -7,6 +7,7 @@ import (
 
 	"github.com/diamondburned/arikawa/api"
 	"github.com/diamondburned/arikawa/discord"
+	"github.com/diamondburned/arikawa/webhook"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
@@ -159,10 +160,10 @@ func TestMocker_ExecuteWebhook(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		for _, c := range successCases {
 			t.Run(c.name, func(t *testing.T) {
-				m, s := NewSession(t)
+				m := New(t)
 
 				var (
-					webhookID discord.Snowflake = 123
+					webhookID discord.WebhookID = 123
 					token                       = "abc"
 				)
 
@@ -184,7 +185,7 @@ func TestMocker_ExecuteWebhook(t *testing.T) {
 
 				m.ExecuteWebhook(webhookID, token, c.data)
 
-				_, err := s.ExecuteWebhook(webhookID, token, false, cp)
+				err := webhook.Execute(webhookID, token, cp)
 				require.NoError(t, err)
 
 				m.Eval()
@@ -232,16 +233,16 @@ func TestMocker_ExecuteWebhook(t *testing.T) {
 			t.Run(c.name, func(t *testing.T) {
 				tMock := new(testing.T)
 
-				m, s := NewSession(tMock)
+				m := New(tMock)
 
 				var (
-					webhookID discord.Snowflake = 123
+					webhookID discord.WebhookID = 123
 					token                       = "abc"
 				)
 
 				m.ExecuteWebhook(webhookID, token, c.data1)
 
-				_, err := s.ExecuteWebhook(webhookID, token, false, c.data2)
+				err := webhook.Execute(webhookID, token, c.data2)
 				require.NoError(t, err)
 
 				assert.True(t, tMock.Failed())
@@ -277,10 +278,10 @@ func TestMocker_ExecuteWebhookAndWait(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		for _, c := range successCases {
 			t.Run(c.name, func(t *testing.T) {
-				m, s := NewSession(t)
+				m := New(t)
 
 				var (
-					webhookID discord.Snowflake = 123
+					webhookID discord.WebhookID = 123
 					token                       = "abc"
 				)
 
@@ -306,7 +307,7 @@ func TestMocker_ExecuteWebhookAndWait(t *testing.T) {
 
 				m.ExecuteWebhookAndWait(webhookID, token, c.data, expect)
 
-				actual, err := s.ExecuteWebhook(webhookID, token, true, cp)
+				actual, err := webhook.ExecuteAndWait(webhookID, token, cp)
 				require.NoError(t, err)
 
 				assert.Equal(t, expect, *actual)
@@ -356,10 +357,10 @@ func TestMocker_ExecuteWebhookAndWait(t *testing.T) {
 			t.Run(c.name, func(t *testing.T) {
 				tMock := new(testing.T)
 
-				m, s := NewSession(tMock)
+				m := New(tMock)
 
 				var (
-					webhookID discord.Snowflake = 123
+					webhookID discord.WebhookID = 123
 					token                       = "abc"
 				)
 
@@ -369,7 +370,7 @@ func TestMocker_ExecuteWebhookAndWait(t *testing.T) {
 
 				m.ExecuteWebhookAndWait(webhookID, token, c.data1, expect)
 
-				actual, err := s.ExecuteWebhook(webhookID, token, true, c.data2)
+				actual, err := webhook.ExecuteAndWait(webhookID, token, c.data2)
 				require.NoError(t, err)
 
 				assert.Equal(t, expect, *actual)

@@ -96,8 +96,8 @@ func TestMocker_ChangeOwnNickname(t *testing.T) {
 		m, s := NewSession(t)
 
 		var (
-			guildID discord.Snowflake = 123
-			nick                      = "abc"
+			guildID discord.GuildID = 123
+			nick                    = "abc"
 		)
 
 		m.ChangeOwnNickname(guildID, nick)
@@ -113,7 +113,7 @@ func TestMocker_ChangeOwnNickname(t *testing.T) {
 
 		m, s := NewSession(tMock)
 
-		var guildID discord.Snowflake = 123
+		var guildID discord.GuildID = 123
 
 		m.ChangeOwnNickname(guildID, "abc")
 
@@ -206,10 +206,10 @@ func TestMocker_UserConnections(t *testing.T) {
 
 	expect := []discord.Connection{
 		{
-			ID: 123,
+			ID: "123",
 		},
 		{
-			ID: 456,
+			ID: "456",
 		},
 	}
 

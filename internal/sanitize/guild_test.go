@@ -265,8 +265,8 @@ func TestMember(t *testing.T) {
 
 func TestBan(t *testing.T) {
 	var (
-		userID discord.Snowflake = 123
-		ban                      = discord.Ban{
+		userID discord.UserID = 123
+		ban                   = discord.Ban{
 			User: discord.User{
 				ID: 0,
 			},

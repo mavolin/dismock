@@ -16,7 +16,7 @@ func TestMocker_Channels(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		m, s := NewSession(t)
 
-		var guildID discord.Snowflake = 123
+		var guildID discord.GuildID = 123
 
 		expect := []discord.Channel{
 			{
@@ -44,7 +44,7 @@ func TestMocker_Channels(t *testing.T) {
 	t.Run("nil channels", func(t *testing.T) {
 		m, s := NewSession(t)
 
-		var guildID discord.Snowflake = 123
+		var guildID discord.GuildID = 123
 
 		expect := []discord.Channel{}
 
@@ -113,8 +113,8 @@ func TestMocker_MoveChannel(t *testing.T) {
 		m, s := NewSession(t)
 
 		var (
-			guildID discord.Snowflake = 123
-			data                      = []api.MoveChannelData{
+			guildID discord.GuildID = 123
+			data                    = []api.MoveChannelData{
 				{
 					ID:       123,
 					Position: option.NewInt(0),
@@ -139,7 +139,7 @@ func TestMocker_MoveChannel(t *testing.T) {
 
 		m, s := NewSession(tMock)
 
-		var guildID discord.Snowflake = 123
+		var guildID discord.GuildID = 123
 
 		m.MoveChannel(guildID, []api.MoveChannelData{
 			{
@@ -190,7 +190,7 @@ func TestMocker_ModifyChannel(t *testing.T) {
 		m, s := NewSession(t)
 
 		var (
-			channelID discord.Snowflake = 123
+			channelID discord.ChannelID = 123
 			data                        = api.ModifyChannelData{
 				Name: "abc",
 			}
@@ -209,7 +209,7 @@ func TestMocker_ModifyChannel(t *testing.T) {
 
 		m, s := NewSession(tMock)
 
-		var channelID discord.Snowflake = 123
+		var channelID discord.ChannelID = 123
 
 		m.ModifyChannel(channelID, api.ModifyChannelData{
 			Name: "abc",
@@ -227,7 +227,7 @@ func TestMocker_ModifyChannel(t *testing.T) {
 func TestMocker_DeleteChannel(t *testing.T) {
 	m, s := NewSession(t)
 
-	var channelID discord.Snowflake = 123
+	var channelID discord.ChannelID = 123
 
 	m.DeleteChannel(channelID)
 
@@ -242,7 +242,7 @@ func TestMocker_EditChannelPermission(t *testing.T) {
 		m, s := NewSession(t)
 
 		var (
-			channelID   discord.Snowflake = 123
+			channelID   discord.ChannelID = 123
 			overwriteID discord.Snowflake = 456
 			data                          = api.EditChannelPermissionData{
 				Type:  discord.OverwriteMember,
@@ -265,7 +265,7 @@ func TestMocker_EditChannelPermission(t *testing.T) {
 		m, s := NewSession(tMock)
 
 		var (
-			channelID   discord.Snowflake = 123
+			channelID   discord.ChannelID = 123
 			overwriteID discord.Snowflake = 456
 		)
 
@@ -290,7 +290,7 @@ func TestMocker_DeleteChannelPermission(t *testing.T) {
 	m, s := NewSession(t)
 
 	var (
-		channelID   discord.Snowflake = 123
+		channelID   discord.ChannelID = 123
 		overwriteID discord.Snowflake = 456
 	)
 
@@ -306,7 +306,7 @@ func TestMocker_Typing(t *testing.T) {
 	m, s := NewSession(t)
 
 	var (
-		channelID discord.Snowflake = 123
+		channelID discord.ChannelID = 123
 	)
 
 	m.Typing(channelID)
@@ -321,19 +321,22 @@ func TestMocker_PinnedMessages(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		m, s := NewSession(t)
 
-		var channelID discord.Snowflake = 123
+		var (
+			channelID discord.ChannelID = 123
+			userID    discord.UserID    = 456
+		)
 
 		expect := []discord.Message{
 			{
-				ID: 456,
+				ID: 789,
 			},
 			{
-				ID: 789,
+				ID: 012,
 			},
 		}
 
 		for i, m := range expect {
-			expect[i] = sanitize.Message(m, 1, channelID, channelID)
+			expect[i] = sanitize.Message(m, 1, channelID, userID)
 		}
 
 		m.PinnedMessages(channelID, expect)
@@ -349,7 +352,7 @@ func TestMocker_PinnedMessages(t *testing.T) {
 	t.Run("nil messages", func(t *testing.T) {
 		m, s := NewSession(t)
 
-		var channelID discord.Snowflake = 123
+		var channelID discord.ChannelID = 123
 
 		//noinspection GoPreferNilSlice
 		expect := []discord.Message{}
@@ -369,8 +372,8 @@ func TestMocker_PinMessage(t *testing.T) {
 	m, s := NewSession(t)
 
 	var (
-		channelID discord.Snowflake = 123
-		messageID discord.Snowflake = 456
+		channelID discord.ChannelID = 123
+		messageID discord.MessageID = 456
 	)
 
 	m.PinMessage(channelID, messageID)
@@ -385,8 +388,8 @@ func TestMocker_UnpinMessage(t *testing.T) {
 	m, s := NewSession(t)
 
 	var (
-		channelID discord.Snowflake = 123
-		messageID discord.Snowflake = 456
+		channelID discord.ChannelID = 123
+		messageID discord.MessageID = 456
 	)
 
 	m.UnpinMessage(channelID, messageID)
@@ -402,8 +405,8 @@ func TestMocker_AddRecipient(t *testing.T) {
 		m, s := NewSession(t)
 
 		var (
-			channelID   discord.Snowflake = 123
-			userID      discord.Snowflake = 456
+			channelID   discord.ChannelID = 123
+			userID      discord.UserID    = 456
 			accessToken                   = "abc"
 			nickname                      = "Ragnar89"
 		)
@@ -422,8 +425,8 @@ func TestMocker_AddRecipient(t *testing.T) {
 		m, s := NewSession(tMock)
 
 		var (
-			channelID discord.Snowflake = 123
-			userID    discord.Snowflake = 456
+			channelID discord.ChannelID = 123
+			userID    discord.UserID    = 456
 		)
 
 		m.AddRecipient(channelID, userID, "abc", "Ragnar89")
@@ -439,8 +442,8 @@ func TestMocker_RemoveRecipient(t *testing.T) {
 	m, s := NewSession(t)
 
 	var (
-		channelID discord.Snowflake = 123
-		userID    discord.Snowflake = 456
+		channelID discord.ChannelID = 123
+		userID    discord.UserID    = 456
 	)
 
 	m.RemoveRecipient(channelID, userID)
@@ -456,8 +459,8 @@ func TestMocker_Ack(t *testing.T) {
 		m, s := NewSession(t)
 
 		var (
-			channelID discord.Snowflake = 123
-			messageID discord.Snowflake = 456
+			channelID discord.ChannelID = 123
+			messageID discord.MessageID = 456
 			ack                         = api.Ack{
 				Token: "abc",
 			}
@@ -485,8 +488,8 @@ func TestMocker_Ack(t *testing.T) {
 		m, s := NewSession(tMock)
 
 		var (
-			channelID discord.Snowflake = 123
-			messageID discord.Snowflake = 456
+			channelID discord.ChannelID = 123
+			messageID discord.MessageID = 456
 		)
 
 		expect := api.Ack{

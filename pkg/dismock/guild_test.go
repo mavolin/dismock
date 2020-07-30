@@ -233,7 +233,7 @@ func TestMocker_GuildsBefore(t *testing.T) {
 			t.Run(c.name, func(t *testing.T) {
 				m, s := NewSession(t)
 
-				var before discord.Snowflake = 999999999999
+				var before discord.GuildID = 999999999999
 
 				expect := []discord.Guild{ // more than 100 entries so multiple requests are mocked
 					{ID: 1234567890}, {ID: 2345678901}, {ID: 3456789012},
@@ -357,7 +357,7 @@ func TestMocker_GuildsAfter(t *testing.T) {
 			t.Run(c.name, func(t *testing.T) {
 				m, s := NewSession(t)
 
-				var after discord.Snowflake = 123
+				var after discord.GuildID = 123
 
 				expect := []discord.Guild{ // more than 100 entries so multiple requests are mocked
 					{ID: 1234567890}, {ID: 2345678901}, {ID: 3456789012},
@@ -463,7 +463,7 @@ func TestMocker_GuildsAfter(t *testing.T) {
 func TestMocker_LeaveGuild(t *testing.T) {
 	m, s := NewSession(t)
 
-	var guildID discord.Snowflake = 123
+	var guildID discord.GuildID = 123
 
 	m.LeaveGuild(guildID)
 
@@ -523,7 +523,7 @@ func TestMocker_ModifyGuild(t *testing.T) {
 func TestMocker_DeleteGuild(t *testing.T) {
 	m, s := NewSession(t)
 
-	var guildID discord.Snowflake = 123
+	var guildID discord.GuildID = 123
 
 	m.DeleteGuild(guildID)
 
@@ -537,7 +537,7 @@ func TestMocker_VoiceRegionsGuild(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		m, s := NewSession(t)
 
-		var guildID discord.Snowflake = 123
+		var guildID discord.GuildID = 123
 
 		expect := []discord.VoiceRegion{
 			{
@@ -563,7 +563,7 @@ func TestMocker_VoiceRegionsGuild(t *testing.T) {
 	t.Run("nil voice regions", func(t *testing.T) {
 		m, s := NewSession(t)
 
-		var guildID discord.Snowflake = 123
+		var guildID discord.GuildID = 123
 
 		//noinspection GoPreferNilSlice
 		expect := []discord.VoiceRegion{}
@@ -638,7 +638,7 @@ func TestMocker_AuditLog(t *testing.T) {
 			t.Run(c.name, func(t *testing.T) {
 				m, s := NewSession(t)
 
-				var guildID discord.Snowflake = 123
+				var guildID discord.GuildID = 123
 
 				expect := sanitize.AuditLog(discord.AuditLog{
 					Users: []discord.User{
@@ -673,7 +673,7 @@ func TestMocker_AuditLog(t *testing.T) {
 
 		m, s := NewSession(tMock)
 
-		var guildID discord.Snowflake = 123
+		var guildID discord.GuildID = 123
 
 		expect := sanitize.AuditLog(discord.AuditLog{
 			Users: []discord.User{
@@ -711,7 +711,7 @@ func TestMocker_Integrations(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		m, s := NewSession(t)
 
-		var guildID discord.Snowflake = 123
+		var guildID discord.GuildID = 123
 
 		expect := []discord.Integration{
 			{
@@ -741,7 +741,7 @@ func TestMocker_Integrations(t *testing.T) {
 	t.Run("nil integrations", func(t *testing.T) {
 		m, s := NewSession(t)
 
-		var guildID discord.Snowflake = 123
+		var guildID discord.GuildID = 123
 
 		//noinspection GoPreferNilSlice
 		expect := []discord.Integration{}
@@ -762,9 +762,9 @@ func TestMocker_AttachIntegration(t *testing.T) {
 		m, s := NewSession(t)
 
 		var (
-			guildID         discord.Snowflake = 123
-			integrationID   discord.Snowflake = 345
-			integrationType                   = discord.Twitch
+			guildID         discord.GuildID       = 123
+			integrationID   discord.IntegrationID = 345
+			integrationType                       = discord.Twitch
 		)
 
 		m.AttachIntegration(guildID, integrationID, integrationType)
@@ -780,7 +780,7 @@ func TestMocker_AttachIntegration(t *testing.T) {
 
 		m, s := NewSession(tMock)
 
-		var guildID discord.Snowflake = 123
+		var guildID discord.GuildID = 123
 
 		m.AttachIntegration(guildID, 345, discord.Twitch)
 
@@ -796,9 +796,9 @@ func TestMocker_ModifyIntegration(t *testing.T) {
 		m, s := NewSession(t)
 
 		var (
-			guildID       discord.Snowflake = 123
-			integrationID discord.Snowflake = 345
-			data                            = api.ModifyIntegrationData{
+			guildID       discord.GuildID       = 123
+			integrationID discord.IntegrationID = 345
+			data                                = api.ModifyIntegrationData{
 				ExpireGracePeriod: option.NullInt,
 			}
 		)
@@ -817,8 +817,8 @@ func TestMocker_ModifyIntegration(t *testing.T) {
 		m, s := NewSession(tMock)
 
 		var (
-			guildID       discord.Snowflake = 123
-			integrationID discord.Snowflake = 456
+			guildID       discord.GuildID       = 123
+			integrationID discord.IntegrationID = 456
 		)
 
 		m.ModifyIntegration(guildID, integrationID, api.ModifyIntegrationData{
@@ -838,8 +838,8 @@ func TestMocker_SyncIntegration(t *testing.T) {
 	m, s := NewSession(t)
 
 	var (
-		guildID       discord.Snowflake = 123
-		integrationID discord.Snowflake = 456
+		guildID       discord.GuildID       = 123
+		integrationID discord.IntegrationID = 456
 	)
 
 	m.SyncIntegration(guildID, integrationID)
@@ -853,7 +853,7 @@ func TestMocker_SyncIntegration(t *testing.T) {
 func TestMocker_GuildWidget(t *testing.T) {
 	m, s := NewSession(t)
 
-	var guildID discord.Snowflake = 123
+	var guildID discord.GuildID = 123
 
 	expect := discord.GuildWidget{
 		ChannelID: 345,
@@ -874,8 +874,8 @@ func TestMocker_ModifyGuildWidget(t *testing.T) {
 		m, s := NewSession(t)
 
 		var (
-			guildID discord.Snowflake = 123
-			data                      = api.ModifyGuildWidgetData{
+			guildID discord.GuildID = 123
+			data                    = api.ModifyGuildWidgetData{
 				ChannelID: 345,
 			}
 			expect = discord.GuildWidget{
@@ -900,8 +900,8 @@ func TestMocker_ModifyGuildWidget(t *testing.T) {
 		m, s := NewSession(tMock)
 
 		var (
-			guildID discord.Snowflake = 123
-			expect                    = discord.GuildWidget{
+			guildID discord.GuildID = 123
+			expect                  = discord.GuildWidget{
 				Enabled:   false,
 				ChannelID: 345,
 			}
@@ -925,7 +925,7 @@ func TestMocker_ModifyGuildWidget(t *testing.T) {
 func TestMocker_GuildVanityURL(t *testing.T) {
 	m, s := NewSession(t)
 
-	var guildID discord.Snowflake = 123
+	var guildID discord.GuildID = 123
 
 	expect := sanitize.Invite(discord.Invite{
 		Code: "abc",
@@ -949,8 +949,8 @@ func TestMocker_GuildImage(t *testing.T) {
 		m, s := NewSession(t)
 
 		var (
-			guildID discord.Snowflake = 123
-			style                     = api.GuildBanner3
+			guildID discord.GuildID = 123
+			style                   = api.GuildBanner3
 		)
 
 		expect := []byte{1, 30, 0, 15, 24}
@@ -975,7 +975,7 @@ func TestMocker_GuildImage(t *testing.T) {
 
 		m, s := NewSession(tMock)
 
-		var guildID discord.Snowflake = 123
+		var guildID discord.GuildID = 123
 
 		expect := []byte{1, 30, 0, 15, 24}
 
