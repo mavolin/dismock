@@ -14,7 +14,6 @@ We not only use [conventional commits](https://www.conventionalcommits.org/en/v1
 If you propose a feature, use `feat(PACKAGE_NAME): TITLE`, for a bug replace the `feat` with a `fix`, for `docs` use `docs`, you get the hang.
 Other types are `style`, `refactor` and `test`.
 If your change is breaking (in the semantic versioning sense) add an exclamation mark behind the scope, e.g. `feat(package)!: title`.
-This however, is not necessary, if this is the first release, as all changes would be considered breaking.
 
 If your issue proposes changes to multiple packages, or you don't know which package is affected, leave the `(PACKAGE_NAME)` part out, e.g. `feat: that one thing that's missing`.
 
@@ -35,9 +34,22 @@ Please make small, thoughtful commits, a commit like `feat: add xy` with 20 new 
 Please use [conventional commits](https://www.conventionalcommits.org/en/v1.0.0/) for your contributions, once you get the hang of it, you'll see that they are pretty easy to use.
 Just have a look at the [quick start guide](https://www.conventionalcommits.org/en/v1.0.0/#summary) on their website.
 The scope is typically the package name, but for non-go files appropriate scopes may also be: `git`, `README` or `go.mod`.
-If none match what you are doing, just think of something.
-The types we use are: `fix`, `feat`, `docs`, `style`, `refactor` and `test`.
-Breaking changes are signaled using a `!`, and not by a footer.
+
+##### Types
+We use the following types:
+
+- ci: changes to our CI configuration files and scripts (scopes take the name of the file)
+- docs: changes to the documentation
+- feat: a new feature
+- fix: a bug fix
+- perf: an improvement to perfomance
+- refactor: a code change that neither fixes a bug nor adds a feature
+- style: a change that does not affect the meaning of the code
+- test: a change to an existing test or a new test
+
+##### Breaking Changes
+
+Breaking changes must have a `!` after the type/scope and a `BREAKING CHANGE:` footer.
 
 ### Fixing a Bug
 
@@ -47,7 +59,7 @@ This of course only applies if the function is testable.
 ### Code Style
 
 Make sure all code is `gofmt -s`'ed and passes the golangci-lint checks.
-If your code fails a lint task, but the way you did it is justified, add an exception to the `.golangci.yml` file with a comment explaining, why this exception necessary.
+If your code fails a lint task, but the way you did it is justified add an exception to the `.golangci.yml` file with a comment explaining, why this exception is necessary.
 
 ### Testing
 
@@ -68,7 +80,7 @@ func TestSomething(t *testing.T) {
     expect := 2 // we declare the expected values second
     // use expectX, expectY etc. for multiple returns
 
-    a.needed(s) // prerequisites needed before invoking the function, e.g. a http mock
+    needed(s) // prerequisites needed before invoking the function, e.g. a http mock
     
     actual := Something(s, qty) // get the value computed by the tested function
     // again, use actualX, actualY etc. for multiple returns
@@ -79,16 +91,16 @@ func TestSomething(t *testing.T) {
 
 #### Table-Driven Tests
 
-If there is a single table, it should be called `cases`, multiple use the name `<type>Cases`, e.g. `successCases` and `failureCases`, for tests that test the output at valid input (a success case), and those that aim to provoke an error (a failure case) and therefore work different from a success case.
-The same goes if there is a table that's testing only a portion of a function and multiple non-table-driven tests in addition.
+If there is a single table, it should be called `cases`, multiple use the name `<type>Cases`, e.g. `successCases` and `failureCases`, for tests that test the output for a valid input (a success case), and those that aim to provoke an error (a failure case) and therefore work different from a success case.
+The same goes if there is a table that's only testing a portion of a function and multiple non-table-driven tests in addition.
 
-The struct used in tables is always anonymous.
+The structs used in tables are always anonymous.
 
 Every sub-test including table driven ones should have a name that clearly shows what is being done.
 For table-driven tests this name is either obtained from a `name` field or computed using the other fields in the table entry.
 
 Every case in a table should run in its own subtest (`t.Run`).
-Additionally, if there are multiple tables, each table has its own subtest, in which he calls his cases:
+Additionally, if there are multiple tables, each table has its own subtest, in which it calls its cases:
 
 ```
 TestSomething
@@ -108,6 +120,17 @@ TestSomething
         failureCase-2
 
     additionalTest-1
+```
+
+```
+TestSomething
+    successCases
+        successCase-1
+        successCase-2
+    failureCases
+        failureCase-1
+        failureCase-2
+        additionalNonTableDriveFailureTest-1
 ```
 
 ### Opening a Pull Request
