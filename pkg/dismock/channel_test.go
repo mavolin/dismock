@@ -65,12 +65,28 @@ func TestMocker_CreateChannel(t *testing.T) {
 
 		data := api.CreateChannelData{
 			Name: "abc",
+			Permissions: []discord.Overwrite{
+				{
+					ID:    789,
+					Type:  "role",
+					Allow: 012,
+					Deny:  345,
+				},
+			},
 		}
 
 		expect := sanitize.Channel(discord.Channel{
 			ID:      456,
 			GuildID: 123,
 			Name:    "abc",
+			Permissions: []discord.Overwrite{
+				{
+					ID:    789,
+					Type:  "role",
+					Allow: 012,
+					Deny:  345,
+				},
+			},
 		}, 1)
 
 		m.CreateChannel(data, expect)
@@ -172,7 +188,15 @@ func TestMocker_Channel(t *testing.T) {
 	m, s := NewSession(t)
 
 	expect := sanitize.Channel(discord.Channel{
-		ID: 456,
+		ID: 123,
+		Permissions: []discord.Overwrite{
+			{
+				ID:    456,
+				Type:  "role",
+				Allow: 789,
+				Deny:  012,
+			},
+		},
 	}, 1)
 
 	m.Channel(expect)
@@ -193,6 +217,14 @@ func TestMocker_ModifyChannel(t *testing.T) {
 			channelID discord.ChannelID = 123
 			data                        = api.ModifyChannelData{
 				Name: "abc",
+				Permissions: &[]discord.Overwrite{
+					{
+						ID:    456,
+						Type:  "role",
+						Allow: 798,
+						Deny:  012,
+					},
+				},
 			}
 		)
 
