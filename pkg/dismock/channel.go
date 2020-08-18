@@ -2,7 +2,6 @@ package dismock
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"testing"
 
@@ -119,11 +118,7 @@ func (m *Mocker) CreateChannel(d api.CreateChannelData, c discord.Channel) {
 	c = sanitize.Channel(c, 1)
 
 	recv := newCreateChannelData(d)
-
 	send := newChannel(c)
-
-	b, _ := json.Marshal(send)
-	fmt.Println(string(b))
 
 	m.MockAPI("CreateChannel", http.MethodPost, "/guilds/"+c.GuildID.String()+"/channels",
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
