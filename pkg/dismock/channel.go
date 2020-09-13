@@ -73,17 +73,16 @@ func (o *overwrite) UnmarshalJSON(data []byte) (err error) {
 //
 // This method will sanitize Channel.ID.
 func (m *Mocker) Channels(guildID discord.GuildID, c []discord.Channel) {
-	if c == nil {
-		c = []discord.Channel{}
-	}
+	wrapped := make([]channel, len(c))
 
-	for i, channel := range c {
-		c[i] = sanitize.Channel(channel, 1)
+	for i, c := range c {
+		c = sanitize.Channel(c, 1)
+		wrapped[i] = newChannel(c)
 	}
 
 	m.MockAPI("Channels", http.MethodGet, "/guilds/"+guildID.String()+"/channels",
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
-			mockutil.WriteJSON(t, w, c)
+			mockutil.WriteJSON(t, w, wrapped)
 		})
 }
 
