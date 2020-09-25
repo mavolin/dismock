@@ -18,13 +18,13 @@ import (
 // React mocks a React request.
 func (m *Mocker) React(channelID discord.ChannelID, messageID discord.MessageID, e api.Emoji) {
 	m.MockAPI("React", http.MethodPut,
-		"/channels/"+channelID.String()+"/messages/"+messageID.String()+"/reactions/"+url.PathEscape(e)+"/@me", nil)
+		"/channels/"+channelID.String()+"/messages/"+messageID.String()+"/reactions/"+e+"/@me", nil)
 }
 
 // Unreact mocks a Unreact request.
 func (m *Mocker) Unreact(channelID discord.ChannelID, messageID discord.MessageID, e api.Emoji) {
 	m.MockAPI("Unreact", http.MethodDelete,
-		"/channels/"+channelID.String()+"/messages/"+messageID.String()+"/reactions/"+url.PathEscape(e)+"/@me", nil)
+		"/channels/"+channelID.String()+"/messages/"+messageID.String()+"/reactions/"+e+"/@me", nil)
 }
 
 // Reactions mocks a Reactions request.
@@ -188,7 +188,7 @@ func (m *Mocker) reactionsRange(
 	}
 
 	m.MockAPI(name, http.MethodGet,
-		"/channels/"+channelID.String()+"/messages/"+messageID.String()+"/reactions/"+url.PathEscape(e),
+		"/channels/"+channelID.String()+"/messages/"+messageID.String()+"/reactions/"+e,
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
 			expect := url.Values{
 				"limit": {strconv.FormatUint(uint64(limit), 10)},
@@ -217,13 +217,13 @@ func (m *Mocker) DeleteUserReaction(
 	}
 
 	m.MockAPI("DeleteUserReaction", http.MethodDelete,
-		"/channels/"+channelID.String()+"/messages/"+messageID.String()+"/reactions/"+url.PathEscape(e)+"/"+user, nil)
+		"/channels/"+channelID.String()+"/messages/"+messageID.String()+"/reactions/"+e+"/"+user, nil)
 }
 
 // DeleteReactions mocks a DeleteReactions request.
 func (m *Mocker) DeleteReactions(channelID discord.ChannelID, messageID discord.MessageID, e api.Emoji) {
 	m.MockAPI("DeleteReactions", http.MethodDelete,
-		"/channels/"+channelID.String()+"/messages/"+messageID.String()+"/reactions/"+url.PathEscape(e), nil)
+		"/channels/"+channelID.String()+"/messages/"+messageID.String()+"/reactions/"+e, nil)
 }
 
 // DeleteAllReactions mocks a DeleteAllReactions request.
