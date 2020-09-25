@@ -14,7 +14,7 @@ func TestMocker_React(t *testing.T) {
 	var (
 		channelID discord.ChannelID = 123
 		messageID discord.MessageID = 456
-		emoji                       = "abc"
+		emoji                       = "🍆"
 	)
 
 	m.React(channelID, messageID, emoji)
@@ -31,7 +31,7 @@ func TestMocker_Unreact(t *testing.T) {
 	var (
 		channelID discord.ChannelID = 123
 		messageID discord.MessageID = 456
-		emoji                       = "abc"
+		emoji                       = "🍆"
 	)
 
 	m.Unreact(channelID, messageID, emoji)
@@ -65,7 +65,7 @@ func TestMocker_Reactions(t *testing.T) {
 				var (
 					channelID discord.ChannelID = 123
 					messageID discord.MessageID = 456
-					emoji                       = "abc"
+					emoji                       = "🍆"
 				)
 
 				expect := []discord.User{ // more than 100 entries so multiple requests are mocked
@@ -122,7 +122,7 @@ func TestMocker_Reactions(t *testing.T) {
 		var (
 			channelID discord.ChannelID = 123
 			messageID discord.MessageID = 456
-			emoji                       = "abc"
+			emoji                       = "🍆"
 		)
 
 		var expect []discord.User
@@ -169,7 +169,7 @@ func TestMocker_ReactionsBefore(t *testing.T) {
 				var (
 					channelID discord.ChannelID = 123
 					messageID discord.MessageID = 456
-					emoji                       = "abc"
+					emoji                       = "🍆"
 
 					before discord.UserID = 999999999999
 				)
@@ -228,7 +228,7 @@ func TestMocker_ReactionsBefore(t *testing.T) {
 		var (
 			channelID discord.ChannelID = 123
 			messageID discord.MessageID = 456
-			emoji                       = "abc"
+			emoji                       = "🍆"
 		)
 
 		//noinspection GoPreferNilSlice
@@ -305,7 +305,7 @@ func TestMocker_ReactionsAfter(t *testing.T) {
 				var (
 					channelID discord.ChannelID = 123
 					messageID discord.MessageID = 456
-					emoji                       = "abc"
+					emoji                       = "🍆"
 
 					after discord.UserID = 123
 				)
@@ -364,7 +364,7 @@ func TestMocker_ReactionsAfter(t *testing.T) {
 		var (
 			channelID discord.ChannelID = 123
 			messageID discord.MessageID = 456
-			emoji                       = "abc"
+			emoji                       = "🍆"
 		)
 
 		var expect []discord.User
@@ -387,7 +387,7 @@ func TestMocker_ReactionsAfter(t *testing.T) {
 		var (
 			channelID discord.ChannelID = 123
 			messageID discord.MessageID = 456
-			emoji                       = "abc"
+			emoji                       = "🍆"
 		)
 
 		expect := []discord.User{
@@ -424,7 +424,7 @@ func TestMocker_DeleteUserReaction(t *testing.T) {
 		channelID discord.ChannelID = 123
 		messageID discord.MessageID = 456
 		userID    discord.UserID    = 789
-		emoji                       = "abc"
+		emoji                       = "🍆"
 	)
 
 	m.DeleteUserReaction(channelID, messageID, userID, emoji)
@@ -441,7 +441,7 @@ func TestMocker_DeleteReactions(t *testing.T) {
 	var (
 		channelID discord.ChannelID = 123
 		messageID discord.MessageID = 456
-		emoji                       = "abc"
+		emoji                       = "🍆"
 	)
 
 	m.DeleteReactions(channelID, messageID, emoji)
