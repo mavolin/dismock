@@ -84,14 +84,12 @@ func TestMocker_Members(t *testing.T) {
 
 		var guildID discord.GuildID = 123
 
-		var expect []discord.Member
-
-		m.Members(guildID, 100, expect)
+		m.Members(guildID, 100, nil)
 
 		actual, err := s.Members(guildID, 100)
 		require.NoError(t, err)
 
-		assert.Equal(t, expect, actual)
+		assert.Len(t, actual, 0)
 
 		m.Eval()
 	})
@@ -160,14 +158,12 @@ func TestMocker_MembersAfter(t *testing.T) {
 
 		var guildID discord.GuildID = 123
 
-		var expect []discord.Member
-
-		m.MembersAfter(guildID, 0, 100, expect)
+		m.MembersAfter(guildID, 0, 100, nil)
 
 		actual, err := s.MembersAfter(guildID, 0, 100)
 		require.NoError(t, err)
 
-		assert.Equal(t, expect, actual)
+		assert.Len(t, actual, 0)
 
 		m.Eval()
 	})

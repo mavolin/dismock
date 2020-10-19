@@ -125,14 +125,12 @@ func TestMocker_Reactions(t *testing.T) {
 			emoji                       = "🍆"
 		)
 
-		var expect []discord.User
-
-		m.Reactions(channelID, messageID, 100, emoji, expect)
+		m.Reactions(channelID, messageID, 100, emoji, nil)
 
 		actual, err := s.Reactions(channelID, messageID, emoji, 100)
 		require.NoError(t, err)
 
-		assert.Equal(t, expect, actual)
+		assert.Len(t, actual, 0)
 
 		m.Eval()
 	})
@@ -231,15 +229,12 @@ func TestMocker_ReactionsBefore(t *testing.T) {
 			emoji                       = "🍆"
 		)
 
-		//noinspection GoPreferNilSlice
-		expect := []discord.User{}
-
 		m.ReactionsBefore(channelID, messageID, 0, 100, emoji, nil)
 
 		actual, err := s.ReactionsBefore(channelID, messageID, 0, emoji, 100)
 		require.NoError(t, err)
 
-		assert.Equal(t, expect, actual)
+		assert.Len(t, actual, 0)
 
 		m.Eval()
 	})
@@ -367,14 +362,12 @@ func TestMocker_ReactionsAfter(t *testing.T) {
 			emoji                       = "🍆"
 		)
 
-		var expect []discord.User
-
-		m.ReactionsAfter(channelID, messageID, 0, 100, emoji, expect)
+		m.ReactionsAfter(channelID, messageID, 0, 100, emoji, nil)
 
 		actual, err := s.ReactionsAfter(channelID, messageID, 0, emoji, 100)
 		require.NoError(t, err)
 
-		assert.Equal(t, expect, actual)
+		assert.Len(t, actual, 0)
 
 		m.Eval()
 	})
