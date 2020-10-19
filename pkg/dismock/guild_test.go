@@ -192,14 +192,12 @@ func TestMocker_Guilds(t *testing.T) {
 	t.Run("nil guilds", func(t *testing.T) {
 		m, s := NewSession(t)
 
-		var expect []discord.Guild
-
-		m.Guilds(100, expect)
+		m.Guilds(100, nil)
 
 		actual, err := s.Guilds(100)
 		require.NoError(t, err)
 
-		assert.Equal(t, expect, actual)
+		assert.Len(t, actual, 0)
 
 		m.Eval()
 	})
@@ -290,15 +288,12 @@ func TestMocker_GuildsBefore(t *testing.T) {
 	t.Run("nil guilds", func(t *testing.T) {
 		m, s := NewSession(t)
 
-		//noinspection GoPreferNilSlice
-		expect := []discord.Guild{}
-
 		m.GuildsBefore(0, 100, nil)
 
 		actual, err := s.GuildsBefore(0, 100)
 		require.NoError(t, err)
 
-		assert.Equal(t, expect, actual)
+		assert.Len(t, actual, 0)
 
 		m.Eval()
 	})
@@ -414,14 +409,12 @@ func TestMocker_GuildsAfter(t *testing.T) {
 	t.Run("nil guilds", func(t *testing.T) {
 		m, s := NewSession(t)
 
-		var expect []discord.Guild
-
-		m.GuildsAfter(0, 100, expect)
+		m.GuildsAfter(0, 100, nil)
 
 		actual, err := s.GuildsAfter(0, 100)
 		require.NoError(t, err)
 
-		assert.Equal(t, expect, actual)
+		assert.Len(t, actual, 0)
 
 		m.Eval()
 	})
