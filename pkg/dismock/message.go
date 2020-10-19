@@ -16,6 +16,8 @@ import (
 	"github.com/mavolin/dismock/internal/sanitize"
 )
 
+const maxMessagesLimit = 100
+
 // Messages mocks a Messages request.
 //
 // This method will sanitize Message.ID, Message.ChannelID and
@@ -29,38 +31,36 @@ func (m *Mocker) Messages(channelID discord.ChannelID, limit uint, messages []di
 		panic(fmt.Sprintf("limit may not be less than the number of sent messages (%d vs. %d)", len(messages), limit))
 	}
 
-	const hardLimit uint = 100
+	var before discord.MessageID = 0
 
-	var after discord.MessageID
-
-	for i := 0; i <= len(messages)/int(hardLimit); i++ {
+	for i := 0; i <= len(messages)/maxMessagesLimit; i++ {
 		var (
-			from = uint(i) * hardLimit
-			to   = uint(math.Min(float64(from+hardLimit), float64(len(messages))))
-
-			fetch = to - from // we expect this as the sent limit
+			from = uint(i) * maxMessagesLimit
+			to   = uint(math.Min(float64(from+maxMessagesLimit), float64(len(messages))))
 		)
+
+		fetch := to - from // we expect this as the sent limit
 
 		// but if limit != unlimited
 		if limit > 0 {
 			// and the max data we can send (fetch) is smaller than what could be requested max, we
 			// expect either limit or hardlimit, depending on which is smaller, instead.
-			if fetch < hardLimit {
-				fetch = uint(math.Min(float64(limit), float64(hardLimit)))
+			if fetch < maxMessagesLimit {
+				fetch = uint(math.Min(float64(limit), float64(maxMessagesLimit)))
 			}
 
 			limit -= fetch
 		} else { // this means there is no limit, hence we should expect hardlimit
-			fetch = hardLimit
+			fetch = maxMessagesLimit
 		}
 
-		m.messagesRange(channelID, 0, after, 0, fmt.Sprintf("Messages #%d", i+1), fetch, messages[from:to])
+		m.messagesRange(channelID, before, 0, 0, fmt.Sprintf("MessagesBefore #%d", i+1), fetch, messages[from:to])
 
-		if to-from < hardLimit {
+		if to-from < maxMessagesLimit {
 			break
 		}
 
-		after = messages[to-1].ID
+		before = messages[to-1].ID
 	}
 }
 
@@ -104,17 +104,11 @@ func (m *Mocker) MessagesBefore(
 		panic(fmt.Sprintf("limit may not be less than the number of sent messages (%d vs. %d)", len(messages), limit))
 	}
 
-	const hardLimit = 100
-
-	req := len(messages)/hardLimit + 1
-
-	from := uint(math.Min(float64(uint(req)*hardLimit), float64(len(messages))))
-
-	for i := req; i > 0; i-- {
-		no := req - i + 1
-
-		to := from
-		from = uint(math.Max(float64(0), float64(int(to-hardLimit))))
+	for i := 0; i <= len(messages)/maxMessagesLimit; i++ {
+		var (
+			from = uint(i) * maxMessagesLimit
+			to   = uint(math.Min(float64(from+maxMessagesLimit), float64(len(messages))))
+		)
 
 		fetch := to - from // we expect this as the sent limit
 
@@ -122,22 +116,22 @@ func (m *Mocker) MessagesBefore(
 		if limit > 0 {
 			// and the max data we can send (fetch) is smaller than what could be requested max, we
 			// expect either limit or hardlimit, depending on which is smaller, instead.
-			if fetch < hardLimit {
-				fetch = uint(math.Min(float64(limit), float64(hardLimit)))
+			if fetch < maxMessagesLimit {
+				fetch = uint(math.Min(float64(limit), float64(maxMessagesLimit)))
 			}
 
 			limit -= fetch
 		} else { // this means there is no limit, hence we should expect hardlimit
-			fetch = hardLimit
+			fetch = maxMessagesLimit
 		}
 
-		m.messagesRange(channelID, before, 0, 0, fmt.Sprintf("MessagesBefore #%d", no), fetch, messages[from:to])
+		m.messagesRange(channelID, before, 0, 0, fmt.Sprintf("MessagesBefore #%d", i+1), fetch, messages[from:to])
 
-		if to-from < hardLimit {
+		if to-from < maxMessagesLimit {
 			break
 		}
 
-		before = messages[from].ID
+		before = messages[to-1].ID
 	}
 }
 
@@ -148,6 +142,10 @@ func (m *Mocker) MessagesBefore(
 func (m *Mocker) MessagesAfter(
 	channelID discord.ChannelID, after discord.MessageID, limit uint, messages []discord.Message,
 ) {
+	if after == 0 {
+		after = 1
+	}
+
 	if messages == nil {
 		messages = []discord.Message{}
 	}
@@ -156,36 +154,34 @@ func (m *Mocker) MessagesAfter(
 		panic(fmt.Sprintf("limit may not be less than the number of sent messages (%d vs. %d)", len(messages), limit))
 	}
 
-	const hardLimit uint = 100
-
-	for i := 0; i <= len(messages)/int(hardLimit); i++ {
+	for i := 0; i <= len(messages)/maxMessagesLimit; i++ {
 		var (
-			from = uint(i) * hardLimit
-			to   = uint(math.Min(float64(from+hardLimit), float64(len(messages))))
+			to   = len(messages) - i*maxMessagesLimit
+			from = int(math.Max(float64(to-maxMessagesLimit), float64(0)))
 
-			fetch = to - from // we expect this as the sent limit
+			fetch = from - to // we expect this as the sent limit
 		)
 
 		// but if limit != unlimited
 		if limit > 0 {
 			// and the max data we can send (fetch) is smaller than what could be requested max, we
 			// expect either limit or hardlimit, depending on which is smaller, instead.
-			if fetch < hardLimit {
-				fetch = uint(math.Min(float64(limit), float64(hardLimit)))
+			if fetch < maxMessagesLimit {
+				fetch = int(math.Min(float64(limit), float64(maxMessagesLimit)))
 			}
 
-			limit -= fetch
+			limit -= uint(fetch)
 		} else { // this means there is no limit, hence we should expect hardlimit
-			fetch = hardLimit
+			fetch = maxMessagesLimit
 		}
 
-		m.messagesRange(channelID, 0, after, 0, fmt.Sprintf("MessagesAfter #%d", i+1), fetch, messages[from:to])
+		m.messagesRange(channelID, 0, after, 0, fmt.Sprintf("MessagesAfter #%d", i+1), uint(fetch), messages[from:to])
 
-		if to-from < hardLimit {
+		if to-from < maxMessagesLimit {
 			break
 		}
 
-		after = messages[to-1].ID
+		after = messages[from].ID
 	}
 }
 

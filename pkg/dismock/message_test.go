@@ -91,14 +91,12 @@ func TestMocker_Messages(t *testing.T) {
 
 		var channelID discord.ChannelID = 123
 
-		var expect []discord.Message
-
-		m.Messages(channelID, 100, expect)
+		m.Messages(channelID, 100, nil)
 
 		actual, err := s.Messages(channelID, 100)
 		require.NoError(t, err)
 
-		assert.Equal(t, expect, actual)
+		assert.Len(t, actual, 0)
 
 		m.Eval()
 	})
@@ -281,7 +279,7 @@ func TestMocker_MessagesBefore(t *testing.T) {
 
 				var (
 					channelID discord.ChannelID = 123
-					before    discord.MessageID = 999999999999
+					before    discord.MessageID = 3
 				)
 
 				expect := []discord.Message{ // more than 100 entries so multiple requests are mocked
@@ -341,15 +339,12 @@ func TestMocker_MessagesBefore(t *testing.T) {
 
 		var channelID discord.ChannelID = 123
 
-		//noinspection GoPreferNilSlice
-		expect := []discord.Message{}
-
 		m.MessagesBefore(channelID, 0, 100, nil)
 
 		actual, err := s.MessagesBefore(channelID, 0, 100)
 		require.NoError(t, err)
 
-		assert.Equal(t, expect, actual)
+		assert.Len(t, actual, 0)
 
 		m.Eval()
 	})
