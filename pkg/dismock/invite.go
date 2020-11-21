@@ -5,8 +5,8 @@ import (
 	"net/url"
 	"testing"
 
-	"github.com/diamondburned/arikawa/api"
-	"github.com/diamondburned/arikawa/discord"
+	"github.com/diamondburned/arikawa/v2/api"
+	"github.com/diamondburned/arikawa/v2/discord"
 
 	"github.com/mavolin/dismock/internal/mockutil"
 	"github.com/mavolin/dismock/internal/sanitize"

@@ -8,15 +8,15 @@ import (
 	"strconv"
 	"testing"
 
-	"github.com/diamondburned/arikawa/api"
-	"github.com/diamondburned/arikawa/discord"
-	"github.com/diamondburned/arikawa/utils/json/option"
+	"github.com/diamondburned/arikawa/v2/api"
+	"github.com/diamondburned/arikawa/v2/discord"
+	"github.com/diamondburned/arikawa/v2/utils/json/option"
 
 	"github.com/mavolin/dismock/internal/mockutil"
 	"github.com/mavolin/dismock/internal/sanitize"
 )
 
-const maxMessagesLimit = 100
+const maxFetchMessages = 100
 
 // Messages mocks a Messages request.
 //
@@ -33,10 +33,10 @@ func (m *Mocker) Messages(channelID discord.ChannelID, limit uint, messages []di
 
 	var before discord.MessageID = 0
 
-	for i := 0; i <= len(messages)/maxMessagesLimit; i++ {
+	for i := 0; i <= len(messages)/maxFetchMessages; i++ {
 		var (
-			from = uint(i) * maxMessagesLimit
-			to   = uint(math.Min(float64(from+maxMessagesLimit), float64(len(messages))))
+			from = uint(i) * maxFetchMessages
+			to   = uint(math.Min(float64(from+maxFetchMessages), float64(len(messages))))
 		)
 
 		fetch := to - from // we expect this as the sent limit
@@ -44,19 +44,21 @@ func (m *Mocker) Messages(channelID discord.ChannelID, limit uint, messages []di
 		// but if limit != unlimited
 		if limit > 0 {
 			// and the max data we can send (fetch) is smaller than what could be requested max, we
-			// expect either limit or hardlimit, depending on which is smaller, instead.
-			if fetch < maxMessagesLimit {
-				fetch = uint(math.Min(float64(limit), float64(maxMessagesLimit)))
+			// expect either limit or maxFetchMessages, depending on which is smaller, instead.
+			if fetch < maxFetchMessages {
+				fetch = uint(math.Min(float64(limit), float64(maxFetchMessages)))
 			}
 
 			limit -= fetch
-		} else { // this means there is no limit, hence we should expect hardlimit
-			fetch = maxMessagesLimit
+		} else {
+			// this means there is no limit, hence we should expect
+			// maxFetchMessages
+			fetch = maxFetchMessages
 		}
 
 		m.messagesRange(channelID, before, 0, 0, fmt.Sprintf("MessagesBefore #%d", i+1), fetch, messages[from:to])
 
-		if to-from < maxMessagesLimit {
+		if to-from < maxFetchMessages {
 			break
 		}
 
@@ -104,10 +106,10 @@ func (m *Mocker) MessagesBefore(
 		panic(fmt.Sprintf("limit may not be less than the number of sent messages (%d vs. %d)", len(messages), limit))
 	}
 
-	for i := 0; i <= len(messages)/maxMessagesLimit; i++ {
+	for i := 0; i <= len(messages)/maxFetchMessages; i++ {
 		var (
-			from = uint(i) * maxMessagesLimit
-			to   = uint(math.Min(float64(from+maxMessagesLimit), float64(len(messages))))
+			from = uint(i) * maxFetchMessages
+			to   = uint(math.Min(float64(from+maxFetchMessages), float64(len(messages))))
 		)
 
 		fetch := to - from // we expect this as the sent limit
@@ -115,19 +117,21 @@ func (m *Mocker) MessagesBefore(
 		// but if limit != unlimited
 		if limit > 0 {
 			// and the max data we can send (fetch) is smaller than what could be requested max, we
-			// expect either limit or hardlimit, depending on which is smaller, instead.
-			if fetch < maxMessagesLimit {
-				fetch = uint(math.Min(float64(limit), float64(maxMessagesLimit)))
+			// expect either limit or maxFetchMessages, depending on which is smaller, instead.
+			if fetch < maxFetchMessages {
+				fetch = uint(math.Min(float64(limit), float64(maxFetchMessages)))
 			}
 
 			limit -= fetch
-		} else { // this means there is no limit, hence we should expect hardlimit
-			fetch = maxMessagesLimit
+		} else {
+			// this means there is no limit, hence we should expect
+			// maxFetchMessages
+			fetch = maxFetchMessages
 		}
 
 		m.messagesRange(channelID, before, 0, 0, fmt.Sprintf("MessagesBefore #%d", i+1), fetch, messages[from:to])
 
-		if to-from < maxMessagesLimit {
+		if to-from < maxFetchMessages {
 			break
 		}
 
@@ -154,10 +158,10 @@ func (m *Mocker) MessagesAfter(
 		panic(fmt.Sprintf("limit may not be less than the number of sent messages (%d vs. %d)", len(messages), limit))
 	}
 
-	for i := 0; i <= len(messages)/maxMessagesLimit; i++ {
+	for i := 0; i <= len(messages)/maxFetchMessages; i++ {
 		var (
-			to   = len(messages) - i*maxMessagesLimit
-			from = int(math.Max(float64(to-maxMessagesLimit), float64(0)))
+			to   = len(messages) - i*maxFetchMessages
+			from = int(math.Max(float64(to-maxFetchMessages), float64(0)))
 
 			fetch = from - to // we expect this as the sent limit
 		)
@@ -165,19 +169,21 @@ func (m *Mocker) MessagesAfter(
 		// but if limit != unlimited
 		if limit > 0 {
 			// and the max data we can send (fetch) is smaller than what could be requested max, we
-			// expect either limit or hardlimit, depending on which is smaller, instead.
-			if fetch < maxMessagesLimit {
-				fetch = int(math.Min(float64(limit), float64(maxMessagesLimit)))
+			// expect either limit or maxFetchMessages, depending on which is smaller, instead.
+			if fetch < maxFetchMessages {
+				fetch = int(math.Min(float64(limit), float64(maxFetchMessages)))
 			}
 
 			limit -= uint(fetch)
-		} else { // this means there is no limit, hence we should expect hardlimit
-			fetch = maxMessagesLimit
+		} else {
+			// this means there is no limit, hence we should expect
+			// maxFetchMessages
+			fetch = maxFetchMessages
 		}
 
 		m.messagesRange(channelID, 0, after, 0, fmt.Sprintf("MessagesAfter #%d", i+1), uint(fetch), messages[from:to])
 
-		if to-from < maxMessagesLimit {
+		if to-from < maxFetchMessages {
 			break
 		}
 

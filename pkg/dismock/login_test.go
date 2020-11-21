@@ -3,7 +3,7 @@ package dismock
 import (
 	"testing"
 
-	"github.com/diamondburned/arikawa/api"
+	"github.com/diamondburned/arikawa/v2/api"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )

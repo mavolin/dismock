@@ -6,7 +6,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/diamondburned/arikawa/discord"
+	"github.com/diamondburned/arikawa/v2/discord"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -191,7 +191,7 @@ func TestMocker_Mock(t *testing.T) {
 
 		m.MockAPI("handler", method, path, f)
 
-		h, ok := m.handlers["/api/v6"+path][method]
+		h, ok := m.handlers["/api/v8"+path][method]
 		require.True(t, ok)
 
 		h[0].ServeHTTP(new(httptest.ResponseRecorder), new(http.Request))
@@ -206,7 +206,7 @@ func TestMocker_Mock(t *testing.T) {
 
 		m.MockAPI("handler", method, path, nil)
 
-		h, ok := m.handlers["/api/v6"+path][method]
+		h, ok := m.handlers["/api/v8"+path][method]
 		require.True(t, ok)
 
 		r := new(httptest.ResponseRecorder)

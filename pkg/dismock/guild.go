@@ -9,13 +9,15 @@ import (
 	"strconv"
 	"testing"
 
-	"github.com/diamondburned/arikawa/api"
-	"github.com/diamondburned/arikawa/discord"
+	"github.com/diamondburned/arikawa/v2/api"
+	"github.com/diamondburned/arikawa/v2/discord"
 	"github.com/stretchr/testify/require"
 
 	"github.com/mavolin/dismock/internal/mockutil"
 	"github.com/mavolin/dismock/internal/sanitize"
 )
+
+const maxFetchGuilds = 100
 
 // CreateGuild mocks a CreateGuild request.
 //
@@ -90,14 +92,12 @@ func (m *Mocker) Guilds(limit uint, g []discord.Guild) {
 		panic(fmt.Sprintf("limit may not be less than the number of sent guilds (%d vs. %d)", len(g), limit))
 	}
 
-	const hardLimit uint = 100
-
 	var after discord.GuildID
 
-	for i := 0; i <= len(g)/int(hardLimit); i++ {
+	for i := 0; i <= len(g)/maxFetchGuilds; i++ {
 		var (
-			from = uint(i) * hardLimit
-			to   = uint(math.Min(float64(from+hardLimit), float64(len(g))))
+			from = uint(i) * maxFetchGuilds
+			to   = uint(math.Min(float64(from+maxFetchGuilds), float64(len(g))))
 
 			fetch = to - from // we expect this as the sent limit
 		)
@@ -105,19 +105,21 @@ func (m *Mocker) Guilds(limit uint, g []discord.Guild) {
 		// but if limit != unlimited
 		if limit > 0 {
 			// and the max data we can send (fetch) is smaller than what could be requested max, we
-			// expect either limit or hardlimit, depending on which is smaller, instead.
-			if fetch < hardLimit {
-				fetch = uint(math.Min(float64(limit), float64(hardLimit)))
+			// expect either limit or mexFetchGuild, depending on which is smaller, instead.
+			if fetch < maxFetchGuilds {
+				fetch = uint(math.Min(float64(limit), float64(maxFetchGuilds)))
 			}
 
 			limit -= fetch
-		} else { // this means there is no limit, hence we should expect hardlimit
-			fetch = hardLimit
+		} else {
+			// this means there is no limit, hence we should expect
+			// maxFetchGuilds
+			fetch = maxFetchGuilds
 		}
 
 		m.guildsRange(0, after, fmt.Sprintf("Guilds #%d", i+1), fetch, g[from:to])
 
-		if to-from < hardLimit {
+		if to-from < maxFetchGuilds {
 			break
 		}
 
@@ -138,36 +140,36 @@ func (m *Mocker) GuildsBefore(before discord.GuildID, limit uint, g []discord.Gu
 		panic(fmt.Sprintf("limit may not be less than the number of sent guilds (%d vs. %d)", len(g), limit))
 	}
 
-	const hardLimit = 100
+	req := len(g)/maxFetchGuilds + 1
 
-	req := len(g)/hardLimit + 1
-
-	from := uint(math.Min(float64(uint(req)*hardLimit), float64(len(g))))
+	from := uint(math.Min(float64(uint(req)*maxFetchGuilds), float64(len(g))))
 
 	for i := req; i > 0; i-- {
 		no := req - i + 1
 
 		to := from
-		from = uint(math.Max(float64(0), float64(int(to-hardLimit))))
+		from = uint(math.Max(float64(0), float64(int(to-maxFetchGuilds))))
 
 		fetch := to - from // we expect this as the sent limit
 
 		// but if limit != unlimited
 		if limit > 0 {
 			// and the max data we can send (fetch) is smaller than what could be requested max, we
-			// expect either limit or hardlimit, depending on which is smaller, instead.
-			if fetch < hardLimit {
-				fetch = uint(math.Min(float64(limit), float64(hardLimit)))
+			// expect either limit or mexFetchGuild, depending on which is smaller, instead.
+			if fetch < maxFetchGuilds {
+				fetch = uint(math.Min(float64(limit), float64(maxFetchGuilds)))
 			}
 
 			limit -= fetch
-		} else { // this means there is no limit, hence we should expect hardlimit
-			fetch = hardLimit
+		} else {
+			// this means there is no limit, hence we should expect
+			// maxFetchGuilds
+			fetch = maxFetchGuilds
 		}
 
 		m.guildsRange(before, 0, fmt.Sprintf("GuildsBefore #%d", no), fetch, g[from:to])
 
-		if to-from < hardLimit {
+		if to-from < maxFetchGuilds {
 			break
 		}
 
@@ -188,12 +190,10 @@ func (m *Mocker) GuildsAfter(after discord.GuildID, limit uint, g []discord.Guil
 		panic(fmt.Sprintf("limit may not be less than the number of sent guilds (%d vs. %d)", len(g), limit))
 	}
 
-	const hardLimit uint = 100
-
-	for i := 0; i <= len(g)/int(hardLimit); i++ {
+	for i := 0; i <= len(g)/maxFetchGuilds; i++ {
 		var (
-			from = uint(i) * hardLimit
-			to   = uint(math.Min(float64(from+hardLimit), float64(len(g))))
+			from = uint(i) * maxFetchGuilds
+			to   = uint(math.Min(float64(from+maxFetchGuilds), float64(len(g))))
 
 			fetch = to - from // we expect this as the sent limit
 		)
@@ -201,19 +201,21 @@ func (m *Mocker) GuildsAfter(after discord.GuildID, limit uint, g []discord.Guil
 		// but if limit != unlimited
 		if limit > 0 {
 			// and the max data we can send (fetch) is smaller than what could be requested max, we
-			// expect either limit or hardlimit, depending on which is smaller, instead.
-			if fetch < hardLimit {
-				fetch = uint(math.Min(float64(limit), float64(hardLimit)))
+			// expect either limit or maxFetchGuilds, depending on which is smaller, instead.
+			if fetch < maxFetchGuilds {
+				fetch = uint(math.Min(float64(limit), float64(maxFetchGuilds)))
 			}
 
 			limit -= fetch
-		} else { // this means there is no limit, hence we should expect hardlimit
-			fetch = hardLimit
+		} else {
+			// this means there is no limit, hence we should expect
+			// maxFetchGuilds
+			fetch = maxFetchGuilds
 		}
 
 		m.guildsRange(0, after, fmt.Sprintf("GuildsAfter #%d", i+1), fetch, g[from:to])
 
-		if to-from < hardLimit {
+		if to-from < maxFetchGuilds {
 			break
 		}
 

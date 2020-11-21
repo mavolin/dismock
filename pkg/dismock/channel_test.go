@@ -3,9 +3,9 @@ package dismock
 import (
 	"testing"
 
-	"github.com/diamondburned/arikawa/api"
-	"github.com/diamondburned/arikawa/discord"
-	"github.com/diamondburned/arikawa/utils/json/option"
+	"github.com/diamondburned/arikawa/v2/api"
+	"github.com/diamondburned/arikawa/v2/discord"
+	"github.com/diamondburned/arikawa/v2/utils/json/option"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
@@ -46,14 +46,11 @@ func TestMocker_Channels(t *testing.T) {
 
 		var guildID discord.GuildID = 123
 
-		expect := []discord.Channel{}
-
 		m.Channels(guildID, nil)
 
 		actual, err := s.Channels(guildID)
 		require.NoError(t, err)
-
-		assert.Equal(t, expect, actual)
+		assert.Nil(t, actual)
 
 		m.Eval()
 	})
@@ -68,7 +65,7 @@ func TestMocker_CreateChannel(t *testing.T) {
 			Permissions: []discord.Overwrite{
 				{
 					ID:    789,
-					Type:  "role",
+					Type:  discord.OverwriteRole,
 					Allow: 012,
 					Deny:  345,
 				},
@@ -82,7 +79,7 @@ func TestMocker_CreateChannel(t *testing.T) {
 			Permissions: []discord.Overwrite{
 				{
 					ID:    789,
-					Type:  "role",
+					Type:  discord.OverwriteRole,
 					Allow: 012,
 					Deny:  345,
 				},
@@ -192,7 +189,7 @@ func TestMocker_Channel(t *testing.T) {
 		Permissions: []discord.Overwrite{
 			{
 				ID:    456,
-				Type:  "role",
+				Type:  discord.OverwriteRole,
 				Allow: 789,
 				Deny:  012,
 			},
@@ -220,7 +217,7 @@ func TestMocker_ModifyChannel(t *testing.T) {
 				Permissions: &[]discord.Overwrite{
 					{
 						ID:    456,
-						Type:  "role",
+						Type:  discord.OverwriteRole,
 						Allow: 798,
 						Deny:  012,
 					},
@@ -337,9 +334,7 @@ func TestMocker_DeleteChannelPermission(t *testing.T) {
 func TestMocker_Typing(t *testing.T) {
 	m, s := NewSession(t)
 
-	var (
-		channelID discord.ChannelID = 123
-	)
+	var channelID discord.ChannelID = 123
 
 	m.Typing(channelID)
 

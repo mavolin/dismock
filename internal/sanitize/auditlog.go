@@ -1,7 +1,7 @@
 package sanitize
 
 import (
-	"github.com/diamondburned/arikawa/discord"
+	"github.com/diamondburned/arikawa/v2/discord"
 )
 
 // AuditLog sanitizes an discord.AuditLog.

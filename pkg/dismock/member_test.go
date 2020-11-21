@@ -1,12 +1,11 @@
 package dismock
 
 import (
-	"math/rand"
 	"testing"
 
-	"github.com/diamondburned/arikawa/api"
-	"github.com/diamondburned/arikawa/discord"
-	"github.com/diamondburned/arikawa/utils/json/option"
+	"github.com/diamondburned/arikawa/v2/api"
+	"github.com/diamondburned/arikawa/v2/discord"
+	"github.com/diamondburned/arikawa/v2/utils/json/option"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -62,7 +61,7 @@ func TestMocker_Members(t *testing.T) {
 				for i := 0; i < c.members; i++ {
 					expect[i] = discord.Member{
 						User: discord.User{
-							ID: discord.UserID(rand.Int63()),
+							ID: discord.UserID(i + 1),
 						},
 					}
 				}
@@ -136,7 +135,7 @@ func TestMocker_MembersAfter(t *testing.T) {
 				for i := 0; i < c.members; i++ {
 					expect[i] = discord.Member{
 						User: discord.User{
-							ID: discord.UserID(rand.Int63()),
+							ID: discord.UserID(int(after) + i + 1),
 						},
 					}
 				}

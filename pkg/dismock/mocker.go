@@ -12,10 +12,10 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/diamondburned/arikawa/gateway"
-	"github.com/diamondburned/arikawa/session"
-	"github.com/diamondburned/arikawa/state"
-	"github.com/diamondburned/arikawa/utils/httputil/httpdriver"
+	"github.com/diamondburned/arikawa/v2/gateway"
+	"github.com/diamondburned/arikawa/v2/session"
+	"github.com/diamondburned/arikawa/v2/state"
+	"github.com/diamondburned/arikawa/v2/utils/httputil/httpdriver"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -25,15 +25,15 @@ type (
 		// Server is the httptest.Server used to mock the requests.
 		Server *httptest.Server
 		// Client is a mocked http.Client that redirects all requests to the
-		// mock-server.
+		// Server.
 		Client *http.Client
 		// handlers is a map containing all handlers.
 		// The outer map is sorted by path, the inner one by method.
-		// This ensures that different requests don't share the same Handler array, while still
-		// enforcing the call order.
+		// This ensures that different requests don't share the same Handler
+		// array, while still enforcing the call order.
 		handlers map[string]map[string][]Handler // map[Path]map[HTTPMethod][]Handler
-		// mut is the sync.Mutex used to secure the handlers map, when multiple request come in
-		// concurrently.
+		// mut is the sync.Mutex used to secure the handlers map, when multiple
+		// request come in concurrently.
 		// However, mocks may not be added concurrently.
 		mut *sync.Mutex
 		// t is the test type called on error.
@@ -100,7 +100,7 @@ func New(t *testing.T) *Mocker {
 				return net.Dial(network, m.Server.Listener.Addr().String())
 			},
 			TLSClientConfig: &tls.Config{
-				InsecureSkipVerify: true,
+				InsecureSkipVerify: true, //nolint:gosec
 			},
 		},
 	}
@@ -186,7 +186,7 @@ func (m *Mocker) Mock(name, method, path string, f MockFunc) {
 //
 // The MockFunc may be nil if only the NoContent status shall be returned.
 func (m *Mocker) MockAPI(name, method, path string, f MockFunc) {
-	path = "/api/v6" + path
+	path = "/api/v8" + path
 
 	m.Mock(name, method, path, f)
 }

@@ -7,7 +7,7 @@
 // As you might have noticed, some of the MockX methods have footers like:
 //		This method will sanitize Emoji.ID and Emoji.User.ID.
 // This means that all fields mentioned in the comment will be set to 1, or, if
-// available, a value passed in as a parameter, if their value is v <= 0.
+// available, a value passed in as a parameter if their value is v <= 0.
 // This is necessary, as arikawa serializes all Snowflakes that are s <= 0 to
 // JSON null, as they are seen as invalid.
 //
@@ -25,13 +25,14 @@
 //
 // Mocking Errors
 //
-// Not always do we expect an API call to succeed.
-// To send a discord error, use the Mocker.Error method.
+// To send a discord error, use the Mocker.Error method with the path of the
+// endpoint that should return an error.
 //
 //
 // Important Notes
 //
-// BUG(mavolin): Due to an inconvenient behavior of json.Unmarshal, where on
-// JSON null the the MarshalJSON method doesn't get called, there is no way to
-// differentiate between option.NullX and omitted.
+// BUG(mavolin): Due to an inconvenient behavior of json.Unmarshal where on
+// JSON null the the UnmarshalJSON method doesn't get called, there is no way
+// to differentiate between option.NullX and omitted, and therefore both will
+// be seen as equal.
 package dismock

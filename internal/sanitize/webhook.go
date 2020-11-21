@@ -1,6 +1,6 @@
 package sanitize
 
-import "github.com/diamondburned/arikawa/discord"
+import "github.com/diamondburned/arikawa/v2/discord"
 
 // Webhook sanitizes a discord.Webhook.
 //

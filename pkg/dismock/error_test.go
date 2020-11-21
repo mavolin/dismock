@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/diamondburned/arikawa/utils/httputil"
+	"github.com/diamondburned/arikawa/v2/utils/httputil"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
