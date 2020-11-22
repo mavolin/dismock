@@ -8,8 +8,6 @@ import (
 	"github.com/diamondburned/arikawa/v2/utils/json/option"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-
-	"github.com/mavolin/dismock/internal/sanitize"
 )
 
 func TestMocker_Messages(t *testing.T) {
@@ -40,8 +38,12 @@ func TestMocker_Messages(t *testing.T) {
 				expect := make([]discord.Message, c.messages)
 
 				for i := 0; i < c.messages; i++ {
-					m := discord.Message{ID: discord.MessageID(c.messages - i + 1)}
-					expect[i] = sanitize.Message(m, 1, channelID, 1)
+					expect[i] = discord.Message{
+						ID:        discord.MessageID(c.messages - i + 1),
+						ChannelID: channelID,
+						GuildID:   456,
+						Author:    discord.User{ID: 789},
+					}
 				}
 
 				m.Messages(channelID, c.limit, expect)
@@ -92,8 +94,12 @@ func TestMocker_MessagesAround(t *testing.T) {
 		expect := make([]discord.Message, 100)
 
 		for i := 0; i < len(expect); i++ {
-			m := discord.Message{ID: discord.MessageID(int(around) - i + 1)}
-			expect[i] = sanitize.Message(m, 1, channelID, 1)
+			expect[i] = discord.Message{
+				ID:        discord.MessageID(int(around) - i + 1),
+				ChannelID: channelID,
+				GuildID:   456,
+				Author:    discord.User{ID: 789},
+			}
 		}
 
 		m.MessagesAround(channelID, around, 100, expect)
@@ -135,8 +141,12 @@ func TestMocker_MessagesAround(t *testing.T) {
 			expect := make([]discord.Message, c.messages)
 
 			for i := 0; i < c.messages; i++ {
-				m := discord.Message{ID: discord.MessageID(c.messages - i + 1)}
-				expect[i] = sanitize.Message(m, 1, channelID, 1)
+				expect[i] = discord.Message{
+					ID:        discord.MessageID(c.messages - i + 1),
+					ChannelID: channelID,
+					GuildID:   456,
+					Author:    discord.User{ID: 789},
+				}
 			}
 
 			m.MessagesAround(channelID, around, c.limit, expect)
@@ -177,15 +187,17 @@ func TestMocker_MessagesAround(t *testing.T) {
 
 		expect := []discord.Message{
 			{
-				ID: 123,
+				ID:        123,
+				ChannelID: channelID,
+				GuildID:   456,
+				Author:    discord.User{ID: 789},
 			},
 			{
-				ID: 456,
+				ID:        456,
+				ChannelID: channelID,
+				GuildID:   456,
+				Author:    discord.User{ID: 789},
 			},
-		}
-
-		for i, msg := range expect {
-			expect[i] = sanitize.Message(msg, 1, channelID, 1)
 		}
 
 		m.MessagesAround(channelID, 890, 100, expect)
@@ -231,14 +243,18 @@ func TestMocker_MessagesBefore(t *testing.T) {
 
 				var (
 					channelID discord.ChannelID = 123
-					before    discord.MessageID = 3
+					before    discord.MessageID = 9999
 				)
 
 				expect := make([]discord.Message, c.messages)
 
 				for i := 0; i < c.messages; i++ {
-					m := discord.Message{ID: discord.MessageID(c.messages - i + 1)}
-					expect[i] = sanitize.Message(m, 1, channelID, 1)
+					expect[i] = discord.Message{
+						ID:        discord.MessageID(c.messages - i + 1),
+						ChannelID: channelID,
+						GuildID:   456,
+						Author:    discord.User{ID: 789},
+					}
 				}
 
 				m.MessagesBefore(channelID, before, c.limit, expect)
@@ -277,15 +293,17 @@ func TestMocker_MessagesBefore(t *testing.T) {
 
 		expect := []discord.Message{
 			{
-				ID: 123,
+				ID:        123,
+				ChannelID: channelID,
+				GuildID:   456,
+				Author:    discord.User{ID: 789},
 			},
 			{
-				ID: 456,
+				ID:        456,
+				ChannelID: channelID,
+				GuildID:   456,
+				Author:    discord.User{ID: 789},
 			},
-		}
-
-		for i, msg := range expect {
-			expect[i] = sanitize.Message(msg, 1, channelID, 1)
 		}
 
 		m.MessagesBefore(channelID, 890, 100, expect)
@@ -337,8 +355,12 @@ func TestMocker_MessagesAfter(t *testing.T) {
 				expect := make([]discord.Message, c.messages)
 
 				for i := 0; i < c.messages; i++ {
-					m := discord.Message{ID: discord.MessageID(int(after) - c.messages + 1)}
-					expect[i] = sanitize.Message(m, 1, channelID, 1)
+					expect[i] = discord.Message{
+						ID:        discord.MessageID(int(after) + c.messages + 1),
+						ChannelID: channelID,
+						GuildID:   789,
+						Author:    discord.User{ID: 012},
+					}
 				}
 
 				m.MessagesAfter(channelID, after, c.limit, expect)
@@ -379,15 +401,17 @@ func TestMocker_MessagesAfter(t *testing.T) {
 
 		expect := []discord.Message{
 			{
-				ID: 456,
+				ID:        456,
+				ChannelID: channelID,
+				GuildID:   456,
+				Author:    discord.User{ID: 789},
 			},
 			{
-				ID: 789,
+				ID:        789,
+				ChannelID: channelID,
+				GuildID:   456,
+				Author:    discord.User{ID: 789},
 			},
-		}
-
-		for i, msg := range expect {
-			expect[i] = sanitize.Message(msg, 1, channelID, 1)
 		}
 
 		m.MessagesAfter(channelID, 123, 100, expect)
@@ -411,10 +435,12 @@ func TestMocker_MessagesAfter(t *testing.T) {
 func TestMocker_Message(t *testing.T) {
 	m, s := NewSession(t)
 
-	expect := sanitize.Message(discord.Message{
+	expect := discord.Message{
 		ID:        123,
 		ChannelID: 465,
-	}, 1, 1, 1)
+		GuildID:   456,
+		Author:    discord.User{ID: 789},
+	}
 
 	m.Message(expect)
 
@@ -430,11 +456,12 @@ func TestMocker_SendText(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		m, s := NewSession(t)
 
-		expect := sanitize.Message(discord.Message{
+		expect := discord.Message{
 			ID:        123,
 			ChannelID: 456,
+			Author:    discord.User{ID: 789},
 			Content:   "abc",
-		}, 1, 1, 1)
+		}
 
 		m.SendText(expect)
 
@@ -453,10 +480,10 @@ func TestMocker_SendText(t *testing.T) {
 
 		var channelID discord.ChannelID = 123
 
-		m.SendText(sanitize.Message(discord.Message{
+		m.SendText(discord.Message{
 			ChannelID: channelID,
 			Content:   "abc",
-		}, 1, 1, 1))
+		})
 
 		_, err := s.SendText(channelID, "cba")
 		require.NoError(t, err)
@@ -469,16 +496,17 @@ func TestMocker_SendEmbed(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		m, s := NewSession(t)
 
-		expect := sanitize.Message(discord.Message{
+		expect := discord.Message{
 			ID:        123,
 			ChannelID: 456,
+			Author:    discord.User{ID: 789},
 			Embeds: []discord.Embed{
 				{
 					Title:       "def",
 					Description: "ghi",
 				},
 			},
-		}, 1, 1, 1)
+		}
 
 		m.SendEmbed(expect)
 
@@ -500,7 +528,7 @@ func TestMocker_SendEmbed(t *testing.T) {
 			messageID discord.MessageID = 456
 		)
 
-		m.SendEmbed(sanitize.Message(discord.Message{
+		m.SendEmbed(discord.Message{
 			ID:        messageID,
 			ChannelID: channelID,
 			Content:   "abc",
@@ -510,7 +538,7 @@ func TestMocker_SendEmbed(t *testing.T) {
 					Description: "ghi",
 				},
 			},
-		}, 1, 1, 1))
+		})
 
 		_, err := s.SendEmbed(channelID, discord.Embed{
 			Title:       "fed",
@@ -532,6 +560,7 @@ func TestMocker_SendMessage(t *testing.T) {
 			msg: discord.Message{
 				ID:        123,
 				ChannelID: 456,
+				Author:    discord.User{ID: 789},
 				Content:   "abc",
 				Embeds: []discord.Embed{
 					{
@@ -546,6 +575,7 @@ func TestMocker_SendMessage(t *testing.T) {
 			msg: discord.Message{
 				ID:        123,
 				ChannelID: 456,
+				Author:    discord.User{ID: 789},
 				Content:   "abc",
 			},
 		},
@@ -556,19 +586,17 @@ func TestMocker_SendMessage(t *testing.T) {
 			t.Run(c.name, func(t *testing.T) {
 				m, s := NewSession(t)
 
-				expect := sanitize.Message(c.msg, 1, 1, 1)
-
 				var embed *discord.Embed
-				if len(expect.Embeds) > 0 {
-					embed = &expect.Embeds[0]
+				if len(c.msg.Embeds) > 0 {
+					embed = &c.msg.Embeds[0]
 				}
 
-				m.SendMessage(embed, expect)
+				m.SendMessage(embed, c.msg)
 
-				actual, err := s.SendMessage(expect.ChannelID, expect.Content, embed)
+				actual, err := s.SendMessage(c.msg.ChannelID, c.msg.Content, embed)
 				require.NoError(t, err)
 
-				assert.Equal(t, expect, *actual)
+				assert.Equal(t, c.msg, *actual)
 
 				m.Eval()
 			})
@@ -578,11 +606,12 @@ func TestMocker_SendMessage(t *testing.T) {
 			m, s := NewSession(t)
 
 			var (
-				msg = sanitize.Message(discord.Message{
+				msg = discord.Message{
 					ID:        123,
 					ChannelID: 456,
+					Author:    discord.User{ID: 789},
 					Content:   "abc",
-				}, 1, 1, 1)
+				}
 
 				embed = discord.Embed{
 					Title:       "def",
@@ -620,12 +649,12 @@ func TestMocker_SendMessage(t *testing.T) {
 			}
 		)
 
-		m.SendMessage(&embed, sanitize.Message(discord.Message{
+		m.SendMessage(&embed, discord.Message{
 			ID:        messageID,
 			ChannelID: channelID,
 			Content:   "abc",
 			Embeds:    []discord.Embed{embed},
-		}, 1, 1, 1))
+		})
 
 		_, err := s.SendMessage(channelID, "cba", &embed)
 		require.NoError(t, err)
@@ -638,11 +667,12 @@ func TestMocker_EditText(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		m, s := NewSession(t)
 
-		expect := sanitize.Message(discord.Message{
+		expect := discord.Message{
 			ID:        123,
 			ChannelID: 456,
+			Author:    discord.User{ID: 789},
 			Content:   "abc",
-		}, 1, 1, 1)
+		}
 
 		m.EditText(expect)
 
@@ -668,12 +698,12 @@ func TestMocker_EditText(t *testing.T) {
 			}
 		)
 
-		m.EditText(sanitize.Message(discord.Message{
+		m.EditText(discord.Message{
 			ID:        messageID,
 			ChannelID: channelID,
 			Content:   "abc",
 			Embeds:    []discord.Embed{embed},
-		}, 1, 1, 1))
+		})
 
 		_, err := s.EditText(channelID, messageID, "cba")
 		require.NoError(t, err)
@@ -686,16 +716,17 @@ func TestMocker_EditEmbed(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		m, s := NewSession(t)
 
-		expect := sanitize.Message(discord.Message{
+		expect := discord.Message{
 			ID:        123,
 			ChannelID: 456,
+			Author:    discord.User{ID: 789},
 			Embeds: []discord.Embed{
 				{
 					Title:       "def",
 					Description: "ghi",
 				},
 			},
-		}, 1, 1, 1)
+		}
 
 		m.EditEmbed(expect)
 
@@ -717,7 +748,7 @@ func TestMocker_EditEmbed(t *testing.T) {
 			messageID discord.MessageID = 456
 		)
 
-		m.EditEmbed(sanitize.Message(discord.Message{
+		m.EditEmbed(discord.Message{
 			ID:        messageID,
 			ChannelID: channelID,
 			Content:   "abc",
@@ -727,7 +758,7 @@ func TestMocker_EditEmbed(t *testing.T) {
 					Description: "ghi",
 				},
 			},
-		}, 1, 1, 1))
+		})
 
 		_, err := s.EditEmbed(channelID, messageID, discord.Embed{
 			Title:       "fed",
@@ -751,6 +782,7 @@ func TestMocker_EditMessage(t *testing.T) {
 			msg: discord.Message{
 				ID:        123,
 				ChannelID: 456,
+				Author:    discord.User{ID: 789},
 				Content:   "abc",
 			},
 		},
@@ -760,6 +792,7 @@ func TestMocker_EditMessage(t *testing.T) {
 			msg: discord.Message{
 				ID:        123,
 				ChannelID: 456,
+				Author:    discord.User{ID: 789},
 				Content:   "abc",
 			},
 		},
@@ -768,6 +801,7 @@ func TestMocker_EditMessage(t *testing.T) {
 			msg: discord.Message{
 				ID:        123,
 				ChannelID: 456,
+				Author:    discord.User{ID: 789},
 				Content:   "abc",
 				Embeds: []discord.Embed{
 					{
@@ -782,6 +816,7 @@ func TestMocker_EditMessage(t *testing.T) {
 			msg: discord.Message{
 				ID:        123,
 				ChannelID: 456,
+				Author:    discord.User{ID: 789},
 				Content:   "abc",
 			},
 		},
@@ -792,19 +827,17 @@ func TestMocker_EditMessage(t *testing.T) {
 			t.Run(c.name, func(t *testing.T) {
 				m, s := NewSession(t)
 
-				expect := sanitize.Message(c.msg, 1, 1, 1)
-
 				var embed *discord.Embed
-				if len(expect.Embeds) > 0 {
-					embed = &expect.Embeds[0]
+				if len(c.msg.Embeds) > 0 {
+					embed = &c.msg.Embeds[0]
 				}
 
-				m.EditMessage(embed, expect, c.suppressEmbeds)
+				m.EditMessage(embed, c.msg, c.suppressEmbeds)
 
-				actual, err := s.EditMessage(expect.ChannelID, expect.ID, expect.Content, embed, c.suppressEmbeds)
+				actual, err := s.EditMessage(c.msg.ChannelID, c.msg.ID, c.msg.Content, embed, c.suppressEmbeds)
 				require.NoError(t, err)
 
-				assert.Equal(t, expect, *actual)
+				assert.Equal(t, c.msg, *actual)
 
 				m.Eval()
 			})
@@ -825,12 +858,12 @@ func TestMocker_EditMessage(t *testing.T) {
 			}
 		)
 
-		m.EditMessage(&embed, sanitize.Message(discord.Message{
+		m.EditMessage(&embed, discord.Message{
 			ID:        messageID,
 			ChannelID: channelID,
 			Content:   "abc",
 			Embeds:    []discord.Embed{embed},
-		}, 1, 1, 1), false)
+		}, false)
 
 		_, err := s.EditMessage(channelID, messageID, "cba", &embed, false)
 		require.NoError(t, err)
@@ -847,11 +880,12 @@ func TestMocker_EditMessageComplex(t *testing.T) {
 			Content: option.NewNullableString("abc"),
 		}
 
-		expect := sanitize.Message(discord.Message{
+		expect := discord.Message{
 			ID:        123,
 			ChannelID: 456,
+			Author:    discord.User{ID: 789},
 			Content:   "abc",
-		}, 1, 1, 1)
+		}
 
 		m.EditMessageComplex(data, expect)
 
@@ -868,11 +902,12 @@ func TestMocker_EditMessageComplex(t *testing.T) {
 
 		m, s := NewSession(tMock)
 
-		expect := sanitize.Message(discord.Message{
+		expect := discord.Message{
 			ID:        123,
 			ChannelID: 456,
+			Author:    discord.User{ID: 789},
 			Content:   "abc",
-		}, 1, 1, 1)
+		}
 
 		m.EditMessageComplex(api.EditMessageData{
 			Content: option.NewNullableString("abc"),

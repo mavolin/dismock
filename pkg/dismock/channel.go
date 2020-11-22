@@ -8,12 +8,9 @@ import (
 	"github.com/diamondburned/arikawa/v2/discord"
 
 	"github.com/mavolin/dismock/internal/mockutil"
-	"github.com/mavolin/dismock/internal/sanitize"
 )
 
 // Channels mocks a channels request.
-//
-// This method will sanitize Channel.ID.
 func (m *Mocker) Channels(guildID discord.GuildID, c []discord.Channel) {
 	m.MockAPI("Channels", http.MethodGet, "/guilds/"+guildID.String()+"/channels",
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
@@ -24,11 +21,7 @@ func (m *Mocker) Channels(guildID discord.GuildID, c []discord.Channel) {
 // CreateChannel mocks a CreateChannel request.
 //
 // The GuildID field of the passed discord.Channel must be set.
-//
-// This method will sanitize Channel.ID.
 func (m *Mocker) CreateChannel(d api.CreateChannelData, c discord.Channel) {
-	c = sanitize.Channel(c, 1)
-
 	m.MockAPI("CreateChannel", http.MethodPost, "/guilds/"+c.GuildID.String()+"/channels",
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
 			mockutil.CheckJSON(t, r.Body, new(api.CreateChannelData), &d)
@@ -48,11 +41,7 @@ func (m *Mocker) MoveChannel(guildID discord.GuildID, d []api.MoveChannelData) {
 // Channel mocks a Channel request.
 //
 // The ID field of the passed discord.Channel must be set.
-//
-// This method will sanitize Channel.ID.
 func (m *Mocker) Channel(c discord.Channel) {
-	c = sanitize.Channel(c, 1)
-
 	m.MockAPI("Channel", http.MethodGet, "/channels/"+c.ID.String(),
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
 			mockutil.WriteJSON(t, w, c)
@@ -97,16 +86,9 @@ func (m *Mocker) Typing(channelID discord.ChannelID) {
 }
 
 // PinnedMessages mocks a PinnedMessages request.
-//
-// This method will sanitize Message.ID, Message.ChannelID and
-// Message.Author.ID.
 func (m *Mocker) PinnedMessages(channelID discord.ChannelID, messages []discord.Message) {
 	if messages == nil {
 		messages = []discord.Message{}
-	}
-
-	for i, message := range messages {
-		messages[i] = sanitize.Message(message, 1, channelID, 1)
 	}
 
 	m.MockAPI("PinnedMessages", http.MethodGet, "/channels/"+channelID.String()+"/pins",

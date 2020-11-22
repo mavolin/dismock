@@ -14,18 +14,12 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/mavolin/dismock/internal/mockutil"
-	"github.com/mavolin/dismock/internal/sanitize"
 )
 
 const maxFetchGuilds = 100
 
 // CreateGuild mocks a CreateGuild request.
-//
-// This method will sanitize Guild.ID, Guild.OwnerID, Guild.Emojis.ID and
-// Guild.Roles.ID.
 func (m *Mocker) CreateGuild(d api.CreateGuildData, g discord.Guild) {
-	g = sanitize.Guild(g, 1, 1, 1, 1)
-
 	m.MockAPI("CreateGuild", http.MethodPost, "/guilds",
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
 			mockutil.CheckJSON(t, r.Body, new(api.CreateGuildData), &d)
@@ -36,12 +30,7 @@ func (m *Mocker) CreateGuild(d api.CreateGuildData, g discord.Guild) {
 // Guild mocks a Guild request.
 //
 // The ID field of the passed discord.Guild must be set.
-//
-// This method will sanitize Guild.ID, Guild.OwnerID, Guild.Emojis.ID and
-// Guild.Roles.ID.
 func (m *Mocker) Guild(g discord.Guild) {
-	g = sanitize.Guild(g, 1, 1, 1, 1)
-
 	m.MockAPI("Guild", http.MethodGet, "/guilds/"+g.ID.String(),
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
 			mockutil.WriteJSON(t, w, g)
@@ -51,12 +40,7 @@ func (m *Mocker) Guild(g discord.Guild) {
 // GuildWithCount mocks a GuildWithCount request.
 //
 // The ID field of the passed discord.Guild must be set.
-//
-// This method will sanitize Guild.ID, Guild.OwnerID, Guild.Emojis.ID and
-// Guild.Roles.ID.
 func (m *Mocker) GuildWithCount(g discord.Guild) {
-	g = sanitize.Guild(g, 1, 1, 1, 1)
-
 	m.MockAPI("GuildWithCount", http.MethodGet, "/guilds/"+g.ID.String(),
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
 			mockutil.CheckQuery(t, r.URL.Query(), url.Values{
@@ -67,12 +51,7 @@ func (m *Mocker) GuildWithCount(g discord.Guild) {
 }
 
 // GuildPreview mocks a GuildPreview request.
-//
-// This method will sanitize GuildPreview.ID, GuildPreview.Emojis.ID and
-// GuildPreview.Emojis.User.ID.
 func (m *Mocker) GuildPreview(p discord.GuildPreview) {
-	p = sanitize.GuildPreview(p, 1)
-
 	m.MockAPI("GuildPreview", http.MethodGet, "/guilds/"+p.ID.String()+"/preview",
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
 			mockutil.WriteJSON(t, w, p)
@@ -99,20 +78,20 @@ func (m *Mocker) Guilds(limit uint, g []discord.Guild) {
 			from = uint(i) * maxFetchGuilds
 			to   = uint(math.Min(float64(from+maxFetchGuilds), float64(len(g))))
 
-			fetch = to - from // we expect this as the sent limit
+			fetch = to - from // we msg this as the sent limit
 		)
 
 		// but if limit != unlimited
 		if limit > 0 {
 			// and the max data we can send (fetch) is smaller than what could be requested max, we
-			// expect either limit or mexFetchGuild, depending on which is smaller, instead.
+			// msg either limit or mexFetchGuild, depending on which is smaller, instead.
 			if fetch < maxFetchGuilds {
 				fetch = uint(math.Min(float64(limit), float64(maxFetchGuilds)))
 			}
 
 			limit -= fetch
 		} else {
-			// this means there is no limit, hence we should expect
+			// this means there is no limit, hence we should msg
 			// maxFetchGuilds
 			fetch = maxFetchGuilds
 		}
@@ -150,19 +129,19 @@ func (m *Mocker) GuildsBefore(before discord.GuildID, limit uint, g []discord.Gu
 		to := from
 		from = uint(math.Max(float64(0), float64(int(to-maxFetchGuilds))))
 
-		fetch := to - from // we expect this as the sent limit
+		fetch := to - from // we msg this as the sent limit
 
 		// but if limit != unlimited
 		if limit > 0 {
 			// and the max data we can send (fetch) is smaller than what could be requested max, we
-			// expect either limit or mexFetchGuild, depending on which is smaller, instead.
+			// msg either limit or mexFetchGuild, depending on which is smaller, instead.
 			if fetch < maxFetchGuilds {
 				fetch = uint(math.Min(float64(limit), float64(maxFetchGuilds)))
 			}
 
 			limit -= fetch
 		} else {
-			// this means there is no limit, hence we should expect
+			// this means there is no limit, hence we should msg
 			// maxFetchGuilds
 			fetch = maxFetchGuilds
 		}
@@ -195,20 +174,20 @@ func (m *Mocker) GuildsAfter(after discord.GuildID, limit uint, g []discord.Guil
 			from = uint(i) * maxFetchGuilds
 			to   = uint(math.Min(float64(from+maxFetchGuilds), float64(len(g))))
 
-			fetch = to - from // we expect this as the sent limit
+			fetch = to - from // we msg this as the sent limit
 		)
 
 		// but if limit != unlimited
 		if limit > 0 {
 			// and the max data we can send (fetch) is smaller than what could be requested max, we
-			// expect either limit or maxFetchGuilds, depending on which is smaller, instead.
+			// msg either limit or maxFetchGuilds, depending on which is smaller, instead.
 			if fetch < maxFetchGuilds {
 				fetch = uint(math.Min(float64(limit), float64(maxFetchGuilds)))
 			}
 
 			limit -= fetch
 		} else {
-			// this means there is no limit, hence we should expect
+			// this means there is no limit, hence we should msg
 			// maxFetchGuilds
 			fetch = maxFetchGuilds
 		}
@@ -224,14 +203,7 @@ func (m *Mocker) GuildsAfter(after discord.GuildID, limit uint, g []discord.Guil
 }
 
 // guildsRange mocks a single request to the GET /guilds endpoint.
-//
-// This method will sanitize Guilds.ID, Guilds.OwnerID, Guilds.Emojis.ID and
-// Guilds.Roles.ID.
 func (m *Mocker) guildsRange(before, after discord.GuildID, name string, limit uint, g []discord.Guild) {
-	for i, guild := range g {
-		g[i] = sanitize.Guild(guild, 1, 1, 1, 1)
-	}
-
 	m.MockAPI(name, http.MethodGet, "/users/@me/guilds",
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
 			expect := url.Values{
@@ -259,12 +231,7 @@ func (m *Mocker) LeaveGuild(id discord.GuildID) {
 // ModifyGuild mocks a ModifyGuild request.
 //
 // The ID field of the passed discord.Guild must be set.
-//
-// This method will sanitize Guild.ID, Guild.OwnerID, Guild.Emojis.ID and
-// Guild.Roles.ID.
 func (m *Mocker) ModifyGuild(d api.ModifyGuildData, g discord.Guild) {
-	g = sanitize.Guild(g, 1, 1, 1, 1)
-
 	m.MockAPI("ModifyGuild", http.MethodPatch, "/guilds/"+g.ID.String(),
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
 			mockutil.CheckJSON(t, r.Body, new(api.ModifyGuildData), &d)
@@ -290,11 +257,6 @@ func (m *Mocker) VoiceRegionsGuild(guildID discord.GuildID, vr []discord.VoiceRe
 }
 
 // AuditLog mocks a AuditLog request.
-//
-// This method will sanitize AuditLog.Webhook.ID, AuditLog.Webhook.User.ID,
-// AuditLog.Users.ID, AuditLog.Entries.ID, AuditLog.Entries.UserID,
-// AuditLog.Integrations.ID, AuditLog.Integrations.RoleID and
-// AuditLog.Integrations.User.ID.
 func (m *Mocker) AuditLog(guildID discord.GuildID, d api.AuditLogData, al discord.AuditLog) {
 	switch {
 	case d.Limit == 0:
@@ -302,8 +264,6 @@ func (m *Mocker) AuditLog(guildID discord.GuildID, d api.AuditLogData, al discor
 	case d.Limit > 100:
 		d.Limit = 100
 	}
-
-	al = sanitize.AuditLog(al)
 
 	m.MockAPI("AuditLog", http.MethodGet, "/guilds/"+guildID.String()+"/audit-logs",
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
@@ -329,16 +289,9 @@ func (m *Mocker) AuditLog(guildID discord.GuildID, d api.AuditLogData, al discor
 }
 
 // Integrations mocks a Integrations request.
-//
-// This method will sanitize Integration.ID, Integration.RoleID and
-// Integration.User.ID.
 func (m *Mocker) Integrations(guildID discord.GuildID, integrations []discord.Integration) {
 	if integrations == nil {
 		integrations = []discord.Integration{}
-	}
-
-	for i, integration := range integrations {
-		integrations[i] = sanitize.Integration(integration, 1, 1, 1)
 	}
 
 	m.MockAPI("Integrations", http.MethodGet, "/guilds/"+guildID.String()+"/integrations",
@@ -386,40 +339,44 @@ func (m *Mocker) SyncIntegration(guildID discord.GuildID, integrationID discord.
 		"/guilds/"+guildID.String()+"/integrations/"+integrationID.String()+"/sync", nil)
 }
 
-// GuildWidget mocks a GuildWidget request.
-func (m *Mocker) GuildWidget(guildID discord.GuildID, e discord.GuildWidget) {
-	m.MockAPI("GuildWidget", http.MethodGet, "/guilds/"+guildID.String()+"/widget",
+// GuildWidgetSettings mocks a GuildWidgetSettings request.
+func (m *Mocker) GuildWidgetSettings(guildID discord.GuildID, s discord.GuildWidgetSettings) {
+	m.MockAPI("GuildWidgetSettings", http.MethodGet, "/guilds/"+guildID.String()+"/widget",
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
-			mockutil.WriteJSON(t, w, e)
+			mockutil.WriteJSON(t, w, s)
 		})
 }
 
 // ModifyGuildWidget mocks a ModifyGuildWidget request.
-func (m *Mocker) ModifyGuildWidget(guildID discord.GuildID, d api.ModifyGuildWidgetData, e discord.GuildWidget) {
-	m.MockAPI("ModifyGuild", http.MethodPatch, "/guilds/"+guildID.String()+"/widget",
+func (m *Mocker) ModifyGuildWidget(
+	guildID discord.GuildID, d api.ModifyGuildWidgetData, s discord.GuildWidgetSettings,
+) {
+	m.MockAPI("ModifyGuildWidget", http.MethodPatch, "/guilds/"+guildID.String()+"/widget",
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
 			mockutil.CheckJSON(t, r.Body, new(api.ModifyGuildWidgetData), &d)
-			mockutil.WriteJSON(t, w, e)
+			mockutil.WriteJSON(t, w, s)
+		})
+}
+
+// GuildWidget mocks a GuildWidget request.
+func (m *Mocker) GuildWidget(guildID discord.GuildID, widget discord.GuildWidget) {
+	m.MockAPI("GuildWidgetSettings", http.MethodGet, "/guilds/"+guildID.String()+"/widget.json",
+		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
+			mockutil.WriteJSON(t, w, widget)
 		})
 }
 
 // GuildVanityURL mocks a GuildVanityURL request.
-//
-// Although those fields are normally not sent, this method will sanitize
-// Invite.Guild.ID, Invite.Guild.OwnerID, Invite.Guild.Emojis.ID,
-// Invite.Guild.Roles.ID, Invite.Channel.ID, Invite.Inviter.ID.
-func (m *Mocker) GuildVanityURL(guildID discord.GuildID, i discord.Invite) {
-	i = sanitize.Invite(i, 1, 1, 1, 1, 1, 1, 1)
-
+func (m *Mocker) GuildVanityInvite(guildID discord.GuildID, i discord.Invite) {
 	m.MockAPI("GuildVanityURL", http.MethodGet, "/guilds/"+guildID.String()+"/vanity-url",
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
 			mockutil.WriteJSON(t, w, i)
 		})
 }
 
-// GuildImage mocks a GuildImage request.
-func (m *Mocker) GuildImage(guildID discord.GuildID, style api.GuildImageStyle, img io.Reader) {
-	m.MockAPI("GuildImage", http.MethodGet, "/guilds/"+guildID.String()+"/widget.png",
+// GuildWidgetImage mocks a GuildWidgetImage request.
+func (m *Mocker) GuildWidgetImage(guildID discord.GuildID, style api.GuildWidgetImageStyle, img io.Reader) {
+	m.MockAPI("GuildWidgetImage", http.MethodGet, "/guilds/"+guildID.String()+"/widget.png",
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
 			mockutil.CheckQuery(t, r.URL.Query(), url.Values{
 				"style": {string(style)},

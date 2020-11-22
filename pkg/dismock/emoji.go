@@ -8,19 +8,12 @@ import (
 	"github.com/diamondburned/arikawa/v2/discord"
 
 	"github.com/mavolin/dismock/internal/mockutil"
-	"github.com/mavolin/dismock/internal/sanitize"
 )
 
 // Emojis mocks a Emojis request.
-//
-// This method will sanitize Emoji.ID and Emoji.User.ID.
 func (m *Mocker) Emojis(guildID discord.GuildID, e []discord.Emoji) {
 	if e == nil {
 		e = []discord.Emoji{}
-	}
-
-	for i, emoji := range e {
-		e[i] = sanitize.Emoji(emoji, 1, 1)
 	}
 
 	m.MockAPI("Emojis", http.MethodGet, "/guilds/"+guildID.String()+"/emojis",
@@ -32,11 +25,7 @@ func (m *Mocker) Emojis(guildID discord.GuildID, e []discord.Emoji) {
 // Emoji mocks a Emoji request.
 //
 // The ID field of the passed discord.Emoji is required.
-//
-// This method will sanitize Emoji.ID and Emoji.User.ID.
 func (m *Mocker) Emoji(guildID discord.GuildID, e discord.Emoji) {
-	e = sanitize.Emoji(e, 1, 1)
-
 	m.MockAPI("Emoji", http.MethodGet, "/guilds/"+guildID.String()+"/emojis/"+e.ID.String(),
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
 			mockutil.WriteJSON(t, w, e)
@@ -49,8 +38,6 @@ func (m *Mocker) Emoji(guildID discord.GuildID, e discord.Emoji) {
 //
 // This method will sanitize Emoji.ID and Emoji.User.ID.
 func (m *Mocker) CreateEmoji(guildID discord.GuildID, d api.CreateEmojiData, e discord.Emoji) {
-	e = sanitize.Emoji(e, 1, 1)
-
 	m.MockAPI("CreateEmoji", http.MethodPost, "/guilds/"+guildID.String()+"/emojis",
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
 			mockutil.CheckJSON(t, r.Body, new(api.CreateEmojiData), &d)

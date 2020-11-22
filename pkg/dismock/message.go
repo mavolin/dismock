@@ -13,15 +13,11 @@ import (
 	"github.com/diamondburned/arikawa/v2/utils/json/option"
 
 	"github.com/mavolin/dismock/internal/mockutil"
-	"github.com/mavolin/dismock/internal/sanitize"
 )
 
 const maxFetchMessages = 100
 
 // Messages mocks a Messages request.
-//
-// This method will sanitize Message.ID, Message.ChannelID and
-// Message.Author.ID.
 func (m *Mocker) Messages(channelID discord.ChannelID, limit uint, messages []discord.Message) {
 	if messages == nil {
 		messages = []discord.Message{}
@@ -39,19 +35,19 @@ func (m *Mocker) Messages(channelID discord.ChannelID, limit uint, messages []di
 			to   = uint(math.Min(float64(from+maxFetchMessages), float64(len(messages))))
 		)
 
-		fetch := to - from // we expect this as the sent limit
+		fetch := to - from // we msg this as the sent limit
 
 		// but if limit != unlimited
 		if limit > 0 {
 			// and the max data we can send (fetch) is smaller than what could be requested max, we
-			// expect either limit or maxFetchMessages, depending on which is smaller, instead.
+			// msg either limit or maxFetchMessages, depending on which is smaller, instead.
 			if fetch < maxFetchMessages {
 				fetch = uint(math.Min(float64(limit), float64(maxFetchMessages)))
 			}
 
 			limit -= fetch
 		} else {
-			// this means there is no limit, hence we should expect
+			// this means there is no limit, hence we should msg
 			// maxFetchMessages
 			fetch = maxFetchMessages
 		}
@@ -67,9 +63,6 @@ func (m *Mocker) Messages(channelID discord.ChannelID, limit uint, messages []di
 }
 
 // MessagesAround mocks a MessagesAround request.
-//
-// This method will sanitize Message.ID, Message.ChannelID and
-// Message.Author.ID.
 func (m *Mocker) MessagesAround(
 	channelID discord.ChannelID, around discord.MessageID, limit uint, messages []discord.Message,
 ) {
@@ -112,19 +105,19 @@ func (m *Mocker) MessagesBefore(
 			to   = uint(math.Min(float64(from+maxFetchMessages), float64(len(messages))))
 		)
 
-		fetch := to - from // we expect this as the sent limit
+		fetch := to - from // we msg this as the sent limit
 
 		// but if limit != unlimited
 		if limit > 0 {
 			// and the max data we can send (fetch) is smaller than what could be requested max, we
-			// expect either limit or maxFetchMessages, depending on which is smaller, instead.
+			// msg either limit or maxFetchMessages, depending on which is smaller, instead.
 			if fetch < maxFetchMessages {
 				fetch = uint(math.Min(float64(limit), float64(maxFetchMessages)))
 			}
 
 			limit -= fetch
 		} else {
-			// this means there is no limit, hence we should expect
+			// this means there is no limit, hence we should msg
 			// maxFetchMessages
 			fetch = maxFetchMessages
 		}
@@ -140,9 +133,6 @@ func (m *Mocker) MessagesBefore(
 }
 
 // MessagesAfter mocks a MessagesAfter request.
-//
-// This method will sanitize Message.ID, Message.ChannelID and
-// Message.Author.ID.
 func (m *Mocker) MessagesAfter(
 	channelID discord.ChannelID, after discord.MessageID, limit uint, messages []discord.Message,
 ) {
@@ -163,20 +153,20 @@ func (m *Mocker) MessagesAfter(
 			to   = len(messages) - i*maxFetchMessages
 			from = int(math.Max(float64(to-maxFetchMessages), float64(0)))
 
-			fetch = from - to // we expect this as the sent limit
+			fetch = from - to // we msg this as the sent limit
 		)
 
 		// but if limit != unlimited
 		if limit > 0 {
 			// and the max data we can send (fetch) is smaller than what could be requested max, we
-			// expect either limit or maxFetchMessages, depending on which is smaller, instead.
+			// msg either limit or maxFetchMessages, depending on which is smaller, instead.
 			if fetch < maxFetchMessages {
 				fetch = int(math.Min(float64(limit), float64(maxFetchMessages)))
 			}
 
 			limit -= uint(fetch)
 		} else {
-			// this means there is no limit, hence we should expect
+			// this means there is no limit, hence we should msg
 			// maxFetchMessages
 			fetch = maxFetchMessages
 		}
@@ -192,17 +182,10 @@ func (m *Mocker) MessagesAfter(
 }
 
 // messagesRange mocks a single request to the GET /messages endpoint.
-//
-// This method will sanitize Message.ID, Message.ChannelID and
-// Message.Author.ID.
 func (m *Mocker) messagesRange(
 	channelID discord.ChannelID, before, after, around discord.MessageID, name string, limit uint,
 	messages []discord.Message,
 ) {
-	for i, m := range messages {
-		messages[i] = sanitize.Message(m, 1, channelID, 1)
-	}
-
 	m.MockAPI(name, http.MethodGet, "/channels/"+channelID.String()+"/messages",
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
 			expect := url.Values{
@@ -230,11 +213,7 @@ func (m *Mocker) messagesRange(
 //
 // The ID field and the ChannelID field of the passed discord.Message must be
 // set.
-//
-// This method will sanitize Message.Author.ID.
 func (m *Mocker) Message(msg discord.Message) {
-	msg = sanitize.Message(msg, 1, 1, 1)
-
 	m.MockAPI("Message", http.MethodGet, "/channels/"+msg.ChannelID.String()+"/messages/"+msg.ID.String(),
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
 			mockutil.WriteJSON(t, w, msg)
@@ -245,9 +224,6 @@ func (m *Mocker) Message(msg discord.Message) {
 //
 // The ChannelID field and the Content field of the passed discord.Message must
 // be set.
-//
-// This method will sanitize Message.ID, Message.Author.ID, Message.Embeds.Type
-// and Message.Embeds.Color.
 func (m *Mocker) SendText(msg discord.Message) {
 	m.sendMessageComplex("SendText", api.SendMessageData{
 		Content: msg.Content,
@@ -258,9 +234,6 @@ func (m *Mocker) SendText(msg discord.Message) {
 //
 // The ChannelID field and the Embed field of the passed discord.Message must
 // be set.
-//
-// This method will sanitize Message.ID, Message.Author.ID, Message.Embeds.Type
-// and Message.Embeds.Color.
 func (m *Mocker) SendEmbed(msg discord.Message) {
 	m.sendMessageComplex("SendEmbed", api.SendMessageData{
 		Embed: &msg.Embeds[0],
@@ -294,8 +267,6 @@ func (m *Mocker) SendMessage(embed *discord.Embed, msg discord.Message) {
 //
 // The ID field, the ChannelID field and the Content field of the passed
 // Message must be set.
-//
-// This method will sanitize Message.Author.ID.
 func (m *Mocker) EditText(msg discord.Message) {
 	m.editMessageComplex("EditText", api.EditMessageData{
 		Content: option.NewNullableString(msg.Content),
@@ -306,9 +277,6 @@ func (m *Mocker) EditText(msg discord.Message) {
 //
 // The ID field, the ChannelID field and the Embed[0] field of the passed
 // discord.Message must be set.
-//
-// This method will sanitize Message.Author.ID, Message.Embed.Type and
-// Message.Embed.Color.
 func (m *Mocker) EditEmbed(msg discord.Message) {
 	m.editMessageComplex("EditEmbed", api.EditMessageData{
 		Embed: &msg.Embeds[0],
@@ -319,9 +287,6 @@ func (m *Mocker) EditEmbed(msg discord.Message) {
 //
 // The ID field, the ChannelID field, the Content field of the passed
 // discord.Message must be set.
-//
-// This method will sanitize Message.Author.ID, Message.Embed.Type and
-// Message.Embed.Color.
 func (m *Mocker) EditMessage(embed *discord.Embed, msg discord.Message, suppressEmbeds bool) {
 	d := api.EditMessageData{
 		Content: option.NewNullableString(msg.Content),
@@ -339,9 +304,6 @@ func (m *Mocker) EditMessage(embed *discord.Embed, msg discord.Message, suppress
 //
 // The ID field and the ChannelID field of the passed discord.Message must be
 // set.
-//
-// This method will sanitize Message.Author.ID, Message.Embed.Type and
-// Message.Embed.Color.
 func (m *Mocker) EditMessageComplex(d api.EditMessageData, msg discord.Message) {
 	m.editMessageComplex("EditMessageComplex", d, msg)
 }
@@ -350,12 +312,7 @@ func (m *Mocker) EditMessageComplex(d api.EditMessageData, msg discord.Message) 
 //
 // The ID field and the ChannelID field of the passed discord.Message must be
 // set.
-//
-// This method will sanitize Message.Author.ID, Message.Embed.Type and
-// Message.Embed.Color.
 func (m *Mocker) editMessageComplex(name string, d api.EditMessageData, msg discord.Message) {
-	msg = sanitize.Message(msg, 1, 1, 1)
-
 	if d.Embed != nil {
 		if d.Embed.Type == "" {
 			d.Embed.Type = discord.NormalEmbed

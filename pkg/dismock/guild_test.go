@@ -10,22 +10,21 @@ import (
 	"github.com/diamondburned/arikawa/v2/utils/json/option"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-
-	"github.com/mavolin/dismock/internal/sanitize"
 )
 
 func TestMocker_CreateGuild(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		m, s := NewSession(t)
 
-		data := api.CreateGuildData{
-			Name: "abc",
-		}
+		data := api.CreateGuildData{Name: "abc"}
 
-		expect := sanitize.Guild(discord.Guild{
-			ID:   123,
-			Name: "abc",
-		}, 1, 1, 1, 1)
+		expect := discord.Guild{
+			ID:                     123,
+			Name:                   "abc",
+			OwnerID:                1,
+			RulesChannelID:         2,
+			PublicUpdatesChannelID: 3,
+		}
 
 		m.CreateGuild(data, expect)
 
@@ -42,18 +41,17 @@ func TestMocker_CreateGuild(t *testing.T) {
 
 		m, s := NewSession(tMock)
 
-		expect := sanitize.Guild(discord.Guild{
-			ID:   123,
-			Name: "abc",
-		}, 1, 1, 1, 1)
+		expect := discord.Guild{
+			ID:                     123,
+			Name:                   "abc",
+			OwnerID:                1,
+			RulesChannelID:         2,
+			PublicUpdatesChannelID: 3,
+		}
 
-		m.CreateGuild(api.CreateGuildData{
-			Name: "abc",
-		}, expect)
+		m.CreateGuild(api.CreateGuildData{Name: "abc"}, expect)
 
-		actual, err := s.CreateGuild(api.CreateGuildData{
-			Name: "def",
-		})
+		actual, err := s.CreateGuild(api.CreateGuildData{Name: "def"})
 		require.NoError(t, err)
 
 		assert.Equal(t, expect, *actual)
@@ -64,10 +62,13 @@ func TestMocker_CreateGuild(t *testing.T) {
 func TestMocker_Guild(t *testing.T) {
 	m, s := NewSession(t)
 
-	expect := sanitize.Guild(discord.Guild{
-		ID:   123,
-		Name: "abc",
-	}, 1, 1, 1, 1)
+	expect := discord.Guild{
+		ID:                     123,
+		Name:                   "abc",
+		OwnerID:                1,
+		RulesChannelID:         2,
+		PublicUpdatesChannelID: 3,
+	}
 
 	m.Guild(expect)
 
@@ -82,12 +83,15 @@ func TestMocker_Guild(t *testing.T) {
 func TestMocker_GuildWithCount(t *testing.T) {
 	m, s := NewSession(t)
 
-	expect := sanitize.Guild(discord.Guild{
-		ID:                   123,
-		Name:                 "abc",
-		ApproximateMembers:   3,
-		ApproximatePresences: 2,
-	}, 1, 1, 1, 1)
+	expect := discord.Guild{
+		ID:                     123,
+		Name:                   "abc",
+		OwnerID:                1,
+		RulesChannelID:         2,
+		PublicUpdatesChannelID: 3,
+		ApproximateMembers:     3,
+		ApproximatePresences:   2,
+	}
 
 	m.GuildWithCount(expect)
 
@@ -102,10 +106,10 @@ func TestMocker_GuildWithCount(t *testing.T) {
 func TestMocker_GuildPreview(t *testing.T) {
 	m, s := NewSession(t)
 
-	expect := sanitize.GuildPreview(discord.GuildPreview{
+	expect := discord.GuildPreview{
 		ID:   123,
 		Name: "abc",
-	}, 1)
+	}
 
 	m.GuildPreview(expect)
 
@@ -143,8 +147,12 @@ func TestMocker_Guilds(t *testing.T) {
 				expect := make([]discord.Guild, c.guilds)
 
 				for i := 0; i < c.guilds; i++ {
-					g := discord.Guild{ID: discord.GuildID(i + 1)}
-					expect[i] = sanitize.Guild(g, 1, 1, 1, 1)
+					expect[i] = discord.Guild{
+						ID:                     discord.GuildID(i + 1),
+						OwnerID:                1,
+						RulesChannelID:         2,
+						PublicUpdatesChannelID: 3,
+					}
 				}
 
 				m.Guilds(c.limit, expect)
@@ -209,8 +217,12 @@ func TestMocker_GuildsBefore(t *testing.T) {
 				expect := make([]discord.Guild, c.guilds)
 
 				for i := 0; i < c.guilds; i++ {
-					g := discord.Guild{ID: discord.GuildID(i + 1)}
-					expect[i] = sanitize.Guild(g, 1, 1, 1, 1)
+					expect[i] = discord.Guild{
+						ID:                     discord.GuildID(i + 1),
+						OwnerID:                1,
+						RulesChannelID:         2,
+						PublicUpdatesChannelID: 3,
+					}
 				}
 
 				m.GuildsBefore(before, c.limit, expect)
@@ -245,12 +257,18 @@ func TestMocker_GuildsBefore(t *testing.T) {
 
 		expect := []discord.Guild{
 			{
-				ID:   123,
-				Name: "abc",
+				ID:                     123,
+				Name:                   "abc",
+				OwnerID:                1,
+				RulesChannelID:         2,
+				PublicUpdatesChannelID: 3,
 			},
 			{
-				ID:   456,
-				Name: "def",
+				ID:                     456,
+				Name:                   "def",
+				OwnerID:                1,
+				RulesChannelID:         2,
+				PublicUpdatesChannelID: 3,
 			},
 		}
 
@@ -300,8 +318,12 @@ func TestMocker_GuildsAfter(t *testing.T) {
 				expect := make([]discord.Guild, c.guilds)
 
 				for i := 0; i < c.guilds; i++ {
-					g := discord.Guild{ID: after + 1}
-					expect[i] = sanitize.Guild(g, 1, 1, 1, 1)
+					expect[i] = discord.Guild{
+						ID:                     after + 1,
+						OwnerID:                1,
+						RulesChannelID:         2,
+						PublicUpdatesChannelID: 3,
+					}
 				}
 
 				m.GuildsAfter(after, c.limit, expect)
@@ -336,12 +358,18 @@ func TestMocker_GuildsAfter(t *testing.T) {
 
 		expect := []discord.Guild{
 			{
-				ID:   456,
-				Name: "abc",
+				ID:                     456,
+				Name:                   "abc",
+				OwnerID:                1,
+				RulesChannelID:         2,
+				PublicUpdatesChannelID: 3,
 			},
 			{
-				ID:   789,
-				Name: "def",
+				ID:                     789,
+				Name:                   "def",
+				OwnerID:                1,
+				RulesChannelID:         2,
+				PublicUpdatesChannelID: 3,
 			},
 		}
 
@@ -380,14 +408,15 @@ func TestMocker_ModifyGuild(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		m, s := NewSession(t)
 
-		data := api.ModifyGuildData{
-			Name: "abc",
-		}
+		data := api.ModifyGuildData{Name: "abc"}
 
-		expect := sanitize.Guild(discord.Guild{
-			ID:   123,
-			Name: "abc",
-		}, 1, 1, 1, 1)
+		expect := discord.Guild{
+			ID:                     123,
+			Name:                   "abc",
+			OwnerID:                1,
+			RulesChannelID:         2,
+			PublicUpdatesChannelID: 3,
+		}
 
 		m.ModifyGuild(data, expect)
 
@@ -404,18 +433,17 @@ func TestMocker_ModifyGuild(t *testing.T) {
 
 		m, s := NewSession(tMock)
 
-		expect := sanitize.Guild(discord.Guild{
-			ID:   123,
-			Name: "abc",
-		}, 1, 1, 1, 1)
+		expect := discord.Guild{
+			ID:                     123,
+			Name:                   "abc",
+			OwnerID:                1,
+			RulesChannelID:         2,
+			PublicUpdatesChannelID: 3,
+		}
 
-		m.ModifyGuild(api.ModifyGuildData{
-			Name: "abc",
-		}, expect)
+		m.ModifyGuild(api.ModifyGuildData{Name: "abc"}, expect)
 
-		actual, err := s.ModifyGuild(expect.ID, api.ModifyGuildData{
-			Name: "def",
-		})
+		actual, err := s.ModifyGuild(expect.ID, api.ModifyGuildData{Name: "def"})
 		require.NoError(t, err)
 
 		assert.Equal(t, expect, *actual)
@@ -489,21 +517,15 @@ func TestMocker_AuditLog(t *testing.T) {
 	}{
 		{
 			name: "limit = 0",
-			data: api.AuditLogData{
-				Limit: 0,
-			},
+			data: api.AuditLogData{Limit: 0},
 		},
 		{
 			name: "limit above 100",
-			data: api.AuditLogData{
-				Limit: 101,
-			},
+			data: api.AuditLogData{Limit: 101},
 		},
 		{
 			name: "no data",
-			data: api.AuditLogData{
-				Limit: 50,
-			},
+			data: api.AuditLogData{Limit: 50},
 		},
 		{
 			name: "UserID",
@@ -543,7 +565,7 @@ func TestMocker_AuditLog(t *testing.T) {
 
 				var guildID discord.GuildID = 123
 
-				expect := sanitize.AuditLog(discord.AuditLog{
+				expect := discord.AuditLog{
 					Users: []discord.User{
 						{
 							ID:       256827968133791744,
@@ -557,7 +579,7 @@ func TestMocker_AuditLog(t *testing.T) {
 							ActionType: discord.EmojiUpdate,
 						},
 					},
-				})
+				}
 
 				m.AuditLog(guildID, c.data, expect)
 
@@ -578,7 +600,7 @@ func TestMocker_AuditLog(t *testing.T) {
 
 		var guildID discord.GuildID = 123
 
-		expect := sanitize.AuditLog(discord.AuditLog{
+		expect := discord.AuditLog{
 			Users: []discord.User{
 				{
 					ID:       256827968133791744,
@@ -592,7 +614,7 @@ func TestMocker_AuditLog(t *testing.T) {
 					ActionType: discord.EmojiUpdate,
 				},
 			},
-		})
+		}
 
 		m.AuditLog(guildID, api.AuditLogData{
 			ActionType: discord.EmojiUpdate,
@@ -618,17 +640,17 @@ func TestMocker_Integrations(t *testing.T) {
 
 		expect := []discord.Integration{
 			{
-				ID:   456,
-				Name: "abc",
+				ID:     456,
+				Name:   "abc",
+				RoleID: 1,
+				User:   discord.User{ID: 2},
 			},
 			{
-				ID:   789,
-				Name: "def",
+				ID:     789,
+				Name:   "def",
+				RoleID: 1,
+				User:   discord.User{ID: 2},
 			},
-		}
-
-		for i, integration := range expect {
-			expect[i] = sanitize.Integration(integration, 1, 1, 1)
 		}
 
 		m.Integrations(guildID, expect)
@@ -753,18 +775,16 @@ func TestMocker_SyncIntegration(t *testing.T) {
 	m.Eval()
 }
 
-func TestMocker_GuildWidget(t *testing.T) {
+func TestMocker_GuildWidgetSettings(t *testing.T) {
 	m, s := NewSession(t)
 
 	var guildID discord.GuildID = 123
 
-	expect := discord.GuildWidget{
-		ChannelID: 345,
-	}
+	expect := discord.GuildWidgetSettings{ChannelID: 345}
 
-	m.GuildWidget(guildID, expect)
+	m.GuildWidgetSettings(guildID, expect)
 
-	actual, err := s.GuildWidget(guildID)
+	actual, err := s.GuildWidgetSettings(guildID)
 	require.NoError(t, err)
 
 	assert.Equal(t, expect, *actual)
@@ -781,7 +801,7 @@ func TestMocker_ModifyGuildWidget(t *testing.T) {
 			data                    = api.ModifyGuildWidgetData{
 				ChannelID: 345,
 			}
-			expect = discord.GuildWidget{
+			expect = discord.GuildWidgetSettings{
 				Enabled:   false,
 				ChannelID: 345,
 			}
@@ -804,7 +824,7 @@ func TestMocker_ModifyGuildWidget(t *testing.T) {
 
 		var (
 			guildID discord.GuildID = 123
-			expect                  = discord.GuildWidget{
+			expect                  = discord.GuildWidgetSettings{
 				Enabled:   false,
 				ChannelID: 345,
 			}
@@ -825,21 +845,23 @@ func TestMocker_ModifyGuildWidget(t *testing.T) {
 	})
 }
 
-func TestMocker_GuildVanityURL(t *testing.T) {
+func TestMocker_GuildWidget(t *testing.T) {
 	m, s := NewSession(t)
 
 	var guildID discord.GuildID = 123
 
-	expect := sanitize.Invite(discord.Invite{
-		Code: "abc",
-		InviteMetadata: discord.InviteMetadata{
-			Uses: 3,
-		},
-	}, 1, 1, 1, 1, 1, 1, 1)
+	expect := discord.GuildWidget{
+		ID:            123,
+		Name:          "abc",
+		InviteURL:     "def",
+		Channels:      []discord.Channel{{ID: 456}},
+		Members:       []discord.User{{ID: 789}},
+		PresenceCount: 5,
+	}
 
-	m.GuildVanityURL(guildID, expect)
+	m.GuildWidget(guildID, expect)
 
-	actual, err := s.GuildVanityURL(guildID)
+	actual, err := s.GuildWidget(guildID)
 	require.NoError(t, err)
 
 	assert.Equal(t, expect, *actual)
@@ -847,7 +869,28 @@ func TestMocker_GuildVanityURL(t *testing.T) {
 	m.Eval()
 }
 
-func TestMocker_GuildImage(t *testing.T) {
+func TestMocker_GuildVanityInvite(t *testing.T) {
+	m, s := NewSession(t)
+
+	var guildID discord.GuildID = 123
+
+	expect := discord.Invite{
+		Code:           "abc",
+		Channel:        discord.Channel{ID: 456},
+		InviteMetadata: discord.InviteMetadata{Uses: 3},
+	}
+
+	m.GuildVanityInvite(guildID, expect)
+
+	actual, err := s.GuildVanityInvite(guildID)
+	require.NoError(t, err)
+
+	assert.Equal(t, expect, *actual)
+
+	m.Eval()
+}
+
+func TestMocker_GuildWidgetImage(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		m, s := NewSession(t)
 
@@ -860,9 +903,9 @@ func TestMocker_GuildImage(t *testing.T) {
 
 		reader := bytes.NewBuffer(expect)
 
-		m.GuildImage(guildID, style, reader)
+		m.GuildWidgetImage(guildID, style, reader)
 
-		actualReader, err := s.GuildImage(guildID, style)
+		actualReader, err := s.GuildWidgetImage(guildID, style)
 		require.NoError(t, err)
 
 		actual, err := ioutil.ReadAll(actualReader)
@@ -884,9 +927,9 @@ func TestMocker_GuildImage(t *testing.T) {
 
 		reader := bytes.NewBuffer(expect)
 
-		m.GuildImage(guildID, api.GuildBanner1, reader)
+		m.GuildWidgetImage(guildID, api.GuildBanner1, reader)
 
-		actualReader, err := s.GuildImage(guildID, api.GuildBanner2)
+		actualReader, err := s.GuildWidgetImage(guildID, api.GuildBanner2)
 		require.NoError(t, err)
 
 		actual, err := ioutil.ReadAll(actualReader)

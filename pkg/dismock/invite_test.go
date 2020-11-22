@@ -8,16 +8,15 @@ import (
 	"github.com/diamondburned/arikawa/v2/utils/json/option"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-
-	"github.com/mavolin/dismock/internal/sanitize"
 )
 
 func TestMocker_Invite(t *testing.T) {
 	m, s := NewSession(t)
 
-	expect := sanitize.Invite(discord.Invite{
-		Code: "abc",
-	}, 1, 1, 1, 1, 1, 1, 1)
+	expect := discord.Invite{
+		Code:    "abc",
+		Channel: discord.Channel{ID: 123},
+	}
 
 	m.Invite(expect)
 
@@ -32,11 +31,12 @@ func TestMocker_Invite(t *testing.T) {
 func TestMocker_InviteWithCounts(t *testing.T) {
 	m, s := NewSession(t)
 
-	expect := sanitize.Invite(discord.Invite{
+	expect := discord.Invite{
 		Code:                 "abc",
-		ApproximatePresences: 123,
-		ApproximateMembers:   456,
-	}, 1, 1, 1, 1, 1, 1, 1)
+		Channel:              discord.Channel{ID: 123},
+		ApproximatePresences: 456,
+		ApproximateMembers:   789,
+	}
 
 	m.InviteWithCounts(expect)
 
@@ -56,15 +56,13 @@ func TestMocker_ChannelInvites(t *testing.T) {
 
 		expect := []discord.Invite{
 			{
-				Code: "abc",
+				Code:    "abc",
+				Channel: discord.Channel{ID: channelID},
 			},
 			{
-				Code: "def",
+				Code:    "def",
+				Channel: discord.Channel{ID: channelID},
 			},
-		}
-
-		for i, invite := range expect {
-			expect[i] = sanitize.Invite(invite, 1, 1, 1, 1, 1, 1, 1)
 		}
 
 		m.ChannelInvites(channelID, expect)
@@ -104,15 +102,13 @@ func TestMocker_GuildInvites(t *testing.T) {
 
 		expect := []discord.Invite{
 			{
-				Code: "abc",
+				Code:    "abc",
+				Channel: discord.Channel{ID: 456, GuildID: guildID},
 			},
 			{
-				Code: "def",
+				Code:    "def",
+				Channel: discord.Channel{ID: 456, GuildID: guildID},
 			},
-		}
-
-		for i, invite := range expect {
-			expect[i] = sanitize.Invite(invite, 1, 1, 1, 1, 1, 1, 1)
 		}
 
 		m.GuildInvites(guildID, expect)
@@ -148,16 +144,12 @@ func TestMocker_CreateInvite(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		m, s := NewSession(t)
 
-		data := api.CreateInviteData{
-			MaxAge: option.NewUint(12),
-		}
+		data := api.CreateInviteData{MaxAge: option.NewUint(12)}
 
-		expect := sanitize.Invite(discord.Invite{
-			Code: "abc",
-			Channel: discord.Channel{
-				ID: 123,
-			},
-		}, 1, 1, 1, 1, 1, 1, 1)
+		expect := discord.Invite{
+			Code:    "abc",
+			Channel: discord.Channel{ID: 123},
+		}
 
 		m.CreateInvite(data, expect)
 
@@ -174,12 +166,10 @@ func TestMocker_CreateInvite(t *testing.T) {
 
 		m, s := NewSession(tMock)
 
-		expect := sanitize.Invite(discord.Invite{
-			Code: "abc",
-			Channel: discord.Channel{
-				ID: 123,
-			},
-		}, 1, 1, 1, 1, 1, 1, 1)
+		expect := discord.Invite{
+			Code:    "abc",
+			Channel: discord.Channel{ID: 123},
+		}
 
 		m.CreateInvite(api.CreateInviteData{
 			MaxAge: option.NewUint(12),
@@ -198,11 +188,12 @@ func TestMocker_CreateInvite(t *testing.T) {
 func TestMocker_DeleteInvite(t *testing.T) {
 	m, s := NewSession(t)
 
-	expect := sanitize.Invite(discord.Invite{
+	expect := discord.Invite{
 		Code:                 "abc",
-		ApproximatePresences: 123,
-		ApproximateMembers:   456,
-	}, 1, 1, 1, 1, 1, 1, 1)
+		Channel:              discord.Channel{ID: 123},
+		ApproximatePresences: 456,
+		ApproximateMembers:   789,
+	}
 
 	m.DeleteInvite(expect)
 

@@ -12,7 +12,6 @@ import (
 	"github.com/diamondburned/arikawa/v2/discord"
 
 	"github.com/mavolin/dismock/internal/mockutil"
-	"github.com/mavolin/dismock/internal/sanitize"
 )
 
 const maxFetchReactions = 100
@@ -30,8 +29,6 @@ func (m *Mocker) Unreact(channelID discord.ChannelID, messageID discord.MessageI
 }
 
 // Reactions mocks a Reactions request.
-//
-// This method will sanitize Users.ID.
 func (m *Mocker) Reactions(
 	channelID discord.ChannelID, messageID discord.MessageID, limit uint, e api.Emoji, u []discord.User,
 ) {
@@ -50,20 +47,20 @@ func (m *Mocker) Reactions(
 			from = uint(i) * maxFetchReactions
 			to   = uint(math.Min(float64(from+maxFetchReactions), float64(len(u))))
 
-			fetch = to - from // we expect this as the sent limit
+			fetch = to - from // we msg this as the sent limit
 		)
 
 		// but if limit != unlimited
 		if limit > 0 {
 			// and the max data we can send (fetch) is smaller than what could be requested max, we
-			// expect either limit or maxFetchReactions, depending on which is smaller, instead.
+			// msg either limit or maxFetchReactions, depending on which is smaller, instead.
 			if fetch < maxFetchReactions {
 				fetch = uint(math.Min(float64(limit), float64(maxFetchReactions)))
 			}
 
 			limit -= fetch
 		} else {
-			// this means there is no limit, hence we should expect
+			// this means there is no limit, hence we should msg
 			// maxFetchReactions
 			fetch = maxFetchReactions
 		}
@@ -79,8 +76,6 @@ func (m *Mocker) Reactions(
 }
 
 // ReactionsBefore mocks a ReactionsBefore request.
-//
-// This method will sanitize Users.ID.
 func (m *Mocker) ReactionsBefore(
 	channelID discord.ChannelID, messageID discord.MessageID, before discord.UserID, limit uint, e api.Emoji,
 	u []discord.User,
@@ -103,19 +98,19 @@ func (m *Mocker) ReactionsBefore(
 		to := from
 		from = uint(math.Max(float64(0), float64(int(to-maxFetchReactions))))
 
-		fetch := to - from // we expect this as the sent limit
+		fetch := to - from // we msg this as the sent limit
 
 		// but if limit != unlimited
 		if limit > 0 {
 			// and the max data we can send (fetch) is smaller than what could be requested max, we
-			// expect either limit or maxFetchReactions, depending on which is smaller, instead.
+			// msg either limit or maxFetchReactions, depending on which is smaller, instead.
 			if fetch < maxFetchReactions {
 				fetch = uint(math.Min(float64(limit), float64(maxFetchReactions)))
 			}
 
 			limit -= fetch
 		} else {
-			// this means there is no limit, hence we should expect
+			// this means there is no limit, hence we should msg
 			// maxFetchReactions
 			fetch = maxFetchReactions
 		}
@@ -131,8 +126,6 @@ func (m *Mocker) ReactionsBefore(
 }
 
 // ReactionsAfter mocks a ReactionsAfter request.
-//
-// This method will sanitize Users.ID.
 func (m *Mocker) ReactionsAfter(
 	channelID discord.ChannelID, messageID discord.MessageID, after discord.UserID, limit uint, e api.Emoji,
 	u []discord.User,
@@ -150,20 +143,20 @@ func (m *Mocker) ReactionsAfter(
 			from = uint(i) * maxFetchReactions
 			to   = uint(math.Min(float64(from+maxFetchReactions), float64(len(u))))
 
-			fetch = to - from // we expect this as the sent limit
+			fetch = to - from // we msg this as the sent limit
 		)
 
 		// but if limit != unlimited
 		if limit > 0 {
 			// and the max data we can send (fetch) is smaller than what could be requested max, we
-			// expect either limit or maxFetchReactions, depending on which is smaller, instead.
+			// msg either limit or maxFetchReactions, depending on which is smaller, instead.
 			if fetch < maxFetchReactions {
 				fetch = uint(math.Min(float64(limit), float64(maxFetchReactions)))
 			}
 
 			limit -= fetch
 		} else {
-			// this means there is no limit, hence we should expect
+			// this means there is no limit, hence we should msg
 			// maxFetchReactions
 			fetch = maxFetchReactions
 		}
@@ -179,16 +172,10 @@ func (m *Mocker) ReactionsAfter(
 }
 
 // reactionsRange mocks a single request to the GET /reactions endpoint.
-//
-// This method will sanitize Users.ID.
 func (m *Mocker) reactionsRange(
 	channelID discord.ChannelID, messageID discord.MessageID, before, after discord.UserID, name string, limit uint,
 	e api.Emoji, u []discord.User,
 ) {
-	for i, user := range u {
-		u[i] = sanitize.User(user, 1)
-	}
-
 	m.MockAPI(name, http.MethodGet,
 		"/channels/"+channelID.String()+"/messages/"+messageID.String()+"/reactions/"+e,
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {

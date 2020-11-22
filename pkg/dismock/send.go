@@ -11,15 +11,11 @@ import (
 	"github.com/diamondburned/arikawa/v2/webhook"
 
 	"github.com/mavolin/dismock/internal/mockutil"
-	"github.com/mavolin/dismock/internal/sanitize"
 )
 
 // SendMessageComplex mocks a SendMessageComplex request.
 //
 // The ChannelID field of the passed discord.Message must be set.
-//
-// This method will sanitize Message.ID, Message.Author.ID, Message.Embeds.Type
-// and Message.Embeds.Color.
 func (m *Mocker) SendMessageComplex(d api.SendMessageData, msg discord.Message) {
 	m.sendMessageComplex("SendMessageComplex", d, msg)
 }
@@ -27,12 +23,7 @@ func (m *Mocker) SendMessageComplex(d api.SendMessageData, msg discord.Message) 
 // sendMessageComplex mocks a SendMessageComplex request.
 //
 // The ChannelID field of the passed discord.Message must be set.
-//
-// This method will sanitize Message.ID, Message.Author.ID, Message.Embeds.Type
-// and Message.Embeds.Color.
 func (m *Mocker) sendMessageComplex(name string, d api.SendMessageData, msg discord.Message) {
-	msg = sanitize.Message(msg, 1, 1, 1)
-
 	if d.Embed != nil {
 		if d.Embed.Type == "" {
 			d.Embed.Type = discord.NormalEmbed
@@ -72,16 +63,12 @@ func (m *Mocker) sendMessageComplex(name string, d api.SendMessageData, msg disc
 
 // ExecuteWebhook mocks a ExecuteWebhook request and doesn't "wait" for the
 // message to be delivered.
-//
-// This method will sanitize Message.ID and Message.Author.ID.
 func (m *Mocker) ExecuteWebhook(webhookID discord.WebhookID, token string, d api.ExecuteWebhookData) {
 	m.executeWebhook(webhookID, token, false, d, discord.Message{})
 }
 
 // ExecuteWebhookAndWait mocks a ExecuteWebhook request and "waits" for the
 // message to be delivered.
-//
-// This method will sanitize Message.ID and Message.Author.ID.
 func (m *Mocker) ExecuteWebhookAndWait(
 	webhookID discord.WebhookID, token string, d api.ExecuteWebhookData, msg discord.Message,
 ) {
@@ -89,13 +76,9 @@ func (m *Mocker) ExecuteWebhookAndWait(
 }
 
 // executeWebhook mocks a ExecuteWebhook request.
-//
-// This method will sanitize Message.ID and Message.Author.ID.
 func (m *Mocker) executeWebhook(
 	webhookID discord.WebhookID, token string, wait bool, d api.ExecuteWebhookData, msg discord.Message,
 ) {
-	msg = sanitize.Message(msg, 1, 1, 1)
-
 	webhook.DefaultHTTPClient.Client = httpdriver.WrapClient(*m.Client)
 
 	m.MockAPI("ExecuteWebhook", http.MethodPost, "/webhooks/"+webhookID.String()+"/"+token,

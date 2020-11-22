@@ -9,8 +9,6 @@ import (
 	"github.com/diamondburned/arikawa/v2/webhook"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-
-	"github.com/mavolin/dismock/internal/sanitize"
 )
 
 func TestMocker_CreateWebhook(t *testing.T) {
@@ -21,11 +19,12 @@ func TestMocker_CreateWebhook(t *testing.T) {
 			Name: "abc",
 		}
 
-		expect := sanitize.Webhook(discord.Webhook{
+		expect := discord.Webhook{
 			ID:        123,
 			Name:      "abc",
 			ChannelID: 456,
-		}, 1, 1, 1)
+			User:      discord.User{ID: 789},
+		}
 
 		m.CreateWebhook(data, expect)
 
@@ -42,15 +41,14 @@ func TestMocker_CreateWebhook(t *testing.T) {
 
 		m, s := NewSession(tMock)
 
-		expect := sanitize.Webhook(discord.Webhook{
+		expect := discord.Webhook{
 			ID:        123,
 			Name:      "abc",
 			ChannelID: 456,
-		}, 1, 1, 1)
+			User:      discord.User{ID: 789},
+		}
 
-		m.CreateWebhook(api.CreateWebhookData{
-			Name: "abc",
-		}, expect)
+		m.CreateWebhook(api.CreateWebhookData{Name: "abc"}, expect)
 
 		actual, err := s.CreateWebhook(expect.ChannelID, api.CreateWebhookData{
 			Name: "cba",
@@ -69,15 +67,15 @@ func TestMocker_ChannelWebhooks(t *testing.T) {
 
 	expect := []discord.Webhook{
 		{
-			ID: 456,
+			ID:        456,
+			ChannelID: channelID,
+			User:      discord.User{ID: 789},
 		},
 		{
-			ID: 789,
+			ID:        789,
+			ChannelID: channelID,
+			User:      discord.User{ID: 012},
 		},
-	}
-
-	for i, w := range expect {
-		expect[i] = sanitize.Webhook(w, 1, 1, channelID)
 	}
 
 	m.ChannelWebhooks(channelID, expect)
@@ -98,19 +96,17 @@ func TestMocker_GuildWebhooks(t *testing.T) {
 
 		expect := []discord.Webhook{
 			{
-				ID: 456,
+				ID:        456,
+				ChannelID: 789,
+				GuildID:   guildID,
+				User:      discord.User{ID: 012},
 			},
 			{
-				ID: 789,
+				ID:        789,
+				ChannelID: 012,
+				GuildID:   guildID,
+				User:      discord.User{ID: 345},
 			},
-		}
-
-		for i, w := range expect {
-			expect[i] = sanitize.Webhook(w, 1, 1, 1)
-
-			if w.GuildID == 0 {
-				expect[i].GuildID = guildID
-			}
 		}
 
 		m.GuildWebhooks(guildID, expect)
@@ -153,9 +149,11 @@ func TestMocker_GuildWebhooks(t *testing.T) {
 func TestMocker_Webhook(t *testing.T) {
 	m, s := NewSession(t)
 
-	expect := sanitize.Webhook(discord.Webhook{
-		ID: 456,
-	}, 1, 1, 1)
+	expect := discord.Webhook{
+		ID:        123,
+		ChannelID: 456,
+		User:      discord.User{ID: 789},
+	}
 
 	m.Webhook(expect)
 
@@ -170,10 +168,12 @@ func TestMocker_Webhook(t *testing.T) {
 func TestMocker_WebhookWithToken(t *testing.T) {
 	m := New(t)
 
-	expect := sanitize.Webhook(discord.Webhook{
-		ID:    456,
-		Token: "abc",
-	}, 1, 1, 1)
+	expect := discord.Webhook{
+		ID:        123,
+		Token:     "abc",
+		ChannelID: 456,
+		User:      discord.User{ID: 789},
+	}
 
 	m.WebhookWithToken(expect)
 
@@ -193,10 +193,12 @@ func TestMocker_ModifyWebhook(t *testing.T) {
 			Name: option.NewString("abc"),
 		}
 
-		expect := sanitize.Webhook(discord.Webhook{
-			ID:   456,
-			Name: "abc",
-		}, 1, 1, 1)
+		expect := discord.Webhook{
+			ID:        456,
+			Name:      "abc",
+			ChannelID: 456,
+			User:      discord.User{ID: 789},
+		}
 
 		m.ModifyWebhook(data, expect)
 
@@ -213,10 +215,12 @@ func TestMocker_ModifyWebhook(t *testing.T) {
 
 		m, s := NewSession(tMock)
 
-		expect := sanitize.Webhook(discord.Webhook{
-			ID:   456,
-			Name: "abc",
-		}, 1, 1, 1)
+		expect := discord.Webhook{
+			ID:        123,
+			Name:      "abc",
+			ChannelID: 456,
+			User:      discord.User{ID: 789},
+		}
 
 		m.ModifyWebhook(api.ModifyWebhookData{
 			Name: option.NewString("abc"),
@@ -240,11 +244,13 @@ func TestMocker_ModifyWebhookWithTokenWithToken(t *testing.T) {
 			Name: option.NewString("abc"),
 		}
 
-		expect := sanitize.Webhook(discord.Webhook{
-			ID:    456,
-			Name:  "abc",
-			Token: "def",
-		}, 1, 1, 1)
+		expect := discord.Webhook{
+			ID:        123,
+			Name:      "abc",
+			Token:     "def",
+			ChannelID: 456,
+			User:      discord.User{ID: 789},
+		}
 
 		m.ModifyWebhookWithToken(data, expect)
 
@@ -261,11 +267,13 @@ func TestMocker_ModifyWebhookWithTokenWithToken(t *testing.T) {
 
 		m := New(tMock)
 
-		expect := sanitize.Webhook(discord.Webhook{
-			ID:    456,
-			Name:  "abc",
-			Token: "def",
-		}, 1, 1, 1)
+		expect := discord.Webhook{
+			ID:        123,
+			Name:      "abc",
+			Token:     "def",
+			ChannelID: 456,
+			User:      discord.User{ID: 789},
+		}
 
 		m.ModifyWebhookWithToken(api.ModifyWebhookData{
 			Name: option.NewString("abc"),
