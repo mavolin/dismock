@@ -115,14 +115,19 @@ func TestMocker_MessagesAround(t *testing.T) {
 		limit    uint
 	}{
 		{
+			name:     "limit within range",
+			messages: 70,
+			limit:    70,
+		},
+		{
 			name:     "limit > 100",
 			messages: 100,
 			limit:    199,
 		},
 		{
-			name:     "limit 50",
+			name:     "limit 0",
 			messages: 50,
-			limit:    50,
+			limit:    0,
 		},
 	}
 
