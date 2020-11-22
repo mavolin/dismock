@@ -15,6 +15,7 @@ import (
 func TestMocker_CreateGuild(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		m, s := NewSession(t)
+		defer m.Eval()
 
 		data := api.CreateGuildData{Name: "abc"}
 
@@ -32,8 +33,6 @@ func TestMocker_CreateGuild(t *testing.T) {
 		require.NoError(t, err)
 
 		assert.Equal(t, expect, *actual)
-
-		m.Eval()
 	})
 
 	t.Run("failure", func(t *testing.T) {
@@ -61,6 +60,7 @@ func TestMocker_CreateGuild(t *testing.T) {
 
 func TestMocker_Guild(t *testing.T) {
 	m, s := NewSession(t)
+	defer m.Eval()
 
 	expect := discord.Guild{
 		ID:                     123,
@@ -76,12 +76,11 @@ func TestMocker_Guild(t *testing.T) {
 	require.NoError(t, err)
 
 	assert.Equal(t, expect, *actual)
-
-	m.Eval()
 }
 
 func TestMocker_GuildWithCount(t *testing.T) {
 	m, s := NewSession(t)
+	defer m.Eval()
 
 	expect := discord.Guild{
 		ID:                     123,
@@ -99,12 +98,11 @@ func TestMocker_GuildWithCount(t *testing.T) {
 	require.NoError(t, err)
 
 	assert.Equal(t, expect, *actual)
-
-	m.Eval()
 }
 
 func TestMocker_GuildPreview(t *testing.T) {
 	m, s := NewSession(t)
+	defer m.Eval()
 
 	expect := discord.GuildPreview{
 		ID:   123,
@@ -117,8 +115,6 @@ func TestMocker_GuildPreview(t *testing.T) {
 	require.NoError(t, err)
 
 	assert.Equal(t, expect, *actual)
-
-	m.Eval()
 }
 
 func TestMocker_Guilds(t *testing.T) {
@@ -143,6 +139,7 @@ func TestMocker_Guilds(t *testing.T) {
 		for _, c := range successCases {
 			t.Run(c.name, func(t *testing.T) {
 				m, s := NewSession(t)
+				defer m.Eval()
 
 				expect := make([]discord.Guild, c.guilds)
 
@@ -161,14 +158,13 @@ func TestMocker_Guilds(t *testing.T) {
 				require.NoError(t, err)
 
 				assert.Equal(t, expect, actual)
-
-				m.Eval()
 			})
 		}
 	})
 
 	t.Run("nil guilds", func(t *testing.T) {
 		m, s := NewSession(t)
+		defer m.Eval()
 
 		m.Guilds(100, nil)
 
@@ -176,8 +172,6 @@ func TestMocker_Guilds(t *testing.T) {
 		require.NoError(t, err)
 
 		assert.Len(t, actual, 0)
-
-		m.Eval()
 	})
 
 	t.Run("limit smaller than guilds", func(t *testing.T) {
@@ -211,6 +205,7 @@ func TestMocker_GuildsBefore(t *testing.T) {
 		for _, c := range successCases {
 			t.Run(c.name, func(t *testing.T) {
 				m, s := NewSession(t)
+				defer m.Eval()
 
 				var before discord.GuildID = 999999999999
 
@@ -231,14 +226,13 @@ func TestMocker_GuildsBefore(t *testing.T) {
 				require.NoError(t, err)
 
 				assert.Equal(t, expect, actual)
-
-				m.Eval()
 			})
 		}
 	})
 
 	t.Run("nil guilds", func(t *testing.T) {
 		m, s := NewSession(t)
+		defer m.Eval()
 
 		m.GuildsBefore(0, 100, nil)
 
@@ -246,8 +240,6 @@ func TestMocker_GuildsBefore(t *testing.T) {
 		require.NoError(t, err)
 
 		assert.Len(t, actual, 0)
-
-		m.Eval()
 	})
 
 	t.Run("failure", func(t *testing.T) {
@@ -312,6 +304,7 @@ func TestMocker_GuildsAfter(t *testing.T) {
 		for _, c := range successCases {
 			t.Run(c.name, func(t *testing.T) {
 				m, s := NewSession(t)
+				defer m.Eval()
 
 				var after discord.GuildID = 123
 
@@ -332,14 +325,13 @@ func TestMocker_GuildsAfter(t *testing.T) {
 				require.NoError(t, err)
 
 				assert.Equal(t, expect, actual)
-
-				m.Eval()
 			})
 		}
 	})
 
 	t.Run("nil guilds", func(t *testing.T) {
 		m, s := NewSession(t)
+		defer m.Eval()
 
 		m.GuildsAfter(0, 100, nil)
 
@@ -347,8 +339,6 @@ func TestMocker_GuildsAfter(t *testing.T) {
 		require.NoError(t, err)
 
 		assert.Len(t, actual, 0)
-
-		m.Eval()
 	})
 
 	t.Run("failure", func(t *testing.T) {
@@ -393,6 +383,7 @@ func TestMocker_GuildsAfter(t *testing.T) {
 
 func TestMocker_LeaveGuild(t *testing.T) {
 	m, s := NewSession(t)
+	defer m.Eval()
 
 	var guildID discord.GuildID = 123
 
@@ -400,13 +391,12 @@ func TestMocker_LeaveGuild(t *testing.T) {
 
 	err := s.LeaveGuild(guildID)
 	require.NoError(t, err)
-
-	m.Eval()
 }
 
 func TestMocker_ModifyGuild(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		m, s := NewSession(t)
+		defer m.Eval()
 
 		data := api.ModifyGuildData{Name: "abc"}
 
@@ -424,8 +414,6 @@ func TestMocker_ModifyGuild(t *testing.T) {
 		require.NoError(t, err)
 
 		assert.Equal(t, expect, *actual)
-
-		m.Eval()
 	})
 
 	t.Run("failure", func(t *testing.T) {
@@ -453,6 +441,7 @@ func TestMocker_ModifyGuild(t *testing.T) {
 
 func TestMocker_DeleteGuild(t *testing.T) {
 	m, s := NewSession(t)
+	defer m.Eval()
 
 	var guildID discord.GuildID = 123
 
@@ -460,13 +449,12 @@ func TestMocker_DeleteGuild(t *testing.T) {
 
 	err := s.DeleteGuild(guildID)
 	require.NoError(t, err)
-
-	m.Eval()
 }
 
 func TestMocker_VoiceRegionsGuild(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		m, s := NewSession(t)
+		defer m.Eval()
 
 		var guildID discord.GuildID = 123
 
@@ -487,12 +475,11 @@ func TestMocker_VoiceRegionsGuild(t *testing.T) {
 		require.NoError(t, err)
 
 		assert.Equal(t, expect, actual)
-
-		m.Eval()
 	})
 
 	t.Run("nil voice regions", func(t *testing.T) {
 		m, s := NewSession(t)
+		defer m.Eval()
 
 		var guildID discord.GuildID = 123
 
@@ -505,8 +492,6 @@ func TestMocker_VoiceRegionsGuild(t *testing.T) {
 		require.NoError(t, err)
 
 		assert.Equal(t, expect, actual)
-
-		m.Eval()
 	})
 }
 
@@ -562,6 +547,7 @@ func TestMocker_AuditLog(t *testing.T) {
 		for _, c := range successCases {
 			t.Run(c.name, func(t *testing.T) {
 				m, s := NewSession(t)
+				defer m.Eval()
 
 				var guildID discord.GuildID = 123
 
@@ -587,8 +573,6 @@ func TestMocker_AuditLog(t *testing.T) {
 				require.NoError(t, err)
 
 				assert.Equal(t, expect, *actual)
-
-				m.Eval()
 			})
 		}
 	})
@@ -635,6 +619,7 @@ func TestMocker_AuditLog(t *testing.T) {
 func TestMocker_Integrations(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		m, s := NewSession(t)
+		defer m.Eval()
 
 		var guildID discord.GuildID = 123
 
@@ -659,12 +644,11 @@ func TestMocker_Integrations(t *testing.T) {
 		require.NoError(t, err)
 
 		assert.Equal(t, expect, actual)
-
-		m.Eval()
 	})
 
 	t.Run("nil integrations", func(t *testing.T) {
 		m, s := NewSession(t)
+		defer m.Eval()
 
 		var guildID discord.GuildID = 123
 
@@ -677,14 +661,13 @@ func TestMocker_Integrations(t *testing.T) {
 		require.NoError(t, err)
 
 		assert.Equal(t, expect, actual)
-
-		m.Eval()
 	})
 }
 
 func TestMocker_AttachIntegration(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		m, s := NewSession(t)
+		defer m.Eval()
 
 		var (
 			guildID         discord.GuildID       = 123
@@ -696,8 +679,6 @@ func TestMocker_AttachIntegration(t *testing.T) {
 
 		err := s.AttachIntegration(guildID, integrationID, integrationType)
 		require.NoError(t, err)
-
-		m.Eval()
 	})
 
 	t.Run("failure", func(t *testing.T) {
@@ -719,6 +700,7 @@ func TestMocker_AttachIntegration(t *testing.T) {
 func TestMocker_ModifyIntegration(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		m, s := NewSession(t)
+		defer m.Eval()
 
 		var (
 			guildID       discord.GuildID       = 123
@@ -732,8 +714,6 @@ func TestMocker_ModifyIntegration(t *testing.T) {
 
 		err := s.ModifyIntegration(guildID, integrationID, data)
 		require.NoError(t, err)
-
-		m.Eval()
 	})
 
 	t.Run("failure", func(t *testing.T) {
@@ -761,6 +741,7 @@ func TestMocker_ModifyIntegration(t *testing.T) {
 
 func TestMocker_SyncIntegration(t *testing.T) {
 	m, s := NewSession(t)
+	defer m.Eval()
 
 	var (
 		guildID       discord.GuildID       = 123
@@ -771,12 +752,11 @@ func TestMocker_SyncIntegration(t *testing.T) {
 
 	err := s.SyncIntegration(guildID, integrationID)
 	require.NoError(t, err)
-
-	m.Eval()
 }
 
 func TestMocker_GuildWidgetSettings(t *testing.T) {
 	m, s := NewSession(t)
+	defer m.Eval()
 
 	var guildID discord.GuildID = 123
 
@@ -788,13 +768,12 @@ func TestMocker_GuildWidgetSettings(t *testing.T) {
 	require.NoError(t, err)
 
 	assert.Equal(t, expect, *actual)
-
-	m.Eval()
 }
 
 func TestMocker_ModifyGuildWidget(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		m, s := NewSession(t)
+		defer m.Eval()
 
 		var (
 			guildID discord.GuildID = 123
@@ -813,8 +792,6 @@ func TestMocker_ModifyGuildWidget(t *testing.T) {
 		require.NoError(t, err)
 
 		assert.Equal(t, expect, *actual)
-
-		m.Eval()
 	})
 
 	t.Run("failure", func(t *testing.T) {
@@ -847,6 +824,7 @@ func TestMocker_ModifyGuildWidget(t *testing.T) {
 
 func TestMocker_GuildWidget(t *testing.T) {
 	m, s := NewSession(t)
+	defer m.Eval()
 
 	var guildID discord.GuildID = 123
 
@@ -865,12 +843,11 @@ func TestMocker_GuildWidget(t *testing.T) {
 	require.NoError(t, err)
 
 	assert.Equal(t, expect, *actual)
-
-	m.Eval()
 }
 
 func TestMocker_GuildVanityInvite(t *testing.T) {
 	m, s := NewSession(t)
+	defer m.Eval()
 
 	var guildID discord.GuildID = 123
 
@@ -886,13 +863,12 @@ func TestMocker_GuildVanityInvite(t *testing.T) {
 	require.NoError(t, err)
 
 	assert.Equal(t, expect, *actual)
-
-	m.Eval()
 }
 
 func TestMocker_GuildWidgetImage(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		m, s := NewSession(t)
+		defer m.Eval()
 
 		var (
 			guildID discord.GuildID = 123
@@ -912,8 +888,6 @@ func TestMocker_GuildWidgetImage(t *testing.T) {
 		require.NoError(t, err)
 
 		assert.Equal(t, expect, actual)
-
-		m.Eval()
 	})
 
 	t.Run("failure", func(t *testing.T) {

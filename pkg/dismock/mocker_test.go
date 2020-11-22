@@ -23,6 +23,7 @@ func TestMocker_Server(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		t.Run("session", func(t *testing.T) {
 			m, s := NewSession(t)
+			defer m.Eval()
 
 			expect := discord.Channel{ID: 123}
 

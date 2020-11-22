@@ -34,8 +34,6 @@ func TestMocker_ChannelIconURL(t *testing.T) {
 	require.NoError(t, err)
 
 	assert.Equal(t, expect, actual)
-
-	m.Eval()
 }
 
 func TestMocker_ChannelIconURLWithType(t *testing.T) {
@@ -62,8 +60,6 @@ func TestMocker_ChannelIconURLWithType(t *testing.T) {
 	require.NoError(t, err)
 
 	assert.Equal(t, expect, actual)
-
-	m.Eval()
 }
 
 // ================================ Emoji ================================
@@ -105,8 +101,6 @@ func TestMocker_EmojiURL(t *testing.T) {
 			require.NoError(t, err)
 
 			assert.Equal(t, expect, actual)
-
-			m.Eval()
 		})
 	}
 }
@@ -156,8 +150,6 @@ func TestMocker_EmojiURLWithType(t *testing.T) {
 			require.NoError(t, err)
 
 			assert.Equal(t, expect, actual)
-
-			m.Eval()
 		})
 	}
 }
@@ -185,8 +177,6 @@ func TestMocker_GuildIconURL(t *testing.T) {
 	require.NoError(t, err)
 
 	assert.Equal(t, expect, actual)
-
-	m.Eval()
 }
 
 func TestMocker_GuildIconURLWithType(t *testing.T) {
@@ -213,8 +203,6 @@ func TestMocker_GuildIconURLWithType(t *testing.T) {
 	require.NoError(t, err)
 
 	assert.Equal(t, expect, actual)
-
-	m.Eval()
 }
 
 func TestMocker_BannerURL(t *testing.T) {
@@ -238,8 +226,6 @@ func TestMocker_BannerURL(t *testing.T) {
 	require.NoError(t, err)
 
 	assert.Equal(t, expect, actual)
-
-	m.Eval()
 }
 
 func TestMocker_BannerURLWithType(t *testing.T) {
@@ -266,8 +252,6 @@ func TestMocker_BannerURLWithType(t *testing.T) {
 	require.NoError(t, err)
 
 	assert.Equal(t, expect, actual)
-
-	m.Eval()
 }
 
 func TestMocker_SplashURL(t *testing.T) {
@@ -291,8 +275,6 @@ func TestMocker_SplashURL(t *testing.T) {
 	require.NoError(t, err)
 
 	assert.Equal(t, expect, actual)
-
-	m.Eval()
 }
 
 func TestMocker_SplashURLWithType(t *testing.T) {
@@ -319,8 +301,6 @@ func TestMocker_SplashURLWithType(t *testing.T) {
 	require.NoError(t, err)
 
 	assert.Equal(t, expect, actual)
-
-	m.Eval()
 }
 
 func TestMocker_DiscoverySplashURL(t *testing.T) {
@@ -344,8 +324,6 @@ func TestMocker_DiscoverySplashURL(t *testing.T) {
 	require.NoError(t, err)
 
 	assert.Equal(t, expect, actual)
-
-	m.Eval()
 }
 
 func TestMocker_DiscoverySplashURLWithType(t *testing.T) {
@@ -372,8 +350,6 @@ func TestMocker_DiscoverySplashURLWithType(t *testing.T) {
 	require.NoError(t, err)
 
 	assert.Equal(t, expect, actual)
-
-	m.Eval()
 }
 
 func TestFormatImageType(t *testing.T) {

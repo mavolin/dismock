@@ -11,6 +11,7 @@ import (
 func TestMocker_Login(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		m, s := NewSession(t)
+		defer m.Eval()
 
 		var (
 			email    = "abc@def.ghi"
@@ -25,8 +26,6 @@ func TestMocker_Login(t *testing.T) {
 		require.NoError(t, err)
 
 		assert.Equal(t, expect, *actual)
-
-		m.Eval()
 	})
 
 	t.Run("failure", func(t *testing.T) {
@@ -49,6 +48,7 @@ func TestMocker_Login(t *testing.T) {
 func TestMocker_TOTP(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		m, s := NewSession(t)
+		defer m.Eval()
 
 		var (
 			code   = "abc"
@@ -63,8 +63,6 @@ func TestMocker_TOTP(t *testing.T) {
 		require.NoError(t, err)
 
 		assert.Equal(t, expect, *actual)
-
-		m.Eval()
 	})
 
 	t.Run("failure", func(t *testing.T) {

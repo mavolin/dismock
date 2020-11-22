@@ -12,6 +12,7 @@ import (
 
 func TestMocker_Invite(t *testing.T) {
 	m, s := NewSession(t)
+	defer m.Eval()
 
 	expect := discord.Invite{
 		Code:    "abc",
@@ -24,12 +25,11 @@ func TestMocker_Invite(t *testing.T) {
 	require.NoError(t, err)
 
 	assert.Equal(t, expect, *actual)
-
-	m.Eval()
 }
 
 func TestMocker_InviteWithCounts(t *testing.T) {
 	m, s := NewSession(t)
+	defer m.Eval()
 
 	expect := discord.Invite{
 		Code:                 "abc",
@@ -44,13 +44,12 @@ func TestMocker_InviteWithCounts(t *testing.T) {
 	require.NoError(t, err)
 
 	assert.Equal(t, expect, *actual)
-
-	m.Eval()
 }
 
 func TestMocker_ChannelInvites(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		m, s := NewSession(t)
+		defer m.Eval()
 
 		var channelID discord.ChannelID = 123
 
@@ -71,12 +70,11 @@ func TestMocker_ChannelInvites(t *testing.T) {
 		require.NoError(t, err)
 
 		assert.Equal(t, expect, actual)
-
-		m.Eval()
 	})
 
 	t.Run("nil invites", func(t *testing.T) {
 		m, s := NewSession(t)
+		defer m.Eval()
 
 		var channelID discord.ChannelID = 123
 
@@ -89,14 +87,13 @@ func TestMocker_ChannelInvites(t *testing.T) {
 		require.NoError(t, err)
 
 		assert.Equal(t, expect, actual)
-
-		m.Eval()
 	})
 }
 
 func TestMocker_GuildInvites(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		m, s := NewSession(t)
+		defer m.Eval()
 
 		var guildID discord.GuildID = 123
 
@@ -117,12 +114,11 @@ func TestMocker_GuildInvites(t *testing.T) {
 		require.NoError(t, err)
 
 		assert.Equal(t, expect, actual)
-
-		m.Eval()
 	})
 
 	t.Run("nil invites", func(t *testing.T) {
 		m, s := NewSession(t)
+		defer m.Eval()
 
 		var guildID discord.GuildID = 123
 
@@ -135,14 +131,13 @@ func TestMocker_GuildInvites(t *testing.T) {
 		require.NoError(t, err)
 
 		assert.Equal(t, expect, actual)
-
-		m.Eval()
 	})
 }
 
 func TestMocker_CreateInvite(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		m, s := NewSession(t)
+		defer m.Eval()
 
 		data := api.CreateInviteData{MaxAge: option.NewUint(12)}
 
@@ -157,8 +152,6 @@ func TestMocker_CreateInvite(t *testing.T) {
 		require.NoError(t, err)
 
 		assert.Equal(t, expect, *actual)
-
-		m.Eval()
 	})
 
 	t.Run("failure", func(t *testing.T) {
@@ -187,6 +180,7 @@ func TestMocker_CreateInvite(t *testing.T) {
 
 func TestMocker_DeleteInvite(t *testing.T) {
 	m, s := NewSession(t)
+	defer m.Eval()
 
 	expect := discord.Invite{
 		Code:                 "abc",
@@ -201,6 +195,4 @@ func TestMocker_DeleteInvite(t *testing.T) {
 	require.NoError(t, err)
 
 	assert.Equal(t, expect, *actual)
-
-	m.Eval()
 }

@@ -10,6 +10,7 @@ import (
 
 func TestMocker_React(t *testing.T) {
 	m, s := NewSession(t)
+	defer m.Eval()
 
 	var (
 		channelID discord.ChannelID = 123
@@ -21,12 +22,11 @@ func TestMocker_React(t *testing.T) {
 
 	err := s.React(channelID, messageID, emoji)
 	require.NoError(t, err)
-
-	m.Eval()
 }
 
 func TestMocker_Unreact(t *testing.T) {
 	m, s := NewSession(t)
+	defer m.Eval()
 
 	var (
 		channelID discord.ChannelID = 123
@@ -38,8 +38,6 @@ func TestMocker_Unreact(t *testing.T) {
 
 	err := s.Unreact(channelID, messageID, emoji)
 	require.NoError(t, err)
-
-	m.Eval()
 }
 
 func TestMocker_Reactions(t *testing.T) {
@@ -64,6 +62,7 @@ func TestMocker_Reactions(t *testing.T) {
 		for _, c := range successCases {
 			t.Run(c.name, func(t *testing.T) {
 				m, s := NewSession(t)
+				defer m.Eval()
 
 				var (
 					channelID discord.ChannelID = 123
@@ -83,14 +82,13 @@ func TestMocker_Reactions(t *testing.T) {
 				require.NoError(t, err)
 
 				assert.Equal(t, expect, actual)
-
-				m.Eval()
 			})
 		}
 	})
 
 	t.Run("nil users", func(t *testing.T) {
 		m, s := NewSession(t)
+		defer m.Eval()
 
 		var (
 			channelID discord.ChannelID = 123
@@ -104,8 +102,6 @@ func TestMocker_Reactions(t *testing.T) {
 		require.NoError(t, err)
 
 		assert.Len(t, actual, 0)
-
-		m.Eval()
 	})
 
 	t.Run("limit smaller than guilds", func(t *testing.T) {
@@ -139,6 +135,7 @@ func TestMocker_ReactionsBefore(t *testing.T) {
 		for _, c := range successCases {
 			t.Run(c.name, func(t *testing.T) {
 				m, s := NewSession(t)
+				defer m.Eval()
 
 				var (
 					channelID discord.ChannelID = 123
@@ -160,14 +157,13 @@ func TestMocker_ReactionsBefore(t *testing.T) {
 				require.NoError(t, err)
 
 				assert.Equal(t, expect, actual)
-
-				m.Eval()
 			})
 		}
 	})
 
 	t.Run("nil users", func(t *testing.T) {
 		m, s := NewSession(t)
+		defer m.Eval()
 
 		var (
 			channelID discord.ChannelID = 123
@@ -181,8 +177,6 @@ func TestMocker_ReactionsBefore(t *testing.T) {
 		require.NoError(t, err)
 
 		assert.Len(t, actual, 0)
-
-		m.Eval()
 	})
 
 	t.Run("failure", func(t *testing.T) {
@@ -238,6 +232,7 @@ func TestMocker_ReactionsAfter(t *testing.T) {
 		for _, c := range successCases {
 			t.Run(c.name, func(t *testing.T) {
 				m, s := NewSession(t)
+				defer m.Eval()
 
 				var (
 					channelID discord.ChannelID = 123
@@ -259,14 +254,13 @@ func TestMocker_ReactionsAfter(t *testing.T) {
 				require.NoError(t, err)
 
 				assert.Equal(t, expect, actual)
-
-				m.Eval()
 			})
 		}
 	})
 
 	t.Run("nil users", func(t *testing.T) {
 		m, s := NewSession(t)
+		defer m.Eval()
 
 		var (
 			channelID discord.ChannelID = 123
@@ -280,8 +274,6 @@ func TestMocker_ReactionsAfter(t *testing.T) {
 		require.NoError(t, err)
 
 		assert.Len(t, actual, 0)
-
-		m.Eval()
 	})
 
 	t.Run("failure", func(t *testing.T) {
@@ -317,6 +309,7 @@ func TestMocker_ReactionsAfter(t *testing.T) {
 
 func TestMocker_DeleteUserReaction(t *testing.T) {
 	m, s := NewSession(t)
+	defer m.Eval()
 
 	var (
 		channelID discord.ChannelID = 123
@@ -329,12 +322,11 @@ func TestMocker_DeleteUserReaction(t *testing.T) {
 
 	err := s.DeleteUserReaction(channelID, messageID, userID, emoji)
 	require.NoError(t, err)
-
-	m.Eval()
 }
 
 func TestMocker_DeleteReactions(t *testing.T) {
 	m, s := NewSession(t)
+	defer m.Eval()
 
 	var (
 		channelID discord.ChannelID = 123
@@ -346,12 +338,11 @@ func TestMocker_DeleteReactions(t *testing.T) {
 
 	err := s.DeleteReactions(channelID, messageID, emoji)
 	require.NoError(t, err)
-
-	m.Eval()
 }
 
 func TestMocker_DeleteAllReactions(t *testing.T) {
 	m, s := NewSession(t)
+	defer m.Eval()
 
 	var (
 		channelID discord.ChannelID = 123
@@ -362,6 +353,4 @@ func TestMocker_DeleteAllReactions(t *testing.T) {
 
 	err := s.DeleteAllReactions(channelID, messageID)
 	require.NoError(t, err)
-
-	m.Eval()
 }

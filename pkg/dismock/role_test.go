@@ -12,6 +12,7 @@ import (
 
 func TestMocker_AddRole(t *testing.T) {
 	m, s := NewSession(t)
+	defer m.Eval()
 
 	var (
 		guildID discord.GuildID = 123
@@ -23,12 +24,11 @@ func TestMocker_AddRole(t *testing.T) {
 
 	err := s.AddRole(guildID, userID, roleID)
 	require.NoError(t, err)
-
-	m.Eval()
 }
 
 func TestMocker_RemoveRole(t *testing.T) {
 	m, s := NewSession(t)
+	defer m.Eval()
 
 	var (
 		guildID discord.GuildID = 123
@@ -40,12 +40,11 @@ func TestMocker_RemoveRole(t *testing.T) {
 
 	err := s.RemoveRole(guildID, userID, roleID)
 	require.NoError(t, err)
-
-	m.Eval()
 }
 
 func TestMocker_Roles(t *testing.T) {
 	m, s := NewSession(t)
+	defer m.Eval()
 
 	var guildID discord.GuildID = 123
 
@@ -57,13 +56,12 @@ func TestMocker_Roles(t *testing.T) {
 	require.NoError(t, err)
 
 	assert.Equal(t, expect, actual)
-
-	m.Eval()
 }
 
 func TestMocker_CreateRole(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		m, s := NewSession(t)
+		defer m.Eval()
 
 		var guildID discord.GuildID = 123
 
@@ -80,8 +78,6 @@ func TestMocker_CreateRole(t *testing.T) {
 		require.NoError(t, err)
 
 		assert.Equal(t, expect, *actual)
-
-		m.Eval()
 	})
 
 	t.Run("failure", func(t *testing.T) {
@@ -109,6 +105,7 @@ func TestMocker_CreateRole(t *testing.T) {
 func TestMocker_MoveRole(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		m, s := NewSession(t)
+		defer m.Eval()
 
 		var guildID discord.GuildID = 123
 
@@ -142,8 +139,6 @@ func TestMocker_MoveRole(t *testing.T) {
 		require.NoError(t, err)
 
 		assert.Equal(t, expect, actual)
-
-		m.Eval()
 	})
 
 	t.Run("failure", func(t *testing.T) {
@@ -197,6 +192,7 @@ func TestMocker_MoveRole(t *testing.T) {
 func TestMocker_ModifyRole(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		m, s := NewSession(t)
+		defer m.Eval()
 
 		var guildID discord.GuildID = 123
 
@@ -214,8 +210,6 @@ func TestMocker_ModifyRole(t *testing.T) {
 		require.NoError(t, err)
 
 		assert.Equal(t, expect, *actual)
-
-		m.Eval()
 	})
 
 	t.Run("failure", func(t *testing.T) {
@@ -247,6 +241,7 @@ func TestMocker_ModifyRole(t *testing.T) {
 
 func TestMocker_DeleteRole(t *testing.T) {
 	m, s := NewSession(t)
+	defer m.Eval()
 
 	var (
 		guildID discord.GuildID = 123
@@ -257,6 +252,4 @@ func TestMocker_DeleteRole(t *testing.T) {
 
 	err := s.DeleteRole(guildID, roleID)
 	require.NoError(t, err)
-
-	m.Eval()
 }

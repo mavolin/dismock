@@ -40,6 +40,7 @@ func TestMocker_SendMessageComplex(t *testing.T) {
 		for _, c := range successCases {
 			t.Run(c.name, func(t *testing.T) {
 				m, s := NewSession(t)
+				defer m.Eval()
 
 				expect := discord.Message{
 					ID:        123,
@@ -69,8 +70,6 @@ func TestMocker_SendMessageComplex(t *testing.T) {
 				require.NoError(t, err)
 
 				assert.Equal(t, expect, *actual)
-
-				m.Eval()
 			})
 		}
 	})
@@ -183,8 +182,6 @@ func TestMocker_ExecuteWebhook(t *testing.T) {
 
 				err := webhook.Execute(webhookID, token, cp)
 				require.NoError(t, err)
-
-				m.Eval()
 			})
 		}
 	})
@@ -303,8 +300,6 @@ func TestMocker_ExecuteWebhookAndWait(t *testing.T) {
 				require.NoError(t, err)
 
 				assert.Equal(t, expect, *actual)
-
-				m.Eval()
 			})
 		}
 	})

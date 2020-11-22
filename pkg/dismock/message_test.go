@@ -32,6 +32,7 @@ func TestMocker_Messages(t *testing.T) {
 		for _, c := range successCases {
 			t.Run(c.name, func(t *testing.T) {
 				m, s := NewSession(t)
+				defer m.Eval()
 
 				var channelID discord.ChannelID = 123
 
@@ -52,14 +53,13 @@ func TestMocker_Messages(t *testing.T) {
 				require.NoError(t, err)
 
 				assert.Equal(t, expect, actual)
-
-				m.Eval()
 			})
 		}
 	})
 
 	t.Run("nil messages", func(t *testing.T) {
 		m, s := NewSession(t)
+		defer m.Eval()
 
 		var channelID discord.ChannelID = 123
 
@@ -69,8 +69,6 @@ func TestMocker_Messages(t *testing.T) {
 		require.NoError(t, err)
 
 		assert.Len(t, actual, 0)
-
-		m.Eval()
 	})
 
 	t.Run("limit smaller than messages", func(t *testing.T) {
@@ -85,6 +83,7 @@ func TestMocker_Messages(t *testing.T) {
 func TestMocker_MessagesAround(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		m, s := NewSession(t)
+		defer m.Eval()
 
 		var (
 			channelID discord.ChannelID = 123
@@ -108,8 +107,6 @@ func TestMocker_MessagesAround(t *testing.T) {
 		require.NoError(t, err)
 
 		assert.Equal(t, expect, actual)
-
-		m.Eval()
 	})
 
 	limitCases := []struct {
@@ -132,6 +129,7 @@ func TestMocker_MessagesAround(t *testing.T) {
 	for _, c := range limitCases {
 		t.Run(c.name, func(t *testing.T) {
 			m, s := NewSession(t)
+			defer m.Eval()
 
 			var (
 				channelID discord.ChannelID = 123
@@ -155,13 +153,12 @@ func TestMocker_MessagesAround(t *testing.T) {
 			require.NoError(t, err)
 
 			assert.Equal(t, expect, actual)
-
-			m.Eval()
 		})
 	}
 
 	t.Run("nil messages", func(t *testing.T) {
 		m, s := NewSession(t)
+		defer m.Eval()
 
 		var channelID discord.ChannelID = 123
 
@@ -174,8 +171,6 @@ func TestMocker_MessagesAround(t *testing.T) {
 		require.NoError(t, err)
 
 		assert.Equal(t, expect, actual)
-
-		m.Eval()
 	})
 
 	t.Run("failure", func(t *testing.T) {
@@ -240,6 +235,7 @@ func TestMocker_MessagesBefore(t *testing.T) {
 		for _, c := range successCases {
 			t.Run(c.name, func(t *testing.T) {
 				m, s := NewSession(t)
+				defer m.Eval()
 
 				var (
 					channelID discord.ChannelID = 123
@@ -263,14 +259,13 @@ func TestMocker_MessagesBefore(t *testing.T) {
 				require.NoError(t, err)
 
 				assert.Equal(t, expect, actual)
-
-				m.Eval()
 			})
 		}
 	})
 
 	t.Run("nil messages", func(t *testing.T) {
 		m, s := NewSession(t)
+		defer m.Eval()
 
 		var channelID discord.ChannelID = 123
 
@@ -280,8 +275,6 @@ func TestMocker_MessagesBefore(t *testing.T) {
 		require.NoError(t, err)
 
 		assert.Len(t, actual, 0)
-
-		m.Eval()
 	})
 
 	t.Run("failure", func(t *testing.T) {
@@ -346,6 +339,7 @@ func TestMocker_MessagesAfter(t *testing.T) {
 		for _, c := range successCases {
 			t.Run(c.name, func(t *testing.T) {
 				m, s := NewSession(t)
+				defer m.Eval()
 
 				var (
 					channelID discord.ChannelID = 123
@@ -369,14 +363,13 @@ func TestMocker_MessagesAfter(t *testing.T) {
 				require.NoError(t, err)
 
 				assert.Equal(t, expect, actual)
-
-				m.Eval()
 			})
 		}
 	})
 
 	t.Run("nil guilds", func(t *testing.T) {
 		m, s := NewSession(t)
+		defer m.Eval()
 
 		var channelID discord.ChannelID = 123
 
@@ -388,8 +381,6 @@ func TestMocker_MessagesAfter(t *testing.T) {
 		require.NoError(t, err)
 
 		assert.Equal(t, expect, actual)
-
-		m.Eval()
 	})
 
 	t.Run("failure", func(t *testing.T) {
@@ -434,6 +425,7 @@ func TestMocker_MessagesAfter(t *testing.T) {
 
 func TestMocker_Message(t *testing.T) {
 	m, s := NewSession(t)
+	defer m.Eval()
 
 	expect := discord.Message{
 		ID:        123,
@@ -448,13 +440,12 @@ func TestMocker_Message(t *testing.T) {
 	require.NoError(t, err)
 
 	assert.Equal(t, expect, *actual)
-
-	m.Eval()
 }
 
 func TestMocker_SendText(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		m, s := NewSession(t)
+		defer m.Eval()
 
 		expect := discord.Message{
 			ID:        123,
@@ -469,8 +460,6 @@ func TestMocker_SendText(t *testing.T) {
 		require.NoError(t, err)
 
 		assert.Equal(t, expect, *actual)
-
-		m.Eval()
 	})
 
 	t.Run("failure", func(t *testing.T) {
@@ -495,6 +484,7 @@ func TestMocker_SendText(t *testing.T) {
 func TestMocker_SendEmbed(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		m, s := NewSession(t)
+		defer m.Eval()
 
 		expect := discord.Message{
 			ID:        123,
@@ -514,8 +504,6 @@ func TestMocker_SendEmbed(t *testing.T) {
 		require.NoError(t, err)
 
 		assert.Equal(t, expect, *actual)
-
-		m.Eval()
 	})
 
 	t.Run("failure", func(t *testing.T) {
@@ -585,6 +573,7 @@ func TestMocker_SendMessage(t *testing.T) {
 		for _, c := range successCases {
 			t.Run(c.name, func(t *testing.T) {
 				m, s := NewSession(t)
+				defer m.Eval()
 
 				var embed *discord.Embed
 				if len(c.msg.Embeds) > 0 {
@@ -597,13 +586,12 @@ func TestMocker_SendMessage(t *testing.T) {
 				require.NoError(t, err)
 
 				assert.Equal(t, c.msg, *actual)
-
-				m.Eval()
 			})
 		}
 
 		t.Run("param embed", func(t *testing.T) {
 			m, s := NewSession(t)
+			defer m.Eval()
 
 			var (
 				msg = discord.Message{
@@ -630,8 +618,6 @@ func TestMocker_SendMessage(t *testing.T) {
 			require.NoError(t, err)
 
 			assert.Equal(t, expect, *actual)
-
-			m.Eval()
 		})
 	})
 
@@ -666,6 +652,7 @@ func TestMocker_SendMessage(t *testing.T) {
 func TestMocker_EditText(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		m, s := NewSession(t)
+		defer m.Eval()
 
 		expect := discord.Message{
 			ID:        123,
@@ -680,8 +667,6 @@ func TestMocker_EditText(t *testing.T) {
 		require.NoError(t, err)
 
 		assert.Equal(t, expect, *actual)
-
-		m.Eval()
 	})
 
 	t.Run("failure", func(t *testing.T) {
@@ -715,6 +700,7 @@ func TestMocker_EditText(t *testing.T) {
 func TestMocker_EditEmbed(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		m, s := NewSession(t)
+		defer m.Eval()
 
 		expect := discord.Message{
 			ID:        123,
@@ -734,8 +720,6 @@ func TestMocker_EditEmbed(t *testing.T) {
 		require.NoError(t, err)
 
 		assert.Equal(t, expect, *actual)
-
-		m.Eval()
 	})
 
 	t.Run("failure", func(t *testing.T) {
@@ -826,6 +810,7 @@ func TestMocker_EditMessage(t *testing.T) {
 		for _, c := range successCases {
 			t.Run(c.name, func(t *testing.T) {
 				m, s := NewSession(t)
+				defer m.Eval()
 
 				var embed *discord.Embed
 				if len(c.msg.Embeds) > 0 {
@@ -838,8 +823,6 @@ func TestMocker_EditMessage(t *testing.T) {
 				require.NoError(t, err)
 
 				assert.Equal(t, c.msg, *actual)
-
-				m.Eval()
 			})
 		}
 	})
@@ -875,6 +858,7 @@ func TestMocker_EditMessage(t *testing.T) {
 func TestMocker_EditMessageComplex(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		m, s := NewSession(t)
+		defer m.Eval()
 
 		data := api.EditMessageData{
 			Content: option.NewNullableString("abc"),
@@ -893,8 +877,6 @@ func TestMocker_EditMessageComplex(t *testing.T) {
 		require.NoError(t, err)
 
 		assert.Equal(t, expect, *actual)
-
-		m.Eval()
 	})
 
 	t.Run("failure", func(t *testing.T) {
@@ -925,6 +907,7 @@ func TestMocker_EditMessageComplex(t *testing.T) {
 
 func TestMocker_DeleteMessage(t *testing.T) {
 	m, s := NewSession(t)
+	defer m.Eval()
 
 	var (
 		channelID discord.ChannelID = 123
@@ -935,13 +918,12 @@ func TestMocker_DeleteMessage(t *testing.T) {
 
 	err := s.DeleteMessage(channelID, messageID)
 	require.NoError(t, err)
-
-	m.Eval()
 }
 
 func TestMocker_DeleteMessages(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		m, s := NewSession(t)
+		defer m.Eval()
 
 		var (
 			channelID  discord.ChannelID = 123
@@ -952,8 +934,6 @@ func TestMocker_DeleteMessages(t *testing.T) {
 
 		err := s.DeleteMessages(channelID, messageIDs)
 		require.NoError(t, err)
-
-		m.Eval()
 	})
 
 	t.Run("failure", func(t *testing.T) {
