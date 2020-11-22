@@ -1,10 +1,10 @@
 # dismock
 
-[![GitHub Workflow Status](https://img.shields.io/github/workflow/status/mavolin/dismock/Test)](https://github.com/mavolin/dismock/actions?query=workflow%3ATest)
-[![codecov](https://codecov.io/gh/mavolin/dismock/branch/master/graph/badge.svg)](https://codecov.io/gh/mavolin/dismock)
+[![GitHub Workflow Status (branch)](https://img.shields.io/github/workflow/status/mavolin/dismock/Test/v2)](https://github.com/mavolin/dismock/actions?query=workflow%3ATest+branch%3Av2+)
+[![Test Coverage](https://codecov.io/gh/mavolin/dismock/branch/v2/graph/badge.svg)](https://codecov.io/gh/mavolin/dismock/branch/v2)
 [![Go Report Card](https://goreportcard.com/badge/github.com/mavolin/dismock)](https://goreportcard.com/report/github.com/mavolin/dismock)
-[![godoc](https://img.shields.io/badge/godoc-reference-blue)](https://pkg.go.dev/github.com/mavolin/dismock)
-[![GitHub](https://img.shields.io/github/license/mavolin/dismock)](https://github.com/mavolin/dismock/blob/master/LICENSE)
+[![PkgGoDev](https://pkg.go.dev/badge/github.com/mavolin/dismock/v2)](https://pkg.go.dev/github.com/mavolin/dismock/v2)
+[![License](https://img.shields.io/github/license/mavolin/dismock)](https://github.com/mavolin/dismock/blob/v2/LICENSE)
 
 -----
 
