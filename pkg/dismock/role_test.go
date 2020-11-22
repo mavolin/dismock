@@ -3,15 +3,16 @@ package dismock
 import (
 	"testing"
 
-	"github.com/diamondburned/arikawa/api"
-	"github.com/diamondburned/arikawa/discord"
-	"github.com/diamondburned/arikawa/utils/json/option"
+	"github.com/diamondburned/arikawa/v2/api"
+	"github.com/diamondburned/arikawa/v2/discord"
+	"github.com/diamondburned/arikawa/v2/utils/json/option"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
 func TestMocker_AddRole(t *testing.T) {
 	m, s := NewSession(t)
+	defer m.Eval()
 
 	var (
 		guildID discord.GuildID = 123
@@ -23,12 +24,11 @@ func TestMocker_AddRole(t *testing.T) {
 
 	err := s.AddRole(guildID, userID, roleID)
 	require.NoError(t, err)
-
-	m.Eval()
 }
 
 func TestMocker_RemoveRole(t *testing.T) {
 	m, s := NewSession(t)
+	defer m.Eval()
 
 	var (
 		guildID discord.GuildID = 123
@@ -40,23 +40,15 @@ func TestMocker_RemoveRole(t *testing.T) {
 
 	err := s.RemoveRole(guildID, userID, roleID)
 	require.NoError(t, err)
-
-	m.Eval()
 }
 
 func TestMocker_Roles(t *testing.T) {
 	m, s := NewSession(t)
+	defer m.Eval()
 
 	var guildID discord.GuildID = 123
 
-	expect := []discord.Role{
-		{
-			ID: 456,
-		},
-		{
-			ID: 789,
-		},
-	}
+	expect := []discord.Role{{ID: 456}, {ID: 789}}
 
 	m.Roles(guildID, expect)
 
@@ -64,19 +56,16 @@ func TestMocker_Roles(t *testing.T) {
 	require.NoError(t, err)
 
 	assert.Equal(t, expect, actual)
-
-	m.Eval()
 }
 
 func TestMocker_CreateRole(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		m, s := NewSession(t)
+		defer m.Eval()
 
 		var guildID discord.GuildID = 123
 
-		data := api.CreateRoleData{
-			Name: "abc",
-		}
+		data := api.CreateRoleData{Name: "abc"}
 
 		expect := discord.Role{
 			ID:   456,
@@ -89,8 +78,6 @@ func TestMocker_CreateRole(t *testing.T) {
 		require.NoError(t, err)
 
 		assert.Equal(t, expect, *actual)
-
-		m.Eval()
 	})
 
 	t.Run("failure", func(t *testing.T) {
@@ -105,13 +92,9 @@ func TestMocker_CreateRole(t *testing.T) {
 			Name: "abc",
 		}
 
-		m.CreateRole(guildID, api.CreateRoleData{
-			Name: "abc",
-		}, expect)
+		m.CreateRole(guildID, api.CreateRoleData{Name: "abc"}, expect)
 
-		actual, err := s.CreateRole(guildID, api.CreateRoleData{
-			Name: "cba",
-		})
+		actual, err := s.CreateRole(guildID, api.CreateRoleData{Name: "cba"})
 		require.NoError(t, err)
 
 		assert.Equal(t, expect, *actual)
@@ -122,6 +105,7 @@ func TestMocker_CreateRole(t *testing.T) {
 func TestMocker_MoveRole(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		m, s := NewSession(t)
+		defer m.Eval()
 
 		var guildID discord.GuildID = 123
 
@@ -155,8 +139,6 @@ func TestMocker_MoveRole(t *testing.T) {
 		require.NoError(t, err)
 
 		assert.Equal(t, expect, actual)
-
-		m.Eval()
 	})
 
 	t.Run("failure", func(t *testing.T) {
@@ -210,12 +192,11 @@ func TestMocker_MoveRole(t *testing.T) {
 func TestMocker_ModifyRole(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		m, s := NewSession(t)
+		defer m.Eval()
 
 		var guildID discord.GuildID = 123
 
-		data := api.ModifyRoleData{
-			Name: option.NewNullableString("abc"),
-		}
+		data := api.ModifyRoleData{Name: option.NewNullableString("abc")}
 
 		expect := discord.Role{
 			ID:       456,
@@ -229,8 +210,6 @@ func TestMocker_ModifyRole(t *testing.T) {
 		require.NoError(t, err)
 
 		assert.Equal(t, expect, *actual)
-
-		m.Eval()
 	})
 
 	t.Run("failure", func(t *testing.T) {
@@ -262,6 +241,7 @@ func TestMocker_ModifyRole(t *testing.T) {
 
 func TestMocker_DeleteRole(t *testing.T) {
 	m, s := NewSession(t)
+	defer m.Eval()
 
 	var (
 		guildID discord.GuildID = 123
@@ -272,6 +252,4 @@ func TestMocker_DeleteRole(t *testing.T) {
 
 	err := s.DeleteRole(guildID, roleID)
 	require.NoError(t, err)
-
-	m.Eval()
 }

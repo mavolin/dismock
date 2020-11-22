@@ -3,7 +3,7 @@ package dismock
 import (
 	"testing"
 
-	"github.com/diamondburned/arikawa/api"
+	"github.com/diamondburned/arikawa/v2/api"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -11,15 +11,14 @@ import (
 func TestMocker_Login(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		m, s := NewSession(t)
+		defer m.Eval()
 
 		var (
 			email    = "abc@def.ghi"
 			password = "jkl"
 		)
 
-		expect := api.LoginResponse{
-			Token: "mno",
-		}
+		expect := api.LoginResponse{Token: "mno"}
 
 		m.Login(email, password, expect)
 
@@ -27,8 +26,6 @@ func TestMocker_Login(t *testing.T) {
 		require.NoError(t, err)
 
 		assert.Equal(t, expect, *actual)
-
-		m.Eval()
 	})
 
 	t.Run("failure", func(t *testing.T) {
@@ -36,9 +33,7 @@ func TestMocker_Login(t *testing.T) {
 
 		m, s := NewSession(tMock)
 
-		expect := api.LoginResponse{
-			Token: "mno",
-		}
+		expect := api.LoginResponse{Token: "mno"}
 
 		m.Login("cba@fed.ihg", "jkl", expect)
 
@@ -53,15 +48,14 @@ func TestMocker_Login(t *testing.T) {
 func TestMocker_TOTP(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		m, s := NewSession(t)
+		defer m.Eval()
 
 		var (
 			code   = "abc"
 			ticket = "def"
 		)
 
-		expect := api.LoginResponse{
-			Token: "ghi",
-		}
+		expect := api.LoginResponse{Token: "ghi"}
 
 		m.TOTP(code, ticket, expect)
 
@@ -69,8 +63,6 @@ func TestMocker_TOTP(t *testing.T) {
 		require.NoError(t, err)
 
 		assert.Equal(t, expect, *actual)
-
-		m.Eval()
 	})
 
 	t.Run("failure", func(t *testing.T) {
@@ -78,9 +70,7 @@ func TestMocker_TOTP(t *testing.T) {
 
 		m, s := NewSession(tMock)
 
-		expect := api.LoginResponse{
-			Token: "ghi",
-		}
+		expect := api.LoginResponse{Token: "ghi"}
 
 		m.TOTP("abc", "def", expect)
 

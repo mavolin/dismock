@@ -15,8 +15,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/diamondburned/arikawa/api"
-	"github.com/diamondburned/arikawa/utils/json/option"
+	"github.com/diamondburned/arikawa/v2/api"
+	"github.com/diamondburned/arikawa/v2/utils/json/option"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -81,6 +81,7 @@ func CheckMultipart(
 		if err == io.EOF {
 			break
 		}
+
 		require.NoError(t, err)
 
 		name := part.FormName()
@@ -159,7 +160,7 @@ func checkJSON(t *testing.T, r io.Reader, v interface{}, expect interface{}) {
 
 // replacesNullables replaces the values of all nullable types with nil, if
 // they have assumed their JSON value.
-func replaceNullables(val reflect.Value) {
+func replaceNullables(val reflect.Value) { //nolint:gocognit
 	if val.Kind() == reflect.Ptr {
 		val = val.Elem()
 	}

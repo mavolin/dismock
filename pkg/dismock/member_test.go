@@ -1,25 +1,23 @@
 package dismock
 
 import (
-	"math/rand"
 	"testing"
 
-	"github.com/diamondburned/arikawa/api"
-	"github.com/diamondburned/arikawa/discord"
-	"github.com/diamondburned/arikawa/utils/json/option"
+	"github.com/diamondburned/arikawa/v2/api"
+	"github.com/diamondburned/arikawa/v2/discord"
+	"github.com/diamondburned/arikawa/v2/utils/json/option"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
 func TestMocker_Member(t *testing.T) {
 	m, s := NewSession(t)
+	defer m.Eval()
 
 	var guildID discord.GuildID = 123
 
 	expect := discord.Member{
-		User: discord.User{
-			ID: 456,
-		},
+		User: discord.User{ID: 456},
 	}
 
 	m.Member(guildID, expect)
@@ -28,8 +26,6 @@ func TestMocker_Member(t *testing.T) {
 	require.NoError(t, err)
 
 	assert.Equal(t, expect, *actual)
-
-	m.Eval()
 }
 
 func TestMocker_Members(t *testing.T) {
@@ -54,6 +50,7 @@ func TestMocker_Members(t *testing.T) {
 		for _, c := range successCases {
 			t.Run(c.name, func(t *testing.T) {
 				m, s := NewSession(t)
+				defer m.Eval()
 
 				var guildID discord.GuildID = 123
 
@@ -61,9 +58,7 @@ func TestMocker_Members(t *testing.T) {
 
 				for i := 0; i < c.members; i++ {
 					expect[i] = discord.Member{
-						User: discord.User{
-							ID: discord.UserID(rand.Int63()),
-						},
+						User: discord.User{ID: discord.UserID(i + 1)},
 					}
 				}
 
@@ -73,14 +68,13 @@ func TestMocker_Members(t *testing.T) {
 				require.NoError(t, err)
 
 				assert.Equal(t, expect, actual)
-
-				m.Eval()
 			})
 		}
 	})
 
 	t.Run("nil members", func(t *testing.T) {
 		m, s := NewSession(t)
+		defer m.Eval()
 
 		var guildID discord.GuildID = 123
 
@@ -90,8 +84,6 @@ func TestMocker_Members(t *testing.T) {
 		require.NoError(t, err)
 
 		assert.Len(t, actual, 0)
-
-		m.Eval()
 	})
 
 	t.Run("limit smaller than members", func(t *testing.T) {
@@ -125,6 +117,7 @@ func TestMocker_MembersAfter(t *testing.T) {
 		for _, c := range successCases {
 			t.Run(c.name, func(t *testing.T) {
 				m, s := NewSession(t)
+				defer m.Eval()
 
 				var (
 					guildID discord.GuildID = 123
@@ -136,7 +129,7 @@ func TestMocker_MembersAfter(t *testing.T) {
 				for i := 0; i < c.members; i++ {
 					expect[i] = discord.Member{
 						User: discord.User{
-							ID: discord.UserID(rand.Int63()),
+							ID: discord.UserID(int(after) + i + 1),
 						},
 					}
 				}
@@ -147,14 +140,13 @@ func TestMocker_MembersAfter(t *testing.T) {
 				require.NoError(t, err)
 
 				assert.Equal(t, expect, actual)
-
-				m.Eval()
 			})
 		}
 	})
 
 	t.Run("nil members", func(t *testing.T) {
 		m, s := NewSession(t)
+		defer m.Eval()
 
 		var guildID discord.GuildID = 123
 
@@ -164,8 +156,6 @@ func TestMocker_MembersAfter(t *testing.T) {
 		require.NoError(t, err)
 
 		assert.Len(t, actual, 0)
-
-		m.Eval()
 	})
 
 	t.Run("failure", func(t *testing.T) {
@@ -175,14 +165,10 @@ func TestMocker_MembersAfter(t *testing.T) {
 
 		expect := []discord.Member{
 			{
-				User: discord.User{
-					ID: 456,
-				},
+				User: discord.User{ID: 456},
 			},
 			{
-				User: discord.User{
-					ID: 789,
-				},
+				User: discord.User{ID: 789},
 			},
 		}
 
@@ -207,19 +193,16 @@ func TestMocker_MembersAfter(t *testing.T) {
 func TestMocker_AddMember(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		m, s := NewSession(t)
+		defer m.Eval()
 
 		var (
 			guildID discord.GuildID = 123
 
-			data = api.AddMemberData{
-				Token: "abc",
-			}
+			data = api.AddMemberData{Token: "abc"}
 		)
 
 		expect := discord.Member{
-			User: discord.User{
-				ID: 345,
-			},
+			User: discord.User{ID: 345},
 		}
 
 		m.AddMember(guildID, data, expect)
@@ -228,8 +211,6 @@ func TestMocker_AddMember(t *testing.T) {
 		require.NoError(t, err)
 
 		assert.Equal(t, expect, *actual)
-
-		m.Eval()
 	})
 
 	t.Run("failure", func(t *testing.T) {
@@ -245,9 +226,7 @@ func TestMocker_AddMember(t *testing.T) {
 			},
 		}
 
-		m.AddMember(guildID, api.AddMemberData{
-			Token: "abc",
-		}, expect)
+		m.AddMember(guildID, api.AddMemberData{Token: "abc"}, expect)
 
 		actual, err := s.AddMember(guildID, expect.User.ID, api.AddMemberData{
 			Token: "cba",
@@ -262,22 +241,19 @@ func TestMocker_AddMember(t *testing.T) {
 func TestMocker_ModifyMember(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		m, s := NewSession(t)
+		defer m.Eval()
 
 		var (
 			guildID discord.GuildID = 123
 			userID  discord.UserID  = 456
 
-			data = api.ModifyMemberData{
-				Nick: option.NewString("abc"),
-			}
+			data = api.ModifyMemberData{Nick: option.NewString("abc")}
 		)
 
 		m.ModifyMember(guildID, userID, data)
 
 		err := s.ModifyMember(guildID, userID, data)
 		require.NoError(t, err)
-
-		m.Eval()
 	})
 
 	t.Run("failure", func(t *testing.T) {
@@ -310,9 +286,7 @@ func TestMocker_PruneCount(t *testing.T) {
 	}{
 		{
 			name: "days = 0",
-			data: api.PruneCountData{
-				Days: 0,
-			},
+			data: api.PruneCountData{Days: 0},
 		},
 		{
 			name: "nil roles",
@@ -341,6 +315,7 @@ func TestMocker_PruneCount(t *testing.T) {
 		for _, c := range successCases {
 			t.Run(c.name, func(t *testing.T) {
 				m, s := NewSession(t)
+				defer m.Eval()
 
 				var guildID discord.GuildID = 123
 
@@ -352,8 +327,6 @@ func TestMocker_PruneCount(t *testing.T) {
 				require.NoError(t, err)
 
 				assert.Equal(t, expect, actual)
-
-				m.Eval()
 			})
 		}
 	})
@@ -390,9 +363,7 @@ func TestMocker_Prune(t *testing.T) {
 	}{
 		{
 			name: "days = 0",
-			data: api.PruneData{
-				Days: 0,
-			},
+			data: api.PruneData{Days: 0},
 		},
 		{
 			name: "nil roles",
@@ -421,6 +392,7 @@ func TestMocker_Prune(t *testing.T) {
 		for _, c := range successCases {
 			t.Run(c.name, func(t *testing.T) {
 				m, s := NewSession(t)
+				defer m.Eval()
 
 				var guildID discord.GuildID = 123
 
@@ -432,8 +404,6 @@ func TestMocker_Prune(t *testing.T) {
 				require.NoError(t, err)
 
 				assert.Equal(t, expect, actual)
-
-				m.Eval()
 			})
 		}
 	})
@@ -467,6 +437,7 @@ func TestMocker_Prune(t *testing.T) {
 
 func TestMocker_Kick(t *testing.T) {
 	m, s := NewSession(t)
+	defer m.Eval()
 
 	var (
 		guildID discord.GuildID = 123
@@ -477,12 +448,11 @@ func TestMocker_Kick(t *testing.T) {
 
 	err := s.Kick(guildID, userID)
 	require.NoError(t, err)
-
-	m.Eval()
 }
 
 func TestMocker_Bans(t *testing.T) {
 	m, s := NewSession(t)
+	defer m.Eval()
 
 	var guildID discord.GuildID = 123
 
@@ -505,19 +475,16 @@ func TestMocker_Bans(t *testing.T) {
 	require.NoError(t, err)
 
 	assert.Equal(t, expect, actual)
-
-	m.Eval()
 }
 
 func TestMocker_GetBan(t *testing.T) {
 	m, s := NewSession(t)
+	defer m.Eval()
 
 	var guildID discord.GuildID = 123
 
 	expect := discord.Ban{
-		User: discord.User{
-			ID: 123,
-		},
+		User: discord.User{ID: 123},
 	}
 
 	m.GetBan(guildID, expect)
@@ -526,8 +493,6 @@ func TestMocker_GetBan(t *testing.T) {
 	require.NoError(t, err)
 
 	assert.Equal(t, expect, *actual)
-
-	m.Eval()
 }
 
 func TestMocker_Ban(t *testing.T) {
@@ -537,15 +502,11 @@ func TestMocker_Ban(t *testing.T) {
 	}{
 		{
 			name: "deleteDays > 7",
-			data: api.BanData{
-				DeleteDays: option.NewUint(8),
-			},
+			data: api.BanData{DeleteDays: option.NewUint(8)},
 		},
 		{
 			name: "deleteDays",
-			data: api.BanData{
-				DeleteDays: option.NewUint(5),
-			},
+			data: api.BanData{DeleteDays: option.NewUint(5)},
 		},
 		{
 			name: "reason",
@@ -560,6 +521,7 @@ func TestMocker_Ban(t *testing.T) {
 		for _, c := range successCases {
 			t.Run(c.name, func(t *testing.T) {
 				m, s := NewSession(t)
+				defer m.Eval()
 
 				var (
 					guildID discord.GuildID = 123
@@ -570,8 +532,6 @@ func TestMocker_Ban(t *testing.T) {
 
 				err := s.Ban(guildID, userID, c.data)
 				require.NoError(t, err)
-
-				m.Eval()
 			})
 		}
 	})
@@ -579,6 +539,7 @@ func TestMocker_Ban(t *testing.T) {
 
 func TestMocker_Unban(t *testing.T) {
 	m, s := NewSession(t)
+	defer m.Eval()
 
 	var (
 		guildID discord.GuildID = 123
@@ -589,6 +550,4 @@ func TestMocker_Unban(t *testing.T) {
 
 	err := s.Unban(guildID, userID)
 	require.NoError(t, err)
-
-	m.Eval()
 }

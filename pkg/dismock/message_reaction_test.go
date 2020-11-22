@@ -3,13 +3,14 @@ package dismock
 import (
 	"testing"
 
-	"github.com/diamondburned/arikawa/discord"
+	"github.com/diamondburned/arikawa/v2/discord"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
 func TestMocker_React(t *testing.T) {
 	m, s := NewSession(t)
+	defer m.Eval()
 
 	var (
 		channelID discord.ChannelID = 123
@@ -21,12 +22,11 @@ func TestMocker_React(t *testing.T) {
 
 	err := s.React(channelID, messageID, emoji)
 	require.NoError(t, err)
-
-	m.Eval()
 }
 
 func TestMocker_Unreact(t *testing.T) {
 	m, s := NewSession(t)
+	defer m.Eval()
 
 	var (
 		channelID discord.ChannelID = 123
@@ -38,22 +38,23 @@ func TestMocker_Unreact(t *testing.T) {
 
 	err := s.Unreact(channelID, messageID, emoji)
 	require.NoError(t, err)
-
-	m.Eval()
 }
 
 func TestMocker_Reactions(t *testing.T) {
 	successCases := []struct {
-		name  string
-		limit uint
+		name      string
+		reactions int
+		limit     uint
 	}{
 		{
-			name:  "limited",
-			limit: 199,
+			name:      "limited",
+			reactions: 130,
+			limit:     199,
 		},
 		{
-			name:  "unlimited",
-			limit: 0,
+			name:      "unlimited",
+			reactions: 200,
+			limit:     0,
 		},
 	}
 
@@ -61,6 +62,7 @@ func TestMocker_Reactions(t *testing.T) {
 		for _, c := range successCases {
 			t.Run(c.name, func(t *testing.T) {
 				m, s := NewSession(t)
+				defer m.Eval()
 
 				var (
 					channelID discord.ChannelID = 123
@@ -68,40 +70,10 @@ func TestMocker_Reactions(t *testing.T) {
 					emoji                       = "🍆"
 				)
 
-				expect := []discord.User{ // more than 100 entries so multiple requests are mocked
-					{ID: 1234567890}, {ID: 2345678901}, {ID: 3456789012},
-					{ID: 4567890123}, {ID: 5678901234}, {ID: 6789012345}, {ID: 7890123456}, {ID: 8901234567},
-					{ID: 9012345678}, {ID: 123456789}, {ID: 234567890}, {ID: 345678901}, {ID: 456789012},
-					{ID: 567890123}, {ID: 678901234}, {ID: 789012345}, {ID: 890123456}, {ID: 901234567},
-					{ID: 12345678}, {ID: 23456789}, {ID: 34567890}, {ID: 45678901}, {ID: 56789012},
-					{ID: 67890123}, {ID: 78901234}, {ID: 89012345}, {ID: 90123456}, {ID: 1234567},
-					{ID: 2345678}, {ID: 3456789}, {ID: 4567890}, {ID: 5678901}, {ID: 6789012},
-					{ID: 7890123}, {ID: 8901234}, {ID: 9012345}, {ID: 123456}, {ID: 234567},
-					{ID: 345678}, {ID: 456789}, {ID: 567890}, {ID: 678901}, {ID: 789012},
-					{ID: 890123}, {ID: 901234}, {ID: 12345}, {ID: 23456}, {ID: 34567},
-					{ID: 45678}, {ID: 56789}, {ID: 67890}, {ID: 78901}, {ID: 89012},
-					{ID: 90123}, {ID: 1234}, {ID: 2345}, {ID: 3456}, {ID: 4567},
-					{ID: 5678}, {ID: 6789}, {ID: 7890}, {ID: 8901}, {ID: 9012},
-					{ID: 123}, {ID: 234}, {ID: 345}, {ID: 456}, {ID: 567},
-					{ID: 678}, {ID: 789}, {ID: 890}, {ID: 901}, {ID: 12},
-					{ID: 23}, {ID: 45}, {ID: 56}, {ID: 67}, {ID: 78},
-					{ID: 89}, {ID: 90}, {ID: 98}, {ID: 87}, {ID: 76},
-					{ID: 65}, {ID: 54}, {ID: 43}, {ID: 32}, {ID: 21},
-					{ID: 10}, {ID: 987}, {ID: 876}, {ID: 765}, {ID: 654},
-					{ID: 543}, {ID: 432}, {ID: 321}, {ID: 210}, {ID: 109},
-					{ID: 9876}, {ID: 8765}, {ID: 7654}, {ID: 6543}, {ID: 5432},
-					{ID: 4321}, {ID: 3210}, {ID: 2109}, {ID: 1098}, {ID: 98765},
-					{ID: 87654}, {ID: 76543}, {ID: 65432}, {ID: 54321}, {ID: 43210},
-					{ID: 32109}, {ID: 21098}, {ID: 10987}, {ID: 987654}, {ID: 876543},
-					{ID: 765432}, {ID: 654321}, {ID: 543210}, {ID: 432109}, {ID: 321098},
-					{ID: 210987}, {ID: 109876}, {ID: 9876543}, {ID: 8765432}, {ID: 7654321},
-					{ID: 6543210}, {ID: 5432109}, {ID: 4321098}, {ID: 3210987}, {ID: 2109876},
-					{ID: 1098765}, {ID: 98765432}, {ID: 87654321}, {ID: 76543210}, {ID: 65432109},
-					{ID: 54321098}, {ID: 43210987}, {ID: 32109876}, {ID: 21098765}, {ID: 10987654},
-					{ID: 987654321}, {ID: 876543210}, {ID: 765432109}, {ID: 654321098}, {ID: 543210987},
-					{ID: 432109876}, {ID: 321098765}, {ID: 210987654}, {ID: 109876543}, {ID: 9876543210},
-					{ID: 8765432109}, {ID: 7654321098}, {ID: 6543210987}, {ID: 5432109876}, {ID: 4321098765},
-					{ID: 3210987654}, {ID: 2109876543}, {ID: 1098765432},
+				expect := make([]discord.User, c.reactions)
+
+				for i := 1; i < c.reactions+1; i++ {
+					expect[i-1] = discord.User{ID: discord.UserID(i)}
 				}
 
 				m.Reactions(channelID, messageID, c.limit, emoji, expect)
@@ -110,14 +82,13 @@ func TestMocker_Reactions(t *testing.T) {
 				require.NoError(t, err)
 
 				assert.Equal(t, expect, actual)
-
-				m.Eval()
 			})
 		}
 	})
 
 	t.Run("nil users", func(t *testing.T) {
 		m, s := NewSession(t)
+		defer m.Eval()
 
 		var (
 			channelID discord.ChannelID = 123
@@ -131,8 +102,6 @@ func TestMocker_Reactions(t *testing.T) {
 		require.NoError(t, err)
 
 		assert.Len(t, actual, 0)
-
-		m.Eval()
 	})
 
 	t.Run("limit smaller than guilds", func(t *testing.T) {
@@ -146,16 +115,19 @@ func TestMocker_Reactions(t *testing.T) {
 
 func TestMocker_ReactionsBefore(t *testing.T) {
 	successCases := []struct {
-		name  string
-		limit uint
+		name      string
+		reactions int
+		limit     uint
 	}{
 		{
-			name:  "limited",
-			limit: 199,
+			name:      "limited",
+			reactions: 130,
+			limit:     199,
 		},
 		{
-			name:  "unlimited",
-			limit: 0,
+			name:      "unlimited",
+			reactions: 200,
+			limit:     0,
 		},
 	}
 
@@ -163,6 +135,7 @@ func TestMocker_ReactionsBefore(t *testing.T) {
 		for _, c := range successCases {
 			t.Run(c.name, func(t *testing.T) {
 				m, s := NewSession(t)
+				defer m.Eval()
 
 				var (
 					channelID discord.ChannelID = 123
@@ -172,40 +145,10 @@ func TestMocker_ReactionsBefore(t *testing.T) {
 					before discord.UserID = 999999999999
 				)
 
-				expect := []discord.User{ // more than 100 entries so multiple requests are mocked
-					{ID: 1234567890}, {ID: 2345678901}, {ID: 3456789012},
-					{ID: 4567890123}, {ID: 5678901234}, {ID: 6789012345}, {ID: 7890123456}, {ID: 8901234567},
-					{ID: 9012345678}, {ID: 123456789}, {ID: 234567890}, {ID: 345678901}, {ID: 456789012},
-					{ID: 567890123}, {ID: 678901234}, {ID: 789012345}, {ID: 890123456}, {ID: 901234567},
-					{ID: 12345678}, {ID: 23456789}, {ID: 34567890}, {ID: 45678901}, {ID: 56789012},
-					{ID: 67890123}, {ID: 78901234}, {ID: 89012345}, {ID: 90123456}, {ID: 1234567},
-					{ID: 2345678}, {ID: 3456789}, {ID: 4567890}, {ID: 5678901}, {ID: 6789012},
-					{ID: 7890123}, {ID: 8901234}, {ID: 9012345}, {ID: 123456}, {ID: 234567},
-					{ID: 345678}, {ID: 456789}, {ID: 567890}, {ID: 678901}, {ID: 789012},
-					{ID: 890123}, {ID: 901234}, {ID: 12345}, {ID: 23456}, {ID: 34567},
-					{ID: 45678}, {ID: 56789}, {ID: 67890}, {ID: 78901}, {ID: 89012},
-					{ID: 90123}, {ID: 1234}, {ID: 2345}, {ID: 3456}, {ID: 4567},
-					{ID: 5678}, {ID: 6789}, {ID: 7890}, {ID: 8901}, {ID: 9012},
-					{ID: 123}, {ID: 234}, {ID: 345}, {ID: 456}, {ID: 567},
-					{ID: 678}, {ID: 789}, {ID: 890}, {ID: 901}, {ID: 12},
-					{ID: 23}, {ID: 45}, {ID: 56}, {ID: 67}, {ID: 78},
-					{ID: 89}, {ID: 90}, {ID: 98}, {ID: 87}, {ID: 76},
-					{ID: 65}, {ID: 54}, {ID: 43}, {ID: 32}, {ID: 21},
-					{ID: 10}, {ID: 987}, {ID: 876}, {ID: 765}, {ID: 654},
-					{ID: 543}, {ID: 432}, {ID: 321}, {ID: 210}, {ID: 109},
-					{ID: 9876}, {ID: 8765}, {ID: 7654}, {ID: 6543}, {ID: 5432},
-					{ID: 4321}, {ID: 3210}, {ID: 2109}, {ID: 1098}, {ID: 98765},
-					{ID: 87654}, {ID: 76543}, {ID: 65432}, {ID: 54321}, {ID: 43210},
-					{ID: 32109}, {ID: 21098}, {ID: 10987}, {ID: 987654}, {ID: 876543},
-					{ID: 765432}, {ID: 654321}, {ID: 543210}, {ID: 432109}, {ID: 321098},
-					{ID: 210987}, {ID: 109876}, {ID: 9876543}, {ID: 8765432}, {ID: 7654321},
-					{ID: 6543210}, {ID: 5432109}, {ID: 4321098}, {ID: 3210987}, {ID: 2109876},
-					{ID: 1098765}, {ID: 98765432}, {ID: 87654321}, {ID: 76543210}, {ID: 65432109},
-					{ID: 54321098}, {ID: 43210987}, {ID: 32109876}, {ID: 21098765}, {ID: 10987654},
-					{ID: 987654321}, {ID: 876543210}, {ID: 765432109}, {ID: 654321098}, {ID: 543210987},
-					{ID: 432109876}, {ID: 321098765}, {ID: 210987654}, {ID: 109876543}, {ID: 9876543210},
-					{ID: 8765432109}, {ID: 7654321098}, {ID: 6543210987}, {ID: 5432109876}, {ID: 4321098765},
-					{ID: 3210987654}, {ID: 2109876543}, {ID: 1098765432},
+				expect := make([]discord.User, c.reactions)
+
+				for i := 1; i < c.reactions+1; i++ {
+					expect[i-1] = discord.User{ID: discord.UserID(i)}
 				}
 
 				m.ReactionsBefore(channelID, messageID, before, c.limit, emoji, expect)
@@ -214,14 +157,13 @@ func TestMocker_ReactionsBefore(t *testing.T) {
 				require.NoError(t, err)
 
 				assert.Equal(t, expect, actual)
-
-				m.Eval()
 			})
 		}
 	})
 
 	t.Run("nil users", func(t *testing.T) {
 		m, s := NewSession(t)
+		defer m.Eval()
 
 		var (
 			channelID discord.ChannelID = 123
@@ -235,8 +177,6 @@ func TestMocker_ReactionsBefore(t *testing.T) {
 		require.NoError(t, err)
 
 		assert.Len(t, actual, 0)
-
-		m.Eval()
 	})
 
 	t.Run("failure", func(t *testing.T) {
@@ -250,14 +190,7 @@ func TestMocker_ReactionsBefore(t *testing.T) {
 			emoji                       = "abc"
 		)
 
-		expect := []discord.User{
-			{
-				ID: 123,
-			},
-			{
-				ID: 456,
-			},
-		}
+		expect := []discord.User{{ID: 123}, {ID: 456}}
 
 		m.ReactionsBefore(channelID, messageID, 890, 100, emoji, expect)
 
@@ -279,16 +212,19 @@ func TestMocker_ReactionsBefore(t *testing.T) {
 
 func TestMocker_ReactionsAfter(t *testing.T) {
 	successCases := []struct {
-		name  string
-		limit uint
+		name      string
+		reactions int
+		limit     uint
 	}{
 		{
-			name:  "limited",
-			limit: 199,
+			name:      "limited",
+			reactions: 130,
+			limit:     199,
 		},
 		{
-			name:  "unlimited",
-			limit: 0,
+			name:      "unlimited",
+			reactions: 200,
+			limit:     0,
 		},
 	}
 
@@ -296,6 +232,7 @@ func TestMocker_ReactionsAfter(t *testing.T) {
 		for _, c := range successCases {
 			t.Run(c.name, func(t *testing.T) {
 				m, s := NewSession(t)
+				defer m.Eval()
 
 				var (
 					channelID discord.ChannelID = 123
@@ -305,40 +242,10 @@ func TestMocker_ReactionsAfter(t *testing.T) {
 					after discord.UserID = 123
 				)
 
-				expect := []discord.User{ // more than 100 entries so multiple requests are mocked
-					{ID: 1234567890}, {ID: 2345678901}, {ID: 3456789012},
-					{ID: 4567890123}, {ID: 5678901234}, {ID: 6789012345}, {ID: 7890123456}, {ID: 8901234567},
-					{ID: 9012345678}, {ID: 123456789}, {ID: 234567890}, {ID: 345678901}, {ID: 456789012},
-					{ID: 567890123}, {ID: 678901234}, {ID: 789012345}, {ID: 890123456}, {ID: 901234567},
-					{ID: 12345678}, {ID: 23456789}, {ID: 34567890}, {ID: 45678901}, {ID: 56789012},
-					{ID: 67890123}, {ID: 78901234}, {ID: 89012345}, {ID: 90123456}, {ID: 1234567},
-					{ID: 2345678}, {ID: 3456789}, {ID: 4567890}, {ID: 5678901}, {ID: 6789012},
-					{ID: 7890123}, {ID: 8901234}, {ID: 9012345}, {ID: 123456}, {ID: 234567},
-					{ID: 345678}, {ID: 456789}, {ID: 567890}, {ID: 678901}, {ID: 789012},
-					{ID: 890123}, {ID: 901234}, {ID: 12345}, {ID: 23456}, {ID: 34567},
-					{ID: 45678}, {ID: 56789}, {ID: 67890}, {ID: 78901}, {ID: 89012},
-					{ID: 90123}, {ID: 1234}, {ID: 2345}, {ID: 3456}, {ID: 4567},
-					{ID: 5678}, {ID: 6789}, {ID: 7890}, {ID: 8901}, {ID: 9012},
-					{ID: 123}, {ID: 234}, {ID: 345}, {ID: 456}, {ID: 567},
-					{ID: 678}, {ID: 789}, {ID: 890}, {ID: 901}, {ID: 12},
-					{ID: 23}, {ID: 45}, {ID: 56}, {ID: 67}, {ID: 78},
-					{ID: 89}, {ID: 90}, {ID: 98}, {ID: 87}, {ID: 76},
-					{ID: 65}, {ID: 54}, {ID: 43}, {ID: 32}, {ID: 21},
-					{ID: 10}, {ID: 987}, {ID: 876}, {ID: 765}, {ID: 654},
-					{ID: 543}, {ID: 432}, {ID: 321}, {ID: 210}, {ID: 109},
-					{ID: 9876}, {ID: 8765}, {ID: 7654}, {ID: 6543}, {ID: 5432},
-					{ID: 4321}, {ID: 3210}, {ID: 2109}, {ID: 1098}, {ID: 98765},
-					{ID: 87654}, {ID: 76543}, {ID: 65432}, {ID: 54321}, {ID: 43210},
-					{ID: 32109}, {ID: 21098}, {ID: 10987}, {ID: 987654}, {ID: 876543},
-					{ID: 765432}, {ID: 654321}, {ID: 543210}, {ID: 432109}, {ID: 321098},
-					{ID: 210987}, {ID: 109876}, {ID: 9876543}, {ID: 8765432}, {ID: 7654321},
-					{ID: 6543210}, {ID: 5432109}, {ID: 4321098}, {ID: 3210987}, {ID: 2109876},
-					{ID: 1098765}, {ID: 98765432}, {ID: 87654321}, {ID: 76543210}, {ID: 65432109},
-					{ID: 54321098}, {ID: 43210987}, {ID: 32109876}, {ID: 21098765}, {ID: 10987654},
-					{ID: 987654321}, {ID: 876543210}, {ID: 765432109}, {ID: 654321098}, {ID: 543210987},
-					{ID: 432109876}, {ID: 321098765}, {ID: 210987654}, {ID: 109876543}, {ID: 9876543210},
-					{ID: 8765432109}, {ID: 7654321098}, {ID: 6543210987}, {ID: 5432109876}, {ID: 4321098765},
-					{ID: 3210987654}, {ID: 2109876543}, {ID: 1098765432},
+				expect := make([]discord.User, c.reactions)
+
+				for i := 0; i < c.reactions; i++ {
+					expect[i] = discord.User{ID: discord.UserID(int(after) + i + 1)}
 				}
 
 				m.ReactionsAfter(channelID, messageID, after, c.limit, emoji, expect)
@@ -347,14 +254,13 @@ func TestMocker_ReactionsAfter(t *testing.T) {
 				require.NoError(t, err)
 
 				assert.Equal(t, expect, actual)
-
-				m.Eval()
 			})
 		}
 	})
 
 	t.Run("nil users", func(t *testing.T) {
 		m, s := NewSession(t)
+		defer m.Eval()
 
 		var (
 			channelID discord.ChannelID = 123
@@ -368,8 +274,6 @@ func TestMocker_ReactionsAfter(t *testing.T) {
 		require.NoError(t, err)
 
 		assert.Len(t, actual, 0)
-
-		m.Eval()
 	})
 
 	t.Run("failure", func(t *testing.T) {
@@ -383,14 +287,7 @@ func TestMocker_ReactionsAfter(t *testing.T) {
 			emoji                       = "🍆"
 		)
 
-		expect := []discord.User{
-			{
-				ID: 456,
-			},
-			{
-				ID: 789,
-			},
-		}
+		expect := []discord.User{{ID: 456}, {ID: 789}}
 
 		m.ReactionsAfter(channelID, messageID, 123, 100, emoji, expect)
 
@@ -412,6 +309,7 @@ func TestMocker_ReactionsAfter(t *testing.T) {
 
 func TestMocker_DeleteUserReaction(t *testing.T) {
 	m, s := NewSession(t)
+	defer m.Eval()
 
 	var (
 		channelID discord.ChannelID = 123
@@ -424,12 +322,11 @@ func TestMocker_DeleteUserReaction(t *testing.T) {
 
 	err := s.DeleteUserReaction(channelID, messageID, userID, emoji)
 	require.NoError(t, err)
-
-	m.Eval()
 }
 
 func TestMocker_DeleteReactions(t *testing.T) {
 	m, s := NewSession(t)
+	defer m.Eval()
 
 	var (
 		channelID discord.ChannelID = 123
@@ -441,12 +338,11 @@ func TestMocker_DeleteReactions(t *testing.T) {
 
 	err := s.DeleteReactions(channelID, messageID, emoji)
 	require.NoError(t, err)
-
-	m.Eval()
 }
 
 func TestMocker_DeleteAllReactions(t *testing.T) {
 	m, s := NewSession(t)
+	defer m.Eval()
 
 	var (
 		channelID discord.ChannelID = 123
@@ -457,6 +353,4 @@ func TestMocker_DeleteAllReactions(t *testing.T) {
 
 	err := s.DeleteAllReactions(channelID, messageID)
 	require.NoError(t, err)
-
-	m.Eval()
 }

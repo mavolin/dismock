@@ -8,12 +8,13 @@ import (
 	"strconv"
 	"testing"
 
-	"github.com/diamondburned/arikawa/api"
-	"github.com/diamondburned/arikawa/discord"
+	"github.com/diamondburned/arikawa/v2/api"
+	"github.com/diamondburned/arikawa/v2/discord"
 
 	"github.com/mavolin/dismock/internal/mockutil"
-	"github.com/mavolin/dismock/internal/sanitize"
 )
+
+const maxFetchMembers = 1000
 
 // Member mocks a Member request.
 //
@@ -26,8 +27,6 @@ func (m *Mocker) Member(guildID discord.GuildID, member discord.Member) {
 }
 
 // Members mocks a Members request.
-//
-// This method will sanitize Member.User.ID.
 func (m *Mocker) Members(guildID discord.GuildID, limit uint, members []discord.Member) {
 	if members == nil {
 		members = []discord.Member{}
@@ -37,34 +36,34 @@ func (m *Mocker) Members(guildID discord.GuildID, limit uint, members []discord.
 		panic(fmt.Sprintf("limit may not be less than the number of sent Members (%d vs. %d)", len(members), limit))
 	}
 
-	const hardLimit uint = 1000
-
 	var after discord.UserID
 
-	for i := 0; i <= len(members)/int(hardLimit); i++ {
+	for i := 0; i <= len(members)/maxFetchMembers; i++ {
 		var (
-			from = uint(i) * hardLimit
-			to   = uint(math.Min(float64(from+hardLimit), float64(len(members))))
+			from = uint(i) * maxFetchMembers
+			to   = uint(math.Min(float64(from+maxFetchMembers), float64(len(members))))
 
-			fetch = to - from // we expect this as the sent limit
+			fetch = to - from // we msg this as the sent limit
 		)
 
 		// but if limit != unlimited
 		if limit > 0 {
 			// and the max data we can send (fetch) is smaller than what could be requested max, we
-			// expect either limit or hardlimit, depending on which is smaller, instead.
-			if fetch < hardLimit {
-				fetch = uint(math.Min(float64(limit), float64(hardLimit)))
+			// msg either limit or maxFetchMembers, depending on which is smaller, instead.
+			if fetch < maxFetchMembers {
+				fetch = uint(math.Min(float64(limit), float64(maxFetchMembers)))
 			}
 
 			limit -= fetch
-		} else { // this means there is no limit, hence we should expect hardlimit
-			fetch = hardLimit
+		} else {
+			// this means there is no limit, hence we should msg
+			// maxFetchMembers
+			fetch = maxFetchMembers
 		}
 
 		m.membersAfter(guildID, after, fmt.Sprintf("Members #%d", i+1), fetch, members[from:to])
 
-		if to-from < hardLimit {
+		if to-from < maxFetchMembers {
 			break
 		}
 
@@ -73,8 +72,6 @@ func (m *Mocker) Members(guildID discord.GuildID, limit uint, members []discord.
 }
 
 // MembersAfter mocks a MembersAfter request.
-//
-// This method will sanitize Member.User.ID.
 func (m *Mocker) MembersAfter(guildID discord.GuildID, after discord.UserID, limit uint, members []discord.Member) {
 	if members == nil {
 		members = []discord.Member{}
@@ -84,32 +81,32 @@ func (m *Mocker) MembersAfter(guildID discord.GuildID, after discord.UserID, lim
 		panic(fmt.Sprintf("limit may not be less than the number of sent Members (%d vs. %d)", len(members), limit))
 	}
 
-	const hardLimit uint = 1000
-
-	for i := 0; i <= len(members)/int(hardLimit); i++ {
+	for i := 0; i <= len(members)/maxFetchMembers; i++ {
 		var (
-			from = uint(i) * hardLimit
-			to   = uint(math.Min(float64(from+hardLimit), float64(len(members))))
+			from = uint(i) * maxFetchMembers
+			to   = uint(math.Min(float64(from+maxFetchMembers), float64(len(members))))
 
-			fetch = to - from // we expect this as the sent limit
+			fetch = to - from // we msg this as the sent limit
 		)
 
 		// but if limit != unlimited
 		if limit > 0 {
 			// and the max data we can send (fetch) is smaller than what could be requested max, we
-			// expect either limit or hardlimit, depending on which is smaller, instead.
-			if fetch < hardLimit {
-				fetch = uint(math.Min(float64(limit), float64(hardLimit)))
+			// msg either limit or maxFetchMembers, depending on which is smaller, instead.
+			if fetch < maxFetchMembers {
+				fetch = uint(math.Min(float64(limit), float64(maxFetchMembers)))
 			}
 
 			limit -= fetch
-		} else { // this means there is no limit, hence we should expect hardlimit
-			fetch = hardLimit
+		} else {
+			// this means there is no limit, hence we should msg
+			// maxFetchMembers
+			fetch = maxFetchMembers
 		}
 
 		m.membersAfter(guildID, after, fmt.Sprintf("MembersAfter #%d", i+1), fetch, members[from:to])
 
-		if to-from < hardLimit {
+		if to-from < maxFetchMembers {
 			break
 		}
 
@@ -118,15 +115,9 @@ func (m *Mocker) MembersAfter(guildID discord.GuildID, after discord.UserID, lim
 }
 
 // membersAfter mocks a single request to the GET /Members endpoint.
-//
-// This method will sanitize Member.User.ID.
 func (m *Mocker) membersAfter(
 	guildID discord.GuildID, after discord.UserID, name string, limit uint, g []discord.Member,
 ) {
-	for i, Member := range g {
-		g[i] = sanitize.Member(Member, 1)
-	}
-
 	m.MockAPI(name, http.MethodGet, "/guilds/"+guildID.String()+"/members",
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
 			expect := url.Values{
@@ -231,13 +222,7 @@ func (m *Mocker) Kick(guildID discord.GuildID, userID discord.UserID) {
 }
 
 // Bans mocks a Bans request.
-//
-// This method will sanitize Bans.User.ID.
 func (m *Mocker) Bans(guildID discord.GuildID, b []discord.Ban) {
-	for i, ban := range b {
-		b[i] = sanitize.Ban(ban, 1)
-	}
-
 	m.MockAPI("Bans", http.MethodGet, "/guilds/"+guildID.String()+"/bans",
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
 			mockutil.WriteJSON(t, w, b)

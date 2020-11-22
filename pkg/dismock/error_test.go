@@ -4,13 +4,14 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/diamondburned/arikawa/utils/httputil"
+	"github.com/diamondburned/arikawa/v2/utils/httputil"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
 func TestMocker_Error(t *testing.T) {
 	m, s := NewSession(t)
+	defer m.Eval()
 
 	sendErr := httputil.HTTPError{
 		Status:  http.StatusBadRequest,
@@ -28,6 +29,4 @@ func TestMocker_Error(t *testing.T) {
 	assert.Equal(t, sendErr.Status, httpErr.Status)
 	assert.Equal(t, sendErr.Code, httpErr.Code)
 	assert.Equal(t, sendErr.Message, httpErr.Message)
-
-	m.Eval()
 }

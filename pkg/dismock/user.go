@@ -4,11 +4,10 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/diamondburned/arikawa/api"
-	"github.com/diamondburned/arikawa/discord"
+	"github.com/diamondburned/arikawa/v2/api"
+	"github.com/diamondburned/arikawa/v2/discord"
 
 	"github.com/mavolin/dismock/internal/mockutil"
-	"github.com/mavolin/dismock/internal/sanitize"
 )
 
 // User mocks a User request.
@@ -22,11 +21,7 @@ func (m *Mocker) User(u discord.User) {
 }
 
 // Me mocks a Me request.
-//
-// This method will sanitize User.ID.
 func (m *Mocker) Me(u discord.User) {
-	u = sanitize.User(u, 1)
-
 	m.MockAPI("Me", http.MethodGet, "/users/@me",
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
 			mockutil.WriteJSON(t, w, u)
@@ -34,11 +29,7 @@ func (m *Mocker) Me(u discord.User) {
 }
 
 // ModifyMe mocks a ModifyMe request.
-//
-// This method will sanitize User.ID.
 func (m *Mocker) ModifyMe(d api.ModifySelfData, u discord.User) {
-	u = sanitize.User(u, 1)
-
 	m.MockAPI("ModifyMe", http.MethodPatch, "/users/@me",
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
 			mockutil.CheckJSON(t, r.Body, new(api.ModifySelfData), &d)
@@ -64,13 +55,7 @@ func (m *Mocker) ChangeOwnNickname(guildID discord.GuildID, nick string) {
 }
 
 // PrivateChannels mocks a PrivateChannels request.
-//
-// This method will sanitize Channels.ID.
 func (m *Mocker) PrivateChannels(c []discord.Channel) {
-	for i, channel := range c {
-		c[i] = sanitize.Channel(channel, 1)
-	}
-
 	m.MockAPI("PrivateChannels", http.MethodGet, "/users/@me/channels",
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
 			mockutil.WriteJSON(t, w, c)

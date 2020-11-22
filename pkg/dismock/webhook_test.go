@@ -3,29 +3,29 @@ package dismock
 import (
 	"testing"
 
-	"github.com/diamondburned/arikawa/api"
-	"github.com/diamondburned/arikawa/discord"
-	"github.com/diamondburned/arikawa/utils/json/option"
-	"github.com/diamondburned/arikawa/webhook"
+	"github.com/diamondburned/arikawa/v2/api"
+	"github.com/diamondburned/arikawa/v2/discord"
+	"github.com/diamondburned/arikawa/v2/utils/json/option"
+	"github.com/diamondburned/arikawa/v2/webhook"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-
-	"github.com/mavolin/dismock/internal/sanitize"
 )
 
 func TestMocker_CreateWebhook(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		m, s := NewSession(t)
+		defer m.Eval()
 
 		data := api.CreateWebhookData{
 			Name: "abc",
 		}
 
-		expect := sanitize.Webhook(discord.Webhook{
+		expect := discord.Webhook{
 			ID:        123,
 			Name:      "abc",
 			ChannelID: 456,
-		}, 1, 1, 1)
+			User:      discord.User{ID: 789},
+		}
 
 		m.CreateWebhook(data, expect)
 
@@ -33,8 +33,6 @@ func TestMocker_CreateWebhook(t *testing.T) {
 		require.NoError(t, err)
 
 		assert.Equal(t, expect, *actual)
-
-		m.Eval()
 	})
 
 	t.Run("failure", func(t *testing.T) {
@@ -42,15 +40,14 @@ func TestMocker_CreateWebhook(t *testing.T) {
 
 		m, s := NewSession(tMock)
 
-		expect := sanitize.Webhook(discord.Webhook{
+		expect := discord.Webhook{
 			ID:        123,
 			Name:      "abc",
 			ChannelID: 456,
-		}, 1, 1, 1)
+			User:      discord.User{ID: 789},
+		}
 
-		m.CreateWebhook(api.CreateWebhookData{
-			Name: "abc",
-		}, expect)
+		m.CreateWebhook(api.CreateWebhookData{Name: "abc"}, expect)
 
 		actual, err := s.CreateWebhook(expect.ChannelID, api.CreateWebhookData{
 			Name: "cba",
@@ -64,20 +61,21 @@ func TestMocker_CreateWebhook(t *testing.T) {
 
 func TestMocker_ChannelWebhooks(t *testing.T) {
 	m, s := NewSession(t)
+	defer m.Eval()
 
 	var channelID discord.ChannelID = 123
 
 	expect := []discord.Webhook{
 		{
-			ID: 456,
+			ID:        456,
+			ChannelID: channelID,
+			User:      discord.User{ID: 789},
 		},
 		{
-			ID: 789,
+			ID:        789,
+			ChannelID: channelID,
+			User:      discord.User{ID: 012},
 		},
-	}
-
-	for i, w := range expect {
-		expect[i] = sanitize.Webhook(w, 1, 1, channelID)
 	}
 
 	m.ChannelWebhooks(channelID, expect)
@@ -86,31 +84,28 @@ func TestMocker_ChannelWebhooks(t *testing.T) {
 	require.NoError(t, err)
 
 	assert.Equal(t, expect, actual)
-
-	m.Eval()
 }
 
 func TestMocker_GuildWebhooks(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		m, s := NewSession(t)
+		defer m.Eval()
 
 		var guildID discord.GuildID = 123
 
 		expect := []discord.Webhook{
 			{
-				ID: 456,
+				ID:        456,
+				ChannelID: 789,
+				GuildID:   guildID,
+				User:      discord.User{ID: 012},
 			},
 			{
-				ID: 789,
+				ID:        789,
+				ChannelID: 012,
+				GuildID:   guildID,
+				User:      discord.User{ID: 345},
 			},
-		}
-
-		for i, w := range expect {
-			expect[i] = sanitize.Webhook(w, 1, 1, 1)
-
-			if w.GuildID == 0 {
-				expect[i].GuildID = guildID
-			}
 		}
 
 		m.GuildWebhooks(guildID, expect)
@@ -119,12 +114,11 @@ func TestMocker_GuildWebhooks(t *testing.T) {
 		require.NoError(t, err)
 
 		assert.Equal(t, expect, actual)
-
-		m.Eval()
 	})
 
 	t.Run("auto guild id", func(t *testing.T) {
 		m, s := NewSession(t)
+		defer m.Eval()
 
 		var guildID discord.GuildID = 123
 
@@ -145,17 +139,18 @@ func TestMocker_GuildWebhooks(t *testing.T) {
 		for _, w := range actual {
 			assert.Equal(t, guildID, w.GuildID)
 		}
-
-		m.Eval()
 	})
 }
 
 func TestMocker_Webhook(t *testing.T) {
 	m, s := NewSession(t)
+	defer m.Eval()
 
-	expect := sanitize.Webhook(discord.Webhook{
-		ID: 456,
-	}, 1, 1, 1)
+	expect := discord.Webhook{
+		ID:        123,
+		ChannelID: 456,
+		User:      discord.User{ID: 789},
+	}
 
 	m.Webhook(expect)
 
@@ -163,17 +158,17 @@ func TestMocker_Webhook(t *testing.T) {
 	require.NoError(t, err)
 
 	assert.Equal(t, expect, *actual)
-
-	m.Eval()
 }
 
 func TestMocker_WebhookWithToken(t *testing.T) {
 	m := New(t)
 
-	expect := sanitize.Webhook(discord.Webhook{
-		ID:    456,
-		Token: "abc",
-	}, 1, 1, 1)
+	expect := discord.Webhook{
+		ID:        123,
+		Token:     "abc",
+		ChannelID: 456,
+		User:      discord.User{ID: 789},
+	}
 
 	m.WebhookWithToken(expect)
 
@@ -181,22 +176,23 @@ func TestMocker_WebhookWithToken(t *testing.T) {
 	require.NoError(t, err)
 
 	assert.Equal(t, expect, *actual)
-
-	m.Eval()
 }
 
 func TestMocker_ModifyWebhook(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		m, s := NewSession(t)
+		defer m.Eval()
 
 		data := api.ModifyWebhookData{
 			Name: option.NewString("abc"),
 		}
 
-		expect := sanitize.Webhook(discord.Webhook{
-			ID:   456,
-			Name: "abc",
-		}, 1, 1, 1)
+		expect := discord.Webhook{
+			ID:        456,
+			Name:      "abc",
+			ChannelID: 456,
+			User:      discord.User{ID: 789},
+		}
 
 		m.ModifyWebhook(data, expect)
 
@@ -204,8 +200,6 @@ func TestMocker_ModifyWebhook(t *testing.T) {
 		require.NoError(t, err)
 
 		assert.Equal(t, expect, *actual)
-
-		m.Eval()
 	})
 
 	t.Run("failure", func(t *testing.T) {
@@ -213,10 +207,12 @@ func TestMocker_ModifyWebhook(t *testing.T) {
 
 		m, s := NewSession(tMock)
 
-		expect := sanitize.Webhook(discord.Webhook{
-			ID:   456,
-			Name: "abc",
-		}, 1, 1, 1)
+		expect := discord.Webhook{
+			ID:        123,
+			Name:      "abc",
+			ChannelID: 456,
+			User:      discord.User{ID: 789},
+		}
 
 		m.ModifyWebhook(api.ModifyWebhookData{
 			Name: option.NewString("abc"),
@@ -240,11 +236,13 @@ func TestMocker_ModifyWebhookWithTokenWithToken(t *testing.T) {
 			Name: option.NewString("abc"),
 		}
 
-		expect := sanitize.Webhook(discord.Webhook{
-			ID:    456,
-			Name:  "abc",
-			Token: "def",
-		}, 1, 1, 1)
+		expect := discord.Webhook{
+			ID:        123,
+			Name:      "abc",
+			Token:     "def",
+			ChannelID: 456,
+			User:      discord.User{ID: 789},
+		}
 
 		m.ModifyWebhookWithToken(data, expect)
 
@@ -252,8 +250,6 @@ func TestMocker_ModifyWebhookWithTokenWithToken(t *testing.T) {
 		require.NoError(t, err)
 
 		assert.Equal(t, expect, *actual)
-
-		m.Eval()
 	})
 
 	t.Run("failure", func(t *testing.T) {
@@ -261,11 +257,13 @@ func TestMocker_ModifyWebhookWithTokenWithToken(t *testing.T) {
 
 		m := New(tMock)
 
-		expect := sanitize.Webhook(discord.Webhook{
-			ID:    456,
-			Name:  "abc",
-			Token: "def",
-		}, 1, 1, 1)
+		expect := discord.Webhook{
+			ID:        123,
+			Name:      "abc",
+			Token:     "def",
+			ChannelID: 456,
+			User:      discord.User{ID: 789},
+		}
 
 		m.ModifyWebhookWithToken(api.ModifyWebhookData{
 			Name: option.NewString("abc"),
@@ -283,6 +281,7 @@ func TestMocker_ModifyWebhookWithTokenWithToken(t *testing.T) {
 
 func TestMocker_DeleteWebhook(t *testing.T) {
 	m, s := NewSession(t)
+	defer m.Eval()
 
 	var id discord.WebhookID = 123
 
@@ -290,8 +289,6 @@ func TestMocker_DeleteWebhook(t *testing.T) {
 
 	err := s.DeleteWebhook(id)
 	require.NoError(t, err)
-
-	m.Eval()
 }
 
 func TestMocker_DeleteWebhookWithToken(t *testing.T) {
@@ -306,6 +303,4 @@ func TestMocker_DeleteWebhookWithToken(t *testing.T) {
 
 	err := webhook.Delete(id, token)
 	require.NoError(t, err)
-
-	m.Eval()
 }

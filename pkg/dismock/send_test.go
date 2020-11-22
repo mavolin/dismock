@@ -5,13 +5,11 @@ import (
 	"io/ioutil"
 	"testing"
 
-	"github.com/diamondburned/arikawa/api"
-	"github.com/diamondburned/arikawa/discord"
-	"github.com/diamondburned/arikawa/webhook"
+	"github.com/diamondburned/arikawa/v2/api"
+	"github.com/diamondburned/arikawa/v2/discord"
+	"github.com/diamondburned/arikawa/v2/webhook"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-
-	"github.com/mavolin/dismock/internal/sanitize"
 )
 
 func TestMocker_SendMessageComplex(t *testing.T) {
@@ -42,10 +40,13 @@ func TestMocker_SendMessageComplex(t *testing.T) {
 		for _, c := range successCases {
 			t.Run(c.name, func(t *testing.T) {
 				m, s := NewSession(t)
+				defer m.Eval()
 
-				expect := sanitize.Message(discord.Message{
-					ChannelID: 123,
-				}, 1, 1, 1)
+				expect := discord.Message{
+					ID:        123,
+					ChannelID: 456,
+					Author:    discord.User{ID: 789},
+				}
 
 				cp := c.data
 
@@ -69,8 +70,6 @@ func TestMocker_SendMessageComplex(t *testing.T) {
 				require.NoError(t, err)
 
 				assert.Equal(t, expect, *actual)
-
-				m.Eval()
 			})
 		}
 	})
@@ -81,13 +80,9 @@ func TestMocker_SendMessageComplex(t *testing.T) {
 		data2 api.SendMessageData
 	}{
 		{
-			name: "different content",
-			data1: api.SendMessageData{
-				Content: "abc",
-			},
-			data2: api.SendMessageData{
-				Content: "cba",
-			},
+			name:  "different content",
+			data1: api.SendMessageData{Content: "abc"},
+			data2: api.SendMessageData{Content: "cba"},
 		},
 		{
 			name: "different file",
@@ -117,9 +112,11 @@ func TestMocker_SendMessageComplex(t *testing.T) {
 
 				m, s := NewSession(tMock)
 
-				expect := sanitize.Message(discord.Message{
-					ChannelID: 123,
-				}, 1, 1, 1)
+				expect := discord.Message{
+					ID:        123,
+					ChannelID: 456,
+					Author:    discord.User{ID: 789},
+				}
 
 				m.SendMessageComplex(c.data1, expect)
 
@@ -140,9 +137,7 @@ func TestMocker_ExecuteWebhook(t *testing.T) {
 	}{
 		{
 			name: "no files",
-			data: api.ExecuteWebhookData{
-				Content: "abc",
-			},
+			data: api.ExecuteWebhookData{Content: "abc"},
 		},
 		{
 			name: "with file",
@@ -187,8 +182,6 @@ func TestMocker_ExecuteWebhook(t *testing.T) {
 
 				err := webhook.Execute(webhookID, token, cp)
 				require.NoError(t, err)
-
-				m.Eval()
 			})
 		}
 	})
@@ -199,13 +192,9 @@ func TestMocker_ExecuteWebhook(t *testing.T) {
 		data2 api.ExecuteWebhookData
 	}{
 		{
-			name: "different content",
-			data1: api.ExecuteWebhookData{
-				Content: "abc",
-			},
-			data2: api.ExecuteWebhookData{
-				Content: "cba",
-			},
+			name:  "different content",
+			data1: api.ExecuteWebhookData{Content: "abc"},
+			data2: api.ExecuteWebhookData{Content: "cba"},
 		},
 		{
 			name: "different file",
@@ -258,9 +247,7 @@ func TestMocker_ExecuteWebhookAndWait(t *testing.T) {
 	}{
 		{
 			name: "no files",
-			data: api.ExecuteWebhookData{
-				Content: "abc",
-			},
+			data: api.ExecuteWebhookData{Content: "abc"},
 		},
 		{
 			name: "with file",
@@ -285,9 +272,11 @@ func TestMocker_ExecuteWebhookAndWait(t *testing.T) {
 					token                       = "abc"
 				)
 
-				expect := sanitize.Message(discord.Message{
-					ChannelID: 123,
-				}, 1, 1, 1)
+				expect := discord.Message{
+					ID:        123,
+					ChannelID: 456,
+					Author:    discord.User{ID: 789},
+				}
 
 				cp := c.data
 
@@ -311,8 +300,6 @@ func TestMocker_ExecuteWebhookAndWait(t *testing.T) {
 				require.NoError(t, err)
 
 				assert.Equal(t, expect, *actual)
-
-				m.Eval()
 			})
 		}
 	})
@@ -323,13 +310,9 @@ func TestMocker_ExecuteWebhookAndWait(t *testing.T) {
 		data2 api.ExecuteWebhookData
 	}{
 		{
-			name: "different content",
-			data1: api.ExecuteWebhookData{
-				Content: "abc",
-			},
-			data2: api.ExecuteWebhookData{
-				Content: "cba",
-			},
+			name:  "different content",
+			data1: api.ExecuteWebhookData{Content: "abc"},
+			data2: api.ExecuteWebhookData{Content: "cba"},
 		},
 		{
 			name: "different file",
@@ -364,9 +347,11 @@ func TestMocker_ExecuteWebhookAndWait(t *testing.T) {
 					token                       = "abc"
 				)
 
-				expect := sanitize.Message(discord.Message{
-					ChannelID: 123,
-				}, 1, 1, 1)
+				expect := discord.Message{
+					ID:        123,
+					ChannelID: 456,
+					Author:    discord.User{ID: 789},
+				}
 
 				m.ExecuteWebhookAndWait(webhookID, token, c.data1, expect)
 

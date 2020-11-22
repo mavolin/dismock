@@ -3,18 +3,17 @@ package dismock
 import (
 	"testing"
 
-	"github.com/diamondburned/arikawa/api"
-	"github.com/diamondburned/arikawa/discord"
-	"github.com/diamondburned/arikawa/utils/json/option"
+	"github.com/diamondburned/arikawa/v2/api"
+	"github.com/diamondburned/arikawa/v2/discord"
+	"github.com/diamondburned/arikawa/v2/utils/json/option"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-
-	"github.com/mavolin/dismock/internal/sanitize"
 )
 
 func TestMocker_Channels(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		m, s := NewSession(t)
+		defer m.Eval()
 
 		var guildID discord.GuildID = 123
 
@@ -27,67 +26,58 @@ func TestMocker_Channels(t *testing.T) {
 			},
 		}
 
-		for i, c := range expect {
-			expect[i] = sanitize.Channel(c, 1)
-		}
-
 		m.Channels(guildID, expect)
 
 		actual, err := s.Channels(guildID)
 		require.NoError(t, err)
 
 		assert.Equal(t, expect, actual)
-
-		m.Eval()
 	})
 
 	t.Run("nil channels", func(t *testing.T) {
 		m, s := NewSession(t)
+		defer m.Eval()
 
 		var guildID discord.GuildID = 123
-
-		expect := []discord.Channel{}
 
 		m.Channels(guildID, nil)
 
 		actual, err := s.Channels(guildID)
 		require.NoError(t, err)
-
-		assert.Equal(t, expect, actual)
-
-		m.Eval()
+		assert.Nil(t, actual)
 	})
 }
 
 func TestMocker_CreateChannel(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		m, s := NewSession(t)
+		defer m.Eval()
 
 		data := api.CreateChannelData{
 			Name: "abc",
 			Permissions: []discord.Overwrite{
 				{
 					ID:    789,
-					Type:  "role",
+					Type:  discord.OverwriteRole,
 					Allow: 012,
 					Deny:  345,
 				},
 			},
 		}
 
-		expect := sanitize.Channel(discord.Channel{
+		expect := discord.Channel{
 			ID:      456,
 			GuildID: 123,
 			Name:    "abc",
 			Permissions: []discord.Overwrite{
 				{
 					ID:    789,
-					Type:  "role",
+					Type:  discord.OverwriteRole,
 					Allow: 012,
 					Deny:  345,
 				},
 			},
-		}, 1)
+		}
 
 		m.CreateChannel(data, expect)
 
@@ -95,8 +85,6 @@ func TestMocker_CreateChannel(t *testing.T) {
 		require.NoError(t, err)
 
 		assert.Equal(t, expect, *actual)
-
-		m.Eval()
 	})
 
 	t.Run("failure", func(t *testing.T) {
@@ -104,11 +92,11 @@ func TestMocker_CreateChannel(t *testing.T) {
 
 		m, s := NewSession(tMock)
 
-		expect := sanitize.Channel(discord.Channel{
+		expect := discord.Channel{
 			ID:      456,
 			GuildID: 123,
 			Name:    "abc",
-		}, 1)
+		}
 
 		m.CreateChannel(api.CreateChannelData{
 			Name: "abc",
@@ -127,6 +115,7 @@ func TestMocker_CreateChannel(t *testing.T) {
 func TestMocker_MoveChannel(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		m, s := NewSession(t)
+		defer m.Eval()
 
 		var (
 			guildID discord.GuildID = 123
@@ -146,8 +135,6 @@ func TestMocker_MoveChannel(t *testing.T) {
 
 		err := s.MoveChannel(guildID, data)
 		require.NoError(t, err)
-
-		m.Eval()
 	})
 
 	t.Run("failure", func(t *testing.T) {
@@ -186,18 +173,19 @@ func TestMocker_MoveChannel(t *testing.T) {
 
 func TestMocker_Channel(t *testing.T) {
 	m, s := NewSession(t)
+	defer m.Eval()
 
-	expect := sanitize.Channel(discord.Channel{
+	expect := discord.Channel{
 		ID: 123,
 		Permissions: []discord.Overwrite{
 			{
 				ID:    456,
-				Type:  "role",
+				Type:  discord.OverwriteRole,
 				Allow: 789,
 				Deny:  012,
 			},
 		},
-	}, 1)
+	}
 
 	m.Channel(expect)
 
@@ -205,13 +193,12 @@ func TestMocker_Channel(t *testing.T) {
 	require.NoError(t, err)
 
 	assert.Equal(t, expect, *actual)
-
-	m.Eval()
 }
 
 func TestMocker_ModifyChannel(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		m, s := NewSession(t)
+		defer m.Eval()
 
 		var (
 			channelID discord.ChannelID = 123
@@ -220,7 +207,7 @@ func TestMocker_ModifyChannel(t *testing.T) {
 				Permissions: &[]discord.Overwrite{
 					{
 						ID:    456,
-						Type:  "role",
+						Type:  discord.OverwriteRole,
 						Allow: 798,
 						Deny:  012,
 					},
@@ -232,8 +219,6 @@ func TestMocker_ModifyChannel(t *testing.T) {
 
 		err := s.ModifyChannel(channelID, data)
 		require.NoError(t, err)
-
-		m.Eval()
 	})
 
 	t.Run("failure", func(t *testing.T) {
@@ -258,6 +243,7 @@ func TestMocker_ModifyChannel(t *testing.T) {
 
 func TestMocker_DeleteChannel(t *testing.T) {
 	m, s := NewSession(t)
+	defer m.Eval()
 
 	var channelID discord.ChannelID = 123
 
@@ -265,13 +251,12 @@ func TestMocker_DeleteChannel(t *testing.T) {
 
 	err := s.DeleteChannel(channelID)
 	require.NoError(t, err)
-
-	m.Eval()
 }
 
 func TestMocker_EditChannelPermission(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		m, s := NewSession(t)
+		defer m.Eval()
 
 		var (
 			channelID   discord.ChannelID = 123
@@ -287,8 +272,6 @@ func TestMocker_EditChannelPermission(t *testing.T) {
 
 		err := s.EditChannelPermission(channelID, overwriteID, data)
 		require.NoError(t, err)
-
-		m.Eval()
 	})
 
 	t.Run("failure", func(t *testing.T) {
@@ -320,6 +303,7 @@ func TestMocker_EditChannelPermission(t *testing.T) {
 
 func TestMocker_DeleteChannelPermission(t *testing.T) {
 	m, s := NewSession(t)
+	defer m.Eval()
 
 	var (
 		channelID   discord.ChannelID = 123
@@ -330,28 +314,24 @@ func TestMocker_DeleteChannelPermission(t *testing.T) {
 
 	err := s.DeleteChannelPermission(channelID, overwriteID)
 	require.NoError(t, err)
-
-	m.Eval()
 }
 
 func TestMocker_Typing(t *testing.T) {
 	m, s := NewSession(t)
+	defer m.Eval()
 
-	var (
-		channelID discord.ChannelID = 123
-	)
+	var channelID discord.ChannelID = 123
 
 	m.Typing(channelID)
 
 	err := s.Typing(channelID)
 	require.NoError(t, err)
-
-	m.Eval()
 }
 
 func TestMocker_PinnedMessages(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		m, s := NewSession(t)
+		defer m.Eval()
 
 		var (
 			channelID discord.ChannelID = 123
@@ -360,15 +340,15 @@ func TestMocker_PinnedMessages(t *testing.T) {
 
 		expect := []discord.Message{
 			{
-				ID: 789,
+				ID:        789,
+				ChannelID: channelID,
+				Author:    discord.User{ID: userID},
 			},
 			{
-				ID: 012,
+				ID:        012,
+				ChannelID: channelID,
+				Author:    discord.User{ID: userID},
 			},
-		}
-
-		for i, m := range expect {
-			expect[i] = sanitize.Message(m, 1, channelID, userID)
 		}
 
 		m.PinnedMessages(channelID, expect)
@@ -377,12 +357,11 @@ func TestMocker_PinnedMessages(t *testing.T) {
 		require.NoError(t, err)
 
 		assert.Equal(t, expect, actual)
-
-		m.Eval()
 	})
 
 	t.Run("nil messages", func(t *testing.T) {
 		m, s := NewSession(t)
+		defer m.Eval()
 
 		var channelID discord.ChannelID = 123
 
@@ -395,13 +374,12 @@ func TestMocker_PinnedMessages(t *testing.T) {
 		require.NoError(t, err)
 
 		assert.Equal(t, expect, actual)
-
-		m.Eval()
 	})
 }
 
 func TestMocker_PinMessage(t *testing.T) {
 	m, s := NewSession(t)
+	defer m.Eval()
 
 	var (
 		channelID discord.ChannelID = 123
@@ -412,12 +390,11 @@ func TestMocker_PinMessage(t *testing.T) {
 
 	err := s.PinMessage(channelID, messageID)
 	require.NoError(t, err)
-
-	m.Eval()
 }
 
 func TestMocker_UnpinMessage(t *testing.T) {
 	m, s := NewSession(t)
+	defer m.Eval()
 
 	var (
 		channelID discord.ChannelID = 123
@@ -428,13 +405,12 @@ func TestMocker_UnpinMessage(t *testing.T) {
 
 	err := s.UnpinMessage(channelID, messageID)
 	require.NoError(t, err)
-
-	m.Eval()
 }
 
 func TestMocker_AddRecipient(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		m, s := NewSession(t)
+		defer m.Eval()
 
 		var (
 			channelID   discord.ChannelID = 123
@@ -447,8 +423,6 @@ func TestMocker_AddRecipient(t *testing.T) {
 
 		err := s.AddRecipient(channelID, userID, accessToken, nickname)
 		require.NoError(t, err)
-
-		m.Eval()
 	})
 
 	t.Run("failure", func(t *testing.T) {
@@ -472,6 +446,7 @@ func TestMocker_AddRecipient(t *testing.T) {
 
 func TestMocker_RemoveRecipient(t *testing.T) {
 	m, s := NewSession(t)
+	defer m.Eval()
 
 	var (
 		channelID discord.ChannelID = 123
@@ -482,25 +457,20 @@ func TestMocker_RemoveRecipient(t *testing.T) {
 
 	err := s.RemoveRecipient(channelID, userID)
 	require.NoError(t, err)
-
-	m.Eval()
 }
 
 func TestMocker_Ack(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		m, s := NewSession(t)
+		defer m.Eval()
 
 		var (
 			channelID discord.ChannelID = 123
 			messageID discord.MessageID = 456
-			ack                         = api.Ack{
-				Token: "abc",
-			}
+			ack                         = api.Ack{Token: "abc"}
 		)
 
-		expect := api.Ack{
-			Token: "def",
-		}
+		expect := api.Ack{Token: "def"}
 
 		actual := &ack
 
@@ -510,8 +480,6 @@ func TestMocker_Ack(t *testing.T) {
 		require.NoError(t, err)
 
 		assert.Equal(t, expect, *actual)
-
-		m.Eval()
 	})
 
 	t.Run("failure", func(t *testing.T) {
@@ -524,17 +492,11 @@ func TestMocker_Ack(t *testing.T) {
 			messageID discord.MessageID = 456
 		)
 
-		expect := api.Ack{
-			Token: "def",
-		}
+		expect := api.Ack{Token: "def"}
 
-		m.Ack(channelID, messageID, api.Ack{
-			Token: "abc",
-		}, expect)
+		m.Ack(channelID, messageID, api.Ack{Token: "abc"}, expect)
 
-		actual := &api.Ack{
-			Token: "ghi",
-		}
+		actual := &api.Ack{Token: "ghi"}
 
 		err := s.Ack(channelID, messageID, actual)
 		require.NoError(t, err)

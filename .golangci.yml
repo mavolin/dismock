@@ -1,39 +1,43 @@
 linters:
   disable-all: true
   enable:
-    - govet
-    - errcheck
-    - staticcheck
-    - unused
-    - gosimple
-    - structcheck
-    - varcheck
-    - ineffassign
-    - deadcode
-    - typecheck
+    - asciicheck
     - bodyclose
-    - golint
-    - stylecheck
-    - gosec
-    - interfacer
-    - unconvert
-    - dupl
-    - goconst
-    - gocyclo
-    - gocognit
-    - gofmt
-    - goimports
-    - maligned
-    - depguard
-    - misspell
-    - lll
-    - unparam
+    - deadcode
     - dogsled
+    - dupl
+    - errcheck
+    - errorlint
+    - exhaustive
+    - funlen
+    - gochecknoinits
+    - goconst
+    - gocognit
+    - gocritic
+    - gocyclo
+    - gofmt
+    - gofumpt
+    - goimports
+    - golint
+    - gosec
+    - gosimple
+    - govet
+    - ineffassign
+    - lll
+    - maligned
+    - misspell
     - nakedret
     - prealloc
-    - gocritic
-    - gochecknoinits
-    - funlen
+    - rowserrcheck
+    - staticcheck
+    - structcheck
+    - stylecheck
+    - typecheck
+    - unconvert
+    - unparam
+    - unconvert
+    - unused
+    - varcheck
     - whitespace
 
 linters-settings:
@@ -42,25 +46,26 @@ linters-settings:
 
 issues:
   exclude-rules:
+    # prevent errors on //noinspection tags
+    - linters:
+        - gocritic
+        - gofumpt
+      source: "^\\s*//noinspection(?:[^\n]+)?$"
+    - linters:
+        - lll
+      source: //nolint
+    # io.EOF and sql.ErrNoRows should, by doc, never be wrapped
+    - linters:
+        - errorlint
+      source: "\\w+\\s*==\\s*(io.EOF|sql.ErrNoRows)"
     - path: _test\.go$
       linters:
-        - gocyclo
-        - gocognit
-        - errcheck
-        - dupl
-        - gosec
-        - goconst
-        - funlen
         - bodyclose
-    - path: ^pkg/dismock/mocker.go$ # needed to mock
-      text: "^G402: TLS InsecureSkipVerify set true.$"
-      linters:
-        - gosec
-    - path: ^pkg/dismock/.+\.go$ # possible, but param should be limited to discord.Snowflake
-      text: ^`\w+` can be `fmt.Stringer`$
-      linters:
-        - interfacer
-    - path: ^internal/mockutil/mockutil.go$ # the function cannot be split into smaller parts
-      text: cognitive complexity 40 of func `replaceNullables` is high \(> 30\)
-      linters:
+        - dupl
+        - errcheck
+        - errorlint
+        - funlen
         - gocognit
+        - goconst
+        - gocyclo
+        - gosec

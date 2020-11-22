@@ -6,7 +6,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/diamondburned/arikawa/discord"
+	"github.com/diamondburned/arikawa/v2/discord"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -23,10 +23,9 @@ func TestMocker_Server(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		t.Run("session", func(t *testing.T) {
 			m, s := NewSession(t)
+			defer m.Eval()
 
-			expect := discord.Channel{
-				ID: 123,
-			}
+			expect := discord.Channel{ID: 123}
 
 			m.Channel(expect)
 
@@ -61,9 +60,7 @@ func TestMocker_Server(t *testing.T) {
 
 		client := http.Client{
 			Transport: &http.Transport{
-				TLSClientConfig: &tls.Config{
-					InsecureSkipVerify: true,
-				},
+				TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
 			},
 		}
 
@@ -87,9 +84,7 @@ func TestMocker_Server(t *testing.T) {
 
 		client := http.Client{
 			Transport: &http.Transport{
-				TLSClientConfig: &tls.Config{
-					InsecureSkipVerify: true,
-				},
+				TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
 			},
 		}
 
@@ -110,9 +105,7 @@ func TestMocker_Server(t *testing.T) {
 
 			client := http.Client{
 				Transport: &http.Transport{
-					TLSClientConfig: &tls.Config{
-						InsecureSkipVerify: true,
-					},
+					TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
 				},
 			}
 
@@ -134,9 +127,7 @@ func TestMocker_Server(t *testing.T) {
 
 			client := http.Client{
 				Transport: &http.Transport{
-					TLSClientConfig: &tls.Config{
-						InsecureSkipVerify: true,
-					},
+					TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
 				},
 			}
 
@@ -161,9 +152,7 @@ func TestMocker_Server(t *testing.T) {
 
 			client := http.Client{
 				Transport: &http.Transport{
-					TLSClientConfig: &tls.Config{
-						InsecureSkipVerify: true,
-					},
+					TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
 				},
 			}
 
@@ -191,7 +180,7 @@ func TestMocker_Mock(t *testing.T) {
 
 		m.MockAPI("handler", method, path, f)
 
-		h, ok := m.handlers["/api/v6"+path][method]
+		h, ok := m.handlers["/api/v8"+path][method]
 		require.True(t, ok)
 
 		h[0].ServeHTTP(new(httptest.ResponseRecorder), new(http.Request))
@@ -206,7 +195,7 @@ func TestMocker_Mock(t *testing.T) {
 
 		m.MockAPI("handler", method, path, nil)
 
-		h, ok := m.handlers["/api/v6"+path][method]
+		h, ok := m.handlers["/api/v8"+path][method]
 		require.True(t, ok)
 
 		r := new(httptest.ResponseRecorder)
@@ -229,9 +218,7 @@ func TestMocker_Clone(t *testing.T) {
 	assert.NotEqual(t, m1.Client, m2.Client, "clients are the same")
 	assert.Equal(t, m1.handlers, m2.handlers)
 
-	m1.handlers["path2"] = map[string][]Handler{
-		http.MethodPatch: {},
-	}
+	m1.handlers["path2"] = map[string][]Handler{http.MethodPatch: {}}
 
 	assert.NotEqual(t, m1.handlers, m2.handlers)
 }
@@ -248,9 +235,7 @@ func TestMocker_CloneSession(t *testing.T) {
 	assert.NotEqual(t, m1.Client, m2.Client, "clients are the same")
 	assert.Equal(t, m1.handlers, m2.handlers)
 
-	m1.handlers["path2"] = map[string][]Handler{
-		http.MethodPatch: {},
-	}
+	m1.handlers["path2"] = map[string][]Handler{http.MethodPatch: {}}
 
 	assert.NotEqual(t, m1.handlers, m2.handlers)
 }
@@ -267,9 +252,7 @@ func TestMocker_CloneState(t *testing.T) {
 	assert.NotEqual(t, m1.Client, m2.Client, "clients are the same")
 	assert.Equal(t, m1.handlers, m2.handlers)
 
-	m1.handlers["path2"] = map[string][]Handler{
-		http.MethodPatch: {},
-	}
+	m1.handlers["path2"] = map[string][]Handler{http.MethodPatch: {}}
 
 	assert.NotEqual(t, m1.handlers, m2.handlers)
 }
@@ -277,17 +260,13 @@ func TestMocker_CloneState(t *testing.T) {
 func TestMocker_deepCopyHandlers(t *testing.T) {
 	m1 := New(t)
 
-	m1.handlers["path"] = map[string][]Handler{
-		http.MethodGet: {},
-	}
+	m1.handlers["path"] = map[string][]Handler{http.MethodGet: {}}
 
 	cp := m1.deepCopyHandlers()
 
 	assert.Equal(t, m1.handlers, cp)
 
-	cp["path2"] = map[string][]Handler{
-		http.MethodPatch: {},
-	}
+	cp["path2"] = map[string][]Handler{http.MethodPatch: {}}
 
 	assert.NotEqual(t, m1.handlers, cp)
 }
@@ -309,9 +288,7 @@ func TestMocker_Eval(t *testing.T) {
 
 		m := New(tMock)
 
-		m.handlers["path"] = map[string][]Handler{
-			"request0": {},
-		}
+		m.handlers["path"] = map[string][]Handler{"request0": {}}
 
 		c := make(chan struct{})
 

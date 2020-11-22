@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/diamondburned/arikawa/api"
+	"github.com/diamondburned/arikawa/v2/api"
 
 	"github.com/mavolin/dismock/internal/mockutil"
 )
