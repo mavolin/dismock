@@ -13,9 +13,7 @@ import (
 func TestMocker_User(t *testing.T) {
 	m, s := NewSession(t)
 
-	expect := discord.User{
-		ID: 123,
-	}
+	expect := discord.User{ID: 123}
 
 	m.User(expect)
 
@@ -30,9 +28,7 @@ func TestMocker_User(t *testing.T) {
 func TestMocker_Me(t *testing.T) {
 	m, s := NewSession(t)
 
-	expect := discord.User{
-		ID: 123,
-	}
+	expect := discord.User{ID: 123}
 
 	m.Me(expect)
 
@@ -48,9 +44,7 @@ func TestMocker_ModifyMe(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		m, s := NewSession(t)
 
-		data := api.ModifySelfData{
-			Username: option.NewString("abc"),
-		}
+		data := api.ModifySelfData{Username: option.NewString("abc")}
 
 		expect := discord.User{
 			ID:       123,
@@ -77,13 +71,9 @@ func TestMocker_ModifyMe(t *testing.T) {
 			Username: "abc",
 		}
 
-		m.ModifyMe(api.ModifySelfData{
-			Username: option.NewString("abc"),
-		}, expect)
+		m.ModifyMe(api.ModifySelfData{Username: option.NewString("abc")}, expect)
 
-		actual, err := s.ModifyMe(api.ModifySelfData{
-			Username: option.NewString("cba"),
-		})
+		actual, err := s.ModifyMe(api.ModifySelfData{Username: option.NewString("cba")})
 		require.NoError(t, err)
 
 		assert.Equal(t, expect, *actual)
@@ -127,14 +117,7 @@ func TestMocker_ChangeOwnNickname(t *testing.T) {
 func TestMocker_PrivateChannels(t *testing.T) {
 	m, s := NewSession(t)
 
-	expect := []discord.Channel{
-		{
-			ID: 123,
-		},
-		{
-			ID: 456,
-		},
-	}
+	expect := []discord.Channel{{ID: 123}, {ID: 456}}
 
 	m.PrivateChannels(expect)
 
@@ -151,12 +134,8 @@ func TestMocker_CreatePrivateChannel(t *testing.T) {
 		m, s := NewSession(t)
 
 		expect := discord.Channel{
-			ID: 123,
-			DMRecipients: []discord.User{
-				{
-					ID: 456,
-				},
-			},
+			ID:           123,
+			DMRecipients: []discord.User{{ID: 456}},
 		}
 
 		m.CreatePrivateChannel(expect)
@@ -175,21 +154,13 @@ func TestMocker_CreatePrivateChannel(t *testing.T) {
 		m, s := NewSession(tMock)
 
 		expect := discord.Channel{
-			ID: 123,
-			DMRecipients: []discord.User{
-				{
-					ID: 456,
-				},
-			},
+			ID:           123,
+			DMRecipients: []discord.User{{ID: 456}},
 		}
 
 		m.CreatePrivateChannel(discord.Channel{
-			ID: 123,
-			DMRecipients: []discord.User{
-				{
-					ID: 456,
-				},
-			},
+			ID:           123,
+			DMRecipients: []discord.User{{ID: 456}},
 		})
 
 		actual, err := s.CreatePrivateChannel(654)
@@ -204,14 +175,7 @@ func TestMocker_CreatePrivateChannel(t *testing.T) {
 func TestMocker_UserConnections(t *testing.T) {
 	m, s := NewSession(t)
 
-	expect := []discord.Connection{
-		{
-			ID: "123",
-		},
-		{
-			ID: "456",
-		},
-	}
+	expect := []discord.Connection{{ID: "123"}, {ID: "456"}}
 
 	m.UserConnections(expect)
 

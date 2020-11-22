@@ -196,14 +196,7 @@ func TestMocker_ReactionsBefore(t *testing.T) {
 			emoji                       = "abc"
 		)
 
-		expect := []discord.User{
-			{
-				ID: 123,
-			},
-			{
-				ID: 456,
-			},
-		}
+		expect := []discord.User{{ID: 123}, {ID: 456}}
 
 		m.ReactionsBefore(channelID, messageID, 890, 100, emoji, expect)
 
@@ -256,8 +249,8 @@ func TestMocker_ReactionsAfter(t *testing.T) {
 
 				expect := make([]discord.User, c.reactions)
 
-				for i := int(after) + 1; i < c.reactions+int(after)+1; i++ {
-					expect[i-int(after)-1] = discord.User{ID: discord.UserID(i)}
+				for i := 0; i < c.reactions; i++ {
+					expect[i] = discord.User{ID: discord.UserID(int(after) + i + 1)}
 				}
 
 				m.ReactionsAfter(channelID, messageID, after, c.limit, emoji, expect)
@@ -302,14 +295,7 @@ func TestMocker_ReactionsAfter(t *testing.T) {
 			emoji                       = "🍆"
 		)
 
-		expect := []discord.User{
-			{
-				ID: 456,
-			},
-			{
-				ID: 789,
-			},
-		}
+		expect := []discord.User{{ID: 456}, {ID: 789}}
 
 		m.ReactionsAfter(channelID, messageID, 123, 100, emoji, expect)
 

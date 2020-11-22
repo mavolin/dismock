@@ -17,9 +17,7 @@ func TestMocker_Login(t *testing.T) {
 			password = "jkl"
 		)
 
-		expect := api.LoginResponse{
-			Token: "mno",
-		}
+		expect := api.LoginResponse{Token: "mno"}
 
 		m.Login(email, password, expect)
 
@@ -36,9 +34,7 @@ func TestMocker_Login(t *testing.T) {
 
 		m, s := NewSession(tMock)
 
-		expect := api.LoginResponse{
-			Token: "mno",
-		}
+		expect := api.LoginResponse{Token: "mno"}
 
 		m.Login("cba@fed.ihg", "jkl", expect)
 
@@ -59,9 +55,7 @@ func TestMocker_TOTP(t *testing.T) {
 			ticket = "def"
 		)
 
-		expect := api.LoginResponse{
-			Token: "ghi",
-		}
+		expect := api.LoginResponse{Token: "ghi"}
 
 		m.TOTP(code, ticket, expect)
 
@@ -78,9 +72,7 @@ func TestMocker_TOTP(t *testing.T) {
 
 		m, s := NewSession(tMock)
 
-		expect := api.LoginResponse{
-			Token: "ghi",
-		}
+		expect := api.LoginResponse{Token: "ghi"}
 
 		m.TOTP("abc", "def", expect)
 

@@ -49,14 +49,7 @@ func TestMocker_Roles(t *testing.T) {
 
 	var guildID discord.GuildID = 123
 
-	expect := []discord.Role{
-		{
-			ID: 456,
-		},
-		{
-			ID: 789,
-		},
-	}
+	expect := []discord.Role{{ID: 456}, {ID: 789}}
 
 	m.Roles(guildID, expect)
 
@@ -74,9 +67,7 @@ func TestMocker_CreateRole(t *testing.T) {
 
 		var guildID discord.GuildID = 123
 
-		data := api.CreateRoleData{
-			Name: "abc",
-		}
+		data := api.CreateRoleData{Name: "abc"}
 
 		expect := discord.Role{
 			ID:   456,
@@ -105,13 +96,9 @@ func TestMocker_CreateRole(t *testing.T) {
 			Name: "abc",
 		}
 
-		m.CreateRole(guildID, api.CreateRoleData{
-			Name: "abc",
-		}, expect)
+		m.CreateRole(guildID, api.CreateRoleData{Name: "abc"}, expect)
 
-		actual, err := s.CreateRole(guildID, api.CreateRoleData{
-			Name: "cba",
-		})
+		actual, err := s.CreateRole(guildID, api.CreateRoleData{Name: "cba"})
 		require.NoError(t, err)
 
 		assert.Equal(t, expect, *actual)
@@ -213,9 +200,7 @@ func TestMocker_ModifyRole(t *testing.T) {
 
 		var guildID discord.GuildID = 123
 
-		data := api.ModifyRoleData{
-			Name: option.NewNullableString("abc"),
-		}
+		data := api.ModifyRoleData{Name: option.NewNullableString("abc")}
 
 		expect := discord.Role{
 			ID:       456,

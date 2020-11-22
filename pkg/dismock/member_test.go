@@ -16,9 +16,7 @@ func TestMocker_Member(t *testing.T) {
 	var guildID discord.GuildID = 123
 
 	expect := discord.Member{
-		User: discord.User{
-			ID: 456,
-		},
+		User: discord.User{ID: 456},
 	}
 
 	m.Member(guildID, expect)
@@ -60,9 +58,7 @@ func TestMocker_Members(t *testing.T) {
 
 				for i := 0; i < c.members; i++ {
 					expect[i] = discord.Member{
-						User: discord.User{
-							ID: discord.UserID(i + 1),
-						},
+						User: discord.User{ID: discord.UserID(i + 1)},
 					}
 				}
 
@@ -174,14 +170,10 @@ func TestMocker_MembersAfter(t *testing.T) {
 
 		expect := []discord.Member{
 			{
-				User: discord.User{
-					ID: 456,
-				},
+				User: discord.User{ID: 456},
 			},
 			{
-				User: discord.User{
-					ID: 789,
-				},
+				User: discord.User{ID: 789},
 			},
 		}
 
@@ -210,15 +202,11 @@ func TestMocker_AddMember(t *testing.T) {
 		var (
 			guildID discord.GuildID = 123
 
-			data = api.AddMemberData{
-				Token: "abc",
-			}
+			data = api.AddMemberData{Token: "abc"}
 		)
 
 		expect := discord.Member{
-			User: discord.User{
-				ID: 345,
-			},
+			User: discord.User{ID: 345},
 		}
 
 		m.AddMember(guildID, data, expect)
@@ -244,9 +232,7 @@ func TestMocker_AddMember(t *testing.T) {
 			},
 		}
 
-		m.AddMember(guildID, api.AddMemberData{
-			Token: "abc",
-		}, expect)
+		m.AddMember(guildID, api.AddMemberData{Token: "abc"}, expect)
 
 		actual, err := s.AddMember(guildID, expect.User.ID, api.AddMemberData{
 			Token: "cba",
@@ -266,9 +252,7 @@ func TestMocker_ModifyMember(t *testing.T) {
 			guildID discord.GuildID = 123
 			userID  discord.UserID  = 456
 
-			data = api.ModifyMemberData{
-				Nick: option.NewString("abc"),
-			}
+			data = api.ModifyMemberData{Nick: option.NewString("abc")}
 		)
 
 		m.ModifyMember(guildID, userID, data)
@@ -309,9 +293,7 @@ func TestMocker_PruneCount(t *testing.T) {
 	}{
 		{
 			name: "days = 0",
-			data: api.PruneCountData{
-				Days: 0,
-			},
+			data: api.PruneCountData{Days: 0},
 		},
 		{
 			name: "nil roles",
@@ -389,9 +371,7 @@ func TestMocker_Prune(t *testing.T) {
 	}{
 		{
 			name: "days = 0",
-			data: api.PruneData{
-				Days: 0,
-			},
+			data: api.PruneData{Days: 0},
 		},
 		{
 			name: "nil roles",
@@ -514,9 +494,7 @@ func TestMocker_GetBan(t *testing.T) {
 	var guildID discord.GuildID = 123
 
 	expect := discord.Ban{
-		User: discord.User{
-			ID: 123,
-		},
+		User: discord.User{ID: 123},
 	}
 
 	m.GetBan(guildID, expect)
@@ -536,15 +514,11 @@ func TestMocker_Ban(t *testing.T) {
 	}{
 		{
 			name: "deleteDays > 7",
-			data: api.BanData{
-				DeleteDays: option.NewUint(8),
-			},
+			data: api.BanData{DeleteDays: option.NewUint(8)},
 		},
 		{
 			name: "deleteDays",
-			data: api.BanData{
-				DeleteDays: option.NewUint(5),
-			},
+			data: api.BanData{DeleteDays: option.NewUint(5)},
 		},
 		{
 			name: "reason",
