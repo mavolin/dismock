@@ -11,7 +11,7 @@ import (
 	"github.com/diamondburned/arikawa/v2/api"
 	"github.com/diamondburned/arikawa/v2/discord"
 
-	"github.com/mavolin/dismock/internal/mockutil"
+	"github.com/mavolin/dismock/v2/internal/mockutil"
 )
 
 const maxFetchMembers = 1000

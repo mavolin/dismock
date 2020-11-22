@@ -9,7 +9,7 @@ import (
 	"github.com/diamondburned/arikawa/v2/utils/httputil/httpdriver"
 	"github.com/diamondburned/arikawa/v2/webhook"
 
-	"github.com/mavolin/dismock/internal/mockutil"
+	"github.com/mavolin/dismock/v2/internal/mockutil"
 )
 
 // CreateWebhook mocks a CreateWebhook request.

@@ -13,7 +13,7 @@ import (
 	"github.com/diamondburned/arikawa/v2/discord"
 	"github.com/stretchr/testify/require"
 
-	"github.com/mavolin/dismock/internal/mockutil"
+	"github.com/mavolin/dismock/v2/internal/mockutil"
 )
 
 const maxFetchGuilds = 100

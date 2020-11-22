@@ -12,7 +12,7 @@ import (
 	"github.com/diamondburned/arikawa/v2/discord"
 	"github.com/diamondburned/arikawa/v2/utils/json/option"
 
-	"github.com/mavolin/dismock/internal/mockutil"
+	"github.com/mavolin/dismock/v2/internal/mockutil"
 )
 
 const maxFetchMessages = 100
