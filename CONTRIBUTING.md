@@ -33,7 +33,7 @@ Please make small, thoughtful commits, a commit like `feat: add xy` with 20 new 
 
 Please use [conventional commits](https://www.conventionalcommits.org/en/v1.0.0/) for your contributions, once you get the hang of it, you'll see that they are pretty easy to use.
 Just have a look at the [quick start guide](https://www.conventionalcommits.org/en/v1.0.0/#summary) on their website.
-The scope is typically the package name, but for non-go files appropriate scopes may also be: `git`, `README`, `golangci`, or `go.mod`.
+The scope is typically the package name, but for non-go files appropriate scopes may also be: `git`, `readme`, `golangci`, or `go.mod`.
 
 ##### Types
 We use the following types:
