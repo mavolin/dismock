@@ -1,4 +1,4 @@
-module github.com/mavolin/dismock
+module github.com/mavolin/dismock/v2
 
 go 1.13
 
