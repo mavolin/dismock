@@ -561,6 +561,7 @@ func TestMocker_AuditLog(t *testing.T) {
 					Entries: []discord.AuditLogEntry{
 						{
 							ID:         456,
+							TargetID:   789,
 							UserID:     256827968133791744,
 							ActionType: discord.EmojiUpdate,
 						},
@@ -594,6 +595,7 @@ func TestMocker_AuditLog(t *testing.T) {
 			Entries: []discord.AuditLogEntry{
 				{
 					ID:         456,
+					TargetID:   789,
 					UserID:     256827968133791744,
 					ActionType: discord.EmojiUpdate,
 				},
@@ -672,7 +674,7 @@ func TestMocker_AttachIntegration(t *testing.T) {
 		var (
 			guildID         discord.GuildID       = 123
 			integrationID   discord.IntegrationID = 345
-			integrationType                       = discord.Twitch
+			integrationType                       = discord.TwitchService
 		)
 
 		m.AttachIntegration(guildID, integrationID, integrationType)
@@ -688,9 +690,9 @@ func TestMocker_AttachIntegration(t *testing.T) {
 
 		var guildID discord.GuildID = 123
 
-		m.AttachIntegration(guildID, 345, discord.Twitch)
+		m.AttachIntegration(guildID, 345, discord.TwitchService)
 
-		err := s.AttachIntegration(guildID, 345, discord.YouTube)
+		err := s.AttachIntegration(guildID, 345, discord.DiscordService)
 		require.NoError(t, err)
 
 		assert.True(t, tMock.Failed())
