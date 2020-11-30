@@ -15,6 +15,7 @@ import (
 	"github.com/diamondburned/arikawa/v2/gateway"
 	"github.com/diamondburned/arikawa/v2/session"
 	"github.com/diamondburned/arikawa/v2/state"
+	"github.com/diamondburned/arikawa/v2/state/store"
 	"github.com/diamondburned/arikawa/v2/utils/httputil/httpdriver"
 	"github.com/stretchr/testify/assert"
 )
@@ -129,7 +130,7 @@ func NewSession(t *testing.T) (*Mocker, *session.Session) {
 func NewState(t *testing.T) (*Mocker, *state.State) {
 	m, se := NewSession(t)
 
-	st, err := state.NewFromSession(se, new(state.NoopStore))
+	st, err := state.NewFromSession(se, store.NoopCabinet)
 	if err != nil {
 		panic(err) // this should never happen
 	}
