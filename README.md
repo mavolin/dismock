@@ -85,6 +85,7 @@ func (b *Bot) Ping(e *gateway.MessageCreateEvent) (error) {
 ```go
 func TestBot_Ping(t *testing.T) {
     m := dismock.New(t)
+    // no need to call m.Eval() as we'll only use the mocker for cloning anyway
 
     var channelID discord.ChannelID = 123
 
@@ -101,12 +102,14 @@ func TestBot_Ping(t *testing.T) {
         // Cloned mockers have a copy of their parent's request, but run their
         // own mock server and have a dedicated Session/State.
         m, s := m.CloneState(t)
+        defer m.Eval()
 
         ...
     })
 
     t.Run("test2", func(t *testing.T) {
         m, s := m.CloneState(t)
+        defer m.Eval()
         
         ...
     })
