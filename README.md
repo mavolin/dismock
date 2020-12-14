@@ -34,9 +34,9 @@ func (b *Bot) Ping(e *gateway.MessageCreateEvent) (error) {
 
 ```go
 func TestBot_Ping(t *testing.T) {
-    m, s := dismock.NewState(t) // you can also mock a Session by using dismock.NewSession(t).
+    m, s := dismock.NewState(t) // you can also mock a Session by using dismock.NewSession(t)
     // at the end of every test m.Eval() must be called, to check that all 
-    // handlers were invoked.
+    // handlers were invoked
     defer m.Eval()
 
     var channelID discord.ChannelID = 123
@@ -92,11 +92,11 @@ func TestBot_Ping(t *testing.T) {
         Content: "🏓",
     })
     
-   t.Run("test1", func(t *testing.T) {
+    t.Run("test1", func(t *testing.T) {
         // If you have multiple tests that make the same requests, you can
-   	    // create a mocker, and add those API calls.
-   	    // Afterwards, you can create a clone of the mocker in every sub-test 
-   	    // you have.
+        // create a mocker, and add those API calls.
+        // Afterwards, you can create a clone of the mocker in every sub-test 
+        // you have.
         // Cloned mockers have a copy of their parent's request, but run their
         // own mock server and have a dedicated Session/State.
         m, s := m.CloneState(t)
@@ -122,7 +122,7 @@ Below is an example of using dismock with [discordgo](https://github.com/bwmarri
 m := dismock.New(t)
 
 s, _ := discordgo.New("Bot abc") // the token doesn't have to be valid
-s.StateEnable = false
+s.StateEnabled = false
 s.Client = m.Client
 ```
 
