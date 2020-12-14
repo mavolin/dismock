@@ -35,6 +35,7 @@ func (b *Bot) Ping(e *gateway.MessageCreateEvent) (error) {
 ```go
 func TestBot_Ping(t *testing.T) {
     m, s := dismock.NewState(t) // you can also mock a Session by using dismock.NewSession(t)
+    
     // at the end of every test m.Eval() must be called, to check that all 
     // handlers were invoked
     defer m.Eval()
