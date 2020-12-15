@@ -15,6 +15,7 @@ import (
 	"github.com/diamondburned/arikawa/v2/gateway"
 	"github.com/diamondburned/arikawa/v2/session"
 	"github.com/diamondburned/arikawa/v2/state"
+	"github.com/diamondburned/arikawa/v2/state/store"
 	"github.com/diamondburned/arikawa/v2/utils/httputil/httpdriver"
 	"github.com/stretchr/testify/assert"
 )
@@ -128,13 +129,7 @@ func NewSession(t *testing.T) (*Mocker, *session.Session) {
 // return an error, forcing the use of the (mocked) Session.
 func NewState(t *testing.T) (*Mocker, *state.State) {
 	m, se := NewSession(t)
-
-	st, err := state.NewFromSession(se, new(state.NoopStore))
-	if err != nil {
-		panic(err) // this should never happen
-	}
-
-	return m, st
+	return m, state.NewFromSession(se, store.NoopCabinet)
 }
 
 // Mock uses the passed MockFunc to create a mock for the passed path using the
