@@ -43,6 +43,7 @@ import (
 	"github.com/diamondburned/arikawa/v2/session"
 	"github.com/diamondburned/arikawa/v2/state"
 	"github.com/diamondburned/arikawa/v2/state/store"
+	"github.com/diamondburned/arikawa/v2/utils/httputil"
 	"github.com/diamondburned/arikawa/v2/utils/httputil/httpdriver"
 	"github.com/stretchr/testify/assert"
 )
@@ -52,7 +53,7 @@ type (
 	Mocker struct {
 		// Server is the httptest.Server used to mock the requests.
 		Server *httptest.Server
-		// Client is a mocked http.Client that redirects all requests to the
+		// Client is a mocked *http.Client that redirects all requests to the
 		// Server.
 		Client *http.Client
 		// handlers is a map containing all handlers.
@@ -93,7 +94,7 @@ func New(t *testing.T) *Mocker {
 		m.mut.Lock()
 		defer m.mut.Unlock()
 
-		path := strings.TrimRight(r.URL.Path, "/")
+		path := strings.TrimRight(r.URL.EscapedPath(), "/")
 
 		methHandlers, ok := m.handlers[path]
 		if !assert.True(t, ok, "unhandled path '"+path+"'") {
@@ -136,6 +137,12 @@ func New(t *testing.T) *Mocker {
 	return m
 }
 
+func (m *Mocker) HTTPClient() *httputil.Client {
+	c := httputil.NewClient()
+	c.Client = (*httpdriver.DefaultClient)(m.Client)
+	return c
+}
+
 // NewSession creates a new Mocker, starts its test server and returns a
 // manipulated session.Session using the test server.
 func NewSession(t *testing.T) (*Mocker, *session.Session) {
@@ -144,7 +151,7 @@ func NewSession(t *testing.T) (*Mocker, *session.Session) {
 	gw := gateway.NewCustomGateway("", "")
 	s := session.NewWithGateway(gw)
 
-	s.Client.Client.Client = httpdriver.WrapClient(*m.Client)
+	s.Client.Client = m.HTTPClient()
 	s.Client.Retries = 1
 
 	return m, s

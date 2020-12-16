@@ -6,8 +6,9 @@ import (
 	"testing"
 
 	"github.com/diamondburned/arikawa/v2/api"
+	"github.com/diamondburned/arikawa/v2/api/webhook"
 	"github.com/diamondburned/arikawa/v2/discord"
-	"github.com/diamondburned/arikawa/v2/webhook"
+	"github.com/diamondburned/arikawa/v2/utils/sendpart"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -26,7 +27,7 @@ func TestMocker_SendMessageComplex(t *testing.T) {
 		{
 			name: "with file",
 			data: api.SendMessageData{
-				Files: []api.SendMessageFile{
+				Files: []sendpart.File{
 					{
 						Name:   "abc",
 						Reader: bytes.NewBufferString("def"),
@@ -50,7 +51,7 @@ func TestMocker_SendMessageComplex(t *testing.T) {
 
 				cp := c.data
 
-				cp.Files = make([]api.SendMessageFile, len(c.data.Files))
+				cp.Files = make([]sendpart.File, len(c.data.Files))
 				copy(cp.Files, c.data.Files) // the readers of the file will be consumed twice
 
 				// the files are copied now, but the reader for them may be a pointer and wasn't
@@ -87,7 +88,7 @@ func TestMocker_SendMessageComplex(t *testing.T) {
 		{
 			name: "different file",
 			data1: api.SendMessageData{
-				Files: []api.SendMessageFile{
+				Files: []sendpart.File{
 					{
 						Name:   "abc",
 						Reader: bytes.NewBufferString("def"),
@@ -95,7 +96,7 @@ func TestMocker_SendMessageComplex(t *testing.T) {
 				},
 			},
 			data2: api.SendMessageData{
-				Files: []api.SendMessageFile{
+				Files: []sendpart.File{
 					{
 						Name:   "abc",
 						Reader: bytes.NewBufferString("fed"),
@@ -133,16 +134,16 @@ func TestMocker_SendMessageComplex(t *testing.T) {
 func TestMocker_ExecuteWebhook(t *testing.T) {
 	successCases := []struct {
 		name string
-		data api.ExecuteWebhookData
+		data webhook.ExecuteData
 	}{
 		{
 			name: "no files",
-			data: api.ExecuteWebhookData{Content: "abc"},
+			data: webhook.ExecuteData{Content: "abc"},
 		},
 		{
 			name: "with file",
-			data: api.ExecuteWebhookData{
-				Files: []api.SendMessageFile{
+			data: webhook.ExecuteData{
+				Files: []sendpart.File{
 					{
 						Name:   "abc",
 						Reader: bytes.NewBufferString("def"),
@@ -164,7 +165,7 @@ func TestMocker_ExecuteWebhook(t *testing.T) {
 
 				cp := c.data
 
-				cp.Files = make([]api.SendMessageFile, len(c.data.Files))
+				cp.Files = make([]sendpart.File, len(c.data.Files))
 				copy(cp.Files, c.data.Files) // the readers of the file will be consumed twice
 
 				// the files are copied now, but the reader for them may be a pointer and wasn't
@@ -180,7 +181,7 @@ func TestMocker_ExecuteWebhook(t *testing.T) {
 
 				m.ExecuteWebhook(webhookID, token, c.data)
 
-				err := webhook.Execute(webhookID, token, cp)
+				err := webhook.NewCustom(webhookID, token, m.HTTPClient()).Execute(cp)
 				require.NoError(t, err)
 			})
 		}
@@ -188,26 +189,26 @@ func TestMocker_ExecuteWebhook(t *testing.T) {
 
 	failureCases := []struct {
 		name  string
-		data1 api.ExecuteWebhookData
-		data2 api.ExecuteWebhookData
+		data1 webhook.ExecuteData
+		data2 webhook.ExecuteData
 	}{
 		{
 			name:  "different content",
-			data1: api.ExecuteWebhookData{Content: "abc"},
-			data2: api.ExecuteWebhookData{Content: "cba"},
+			data1: webhook.ExecuteData{Content: "abc"},
+			data2: webhook.ExecuteData{Content: "cba"},
 		},
 		{
 			name: "different file",
-			data1: api.ExecuteWebhookData{
-				Files: []api.SendMessageFile{
+			data1: webhook.ExecuteData{
+				Files: []sendpart.File{
 					{
 						Name:   "abc",
 						Reader: bytes.NewBufferString("def"),
 					},
 				},
 			},
-			data2: api.ExecuteWebhookData{
-				Files: []api.SendMessageFile{
+			data2: webhook.ExecuteData{
+				Files: []sendpart.File{
 					{
 						Name:   "abc",
 						Reader: bytes.NewBufferString("fed"),
@@ -231,7 +232,7 @@ func TestMocker_ExecuteWebhook(t *testing.T) {
 
 				m.ExecuteWebhook(webhookID, token, c.data1)
 
-				err := webhook.Execute(webhookID, token, c.data2)
+				err := webhook.NewCustom(webhookID, token, m.HTTPClient()).Execute(c.data2)
 				require.NoError(t, err)
 
 				assert.True(t, tMock.Failed())
@@ -243,16 +244,16 @@ func TestMocker_ExecuteWebhook(t *testing.T) {
 func TestMocker_ExecuteWebhookAndWait(t *testing.T) {
 	successCases := []struct {
 		name string
-		data api.ExecuteWebhookData
+		data webhook.ExecuteData
 	}{
 		{
 			name: "no files",
-			data: api.ExecuteWebhookData{Content: "abc"},
+			data: webhook.ExecuteData{Content: "abc"},
 		},
 		{
 			name: "with file",
-			data: api.ExecuteWebhookData{
-				Files: []api.SendMessageFile{
+			data: webhook.ExecuteData{
+				Files: []sendpart.File{
 					{
 						Name:   "abc",
 						Reader: bytes.NewBufferString("def"),
@@ -280,7 +281,7 @@ func TestMocker_ExecuteWebhookAndWait(t *testing.T) {
 
 				cp := c.data
 
-				cp.Files = make([]api.SendMessageFile, len(c.data.Files))
+				cp.Files = make([]sendpart.File, len(c.data.Files))
 				copy(cp.Files, c.data.Files) // the readers of the file will be consumed twice
 
 				// the files are copied now, but the reader for them may be a pointer and wasn't
@@ -296,7 +297,7 @@ func TestMocker_ExecuteWebhookAndWait(t *testing.T) {
 
 				m.ExecuteWebhookAndWait(webhookID, token, c.data, expect)
 
-				actual, err := webhook.ExecuteAndWait(webhookID, token, cp)
+				actual, err := webhook.NewCustom(webhookID, token, m.HTTPClient()).ExecuteAndWait(cp)
 				require.NoError(t, err)
 
 				assert.Equal(t, expect, *actual)
@@ -306,26 +307,26 @@ func TestMocker_ExecuteWebhookAndWait(t *testing.T) {
 
 	failureCases := []struct {
 		name  string
-		data1 api.ExecuteWebhookData
-		data2 api.ExecuteWebhookData
+		data1 webhook.ExecuteData
+		data2 webhook.ExecuteData
 	}{
 		{
 			name:  "different content",
-			data1: api.ExecuteWebhookData{Content: "abc"},
-			data2: api.ExecuteWebhookData{Content: "cba"},
+			data1: webhook.ExecuteData{Content: "abc"},
+			data2: webhook.ExecuteData{Content: "cba"},
 		},
 		{
 			name: "different file",
-			data1: api.ExecuteWebhookData{
-				Files: []api.SendMessageFile{
+			data1: webhook.ExecuteData{
+				Files: []sendpart.File{
 					{
 						Name:   "abc",
 						Reader: bytes.NewBufferString("def"),
 					},
 				},
 			},
-			data2: api.ExecuteWebhookData{
-				Files: []api.SendMessageFile{
+			data2: webhook.ExecuteData{
+				Files: []sendpart.File{
 					{
 						Name:   "abc",
 						Reader: bytes.NewBufferString("fed"),
@@ -355,7 +356,7 @@ func TestMocker_ExecuteWebhookAndWait(t *testing.T) {
 
 				m.ExecuteWebhookAndWait(webhookID, token, c.data1, expect)
 
-				actual, err := webhook.ExecuteAndWait(webhookID, token, c.data2)
+				actual, err := webhook.NewCustom(webhookID, token, m.HTTPClient()).ExecuteAndWait(c.data2)
 				require.NoError(t, err)
 
 				assert.Equal(t, expect, *actual)
