@@ -6,9 +6,9 @@ import (
 	"testing"
 
 	"github.com/diamondburned/arikawa/v2/api"
+	"github.com/diamondburned/arikawa/v2/api/webhook"
 	"github.com/diamondburned/arikawa/v2/discord"
-	"github.com/diamondburned/arikawa/v2/utils/httputil/httpdriver"
-	"github.com/diamondburned/arikawa/v2/webhook"
+	"github.com/diamondburned/arikawa/v2/utils/sendpart"
 
 	"github.com/mavolin/dismock/v2/internal/mockutil"
 )
@@ -46,7 +46,7 @@ func (m *Mocker) sendMessageComplex(name string, d api.SendMessageData, msg disc
 
 	m.MockAPI(name, http.MethodPost, "/channels/"+msg.ChannelID.String()+"/messages",
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
-			files := make([]api.SendMessageFile, len(d.Files))
+			files := make([]sendpart.File, len(d.Files))
 			copy(files, d.Files)
 
 			d.Files = nil
@@ -63,24 +63,22 @@ func (m *Mocker) sendMessageComplex(name string, d api.SendMessageData, msg disc
 
 // ExecuteWebhook mocks a ExecuteWebhook request and doesn't "wait" for the
 // message to be delivered.
-func (m *Mocker) ExecuteWebhook(webhookID discord.WebhookID, token string, d api.ExecuteWebhookData) {
+func (m *Mocker) ExecuteWebhook(webhookID discord.WebhookID, token string, d webhook.ExecuteData) {
 	m.executeWebhook(webhookID, token, false, d, discord.Message{})
 }
 
 // ExecuteWebhookAndWait mocks a ExecuteWebhook request and "waits" for the
 // message to be delivered.
 func (m *Mocker) ExecuteWebhookAndWait(
-	webhookID discord.WebhookID, token string, d api.ExecuteWebhookData, msg discord.Message,
+	webhookID discord.WebhookID, token string, d webhook.ExecuteData, msg discord.Message,
 ) {
 	m.executeWebhook(webhookID, token, true, d, msg)
 }
 
 // executeWebhook mocks a ExecuteWebhook request.
 func (m *Mocker) executeWebhook(
-	webhookID discord.WebhookID, token string, wait bool, d api.ExecuteWebhookData, msg discord.Message,
+	webhookID discord.WebhookID, token string, wait bool, d webhook.ExecuteData, msg discord.Message,
 ) {
-	webhook.DefaultHTTPClient.Client = httpdriver.WrapClient(*m.Client)
-
 	m.MockAPI("ExecuteWebhook", http.MethodPost, "/webhooks/"+webhookID.String()+"/"+token,
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
 			if wait {
@@ -89,15 +87,15 @@ func (m *Mocker) executeWebhook(
 				})
 			}
 
-			files := make([]api.SendMessageFile, len(d.Files))
+			files := make([]sendpart.File, len(d.Files))
 			copy(files, d.Files)
 
 			d.Files = nil
 
 			if len(files) == 0 {
-				mockutil.CheckJSON(t, r.Body, new(api.ExecuteWebhookData), &d)
+				mockutil.CheckJSON(t, r.Body, new(webhook.ExecuteData), &d)
 			} else {
-				mockutil.CheckMultipart(t, r.Body, r.Header, new(api.ExecuteWebhookData), &d, files)
+				mockutil.CheckMultipart(t, r.Body, r.Header, new(webhook.ExecuteData), &d, files)
 			}
 
 			if wait {

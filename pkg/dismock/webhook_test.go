@@ -4,9 +4,9 @@ import (
 	"testing"
 
 	"github.com/diamondburned/arikawa/v2/api"
+	"github.com/diamondburned/arikawa/v2/api/webhook"
 	"github.com/diamondburned/arikawa/v2/discord"
 	"github.com/diamondburned/arikawa/v2/utils/json/option"
-	"github.com/diamondburned/arikawa/v2/webhook"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -172,7 +172,7 @@ func TestMocker_WebhookWithToken(t *testing.T) {
 
 	m.WebhookWithToken(expect)
 
-	actual, err := webhook.Get(expect.ID, expect.Token)
+	actual, err := webhook.NewCustom(expect.ID, expect.Token, m.HTTPClient()).Get()
 	require.NoError(t, err)
 
 	assert.Equal(t, expect, *actual)
@@ -246,7 +246,7 @@ func TestMocker_ModifyWebhookWithTokenWithToken(t *testing.T) {
 
 		m.ModifyWebhookWithToken(data, expect)
 
-		actual, err := webhook.Modify(expect.ID, expect.Token, data)
+		actual, err := webhook.NewCustom(expect.ID, expect.Token, m.HTTPClient()).Modify(data)
 		require.NoError(t, err)
 
 		assert.Equal(t, expect, *actual)
@@ -269,7 +269,7 @@ func TestMocker_ModifyWebhookWithTokenWithToken(t *testing.T) {
 			Name: option.NewString("abc"),
 		}, expect)
 
-		actual, err := webhook.Modify(expect.ID, expect.Token, api.ModifyWebhookData{
+		actual, err := webhook.NewCustom(expect.ID, expect.Token, m.HTTPClient()).Modify(api.ModifyWebhookData{
 			Name: option.NewString("cba"),
 		})
 		require.NoError(t, err)
@@ -301,6 +301,6 @@ func TestMocker_DeleteWebhookWithToken(t *testing.T) {
 
 	m.DeleteWebhookWithToken(id, token)
 
-	err := webhook.Delete(id, token)
+	err := webhook.NewCustom(id, token, m.HTTPClient()).Delete()
 	require.NoError(t, err)
 }

@@ -15,8 +15,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/diamondburned/arikawa/v2/api"
 	"github.com/diamondburned/arikawa/v2/utils/json/option"
+	"github.com/diamondburned/arikawa/v2/utils/sendpart"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -57,7 +57,7 @@ func CheckJSON(t *testing.T, r io.ReadCloser, v interface{}, expect interface{})
 //
 // The expectJSON parameter may be nil, indicating no JSON body.
 func CheckMultipart(
-	t *testing.T, body io.ReadCloser, h http.Header, v interface{}, expectJSON interface{}, f []api.SendMessageFile,
+	t *testing.T, body io.ReadCloser, h http.Header, v interface{}, expectJSON interface{}, f []sendpart.File,
 ) {
 	_, p, err := mime.ParseMediaType(h.Get("Content-Type"))
 	require.NoError(t, err)

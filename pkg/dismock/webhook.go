@@ -6,8 +6,6 @@ import (
 
 	"github.com/diamondburned/arikawa/v2/api"
 	"github.com/diamondburned/arikawa/v2/discord"
-	"github.com/diamondburned/arikawa/v2/utils/httputil/httpdriver"
-	"github.com/diamondburned/arikawa/v2/webhook"
 
 	"github.com/mavolin/dismock/v2/internal/mockutil"
 )
@@ -59,8 +57,6 @@ func (m *Mocker) Webhook(webhook discord.Webhook) {
 //
 // This method will sanitize Webhook.User.ID and Webhook.ChannelID.
 func (m *Mocker) WebhookWithToken(wh discord.Webhook) {
-	webhook.DefaultHTTPClient.Client = httpdriver.WrapClient(*m.Client)
-
 	m.MockAPI("WebhookWithToken", http.MethodGet, "/webhooks/"+wh.ID.String()+"/"+wh.Token,
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
 			mockutil.WriteJSON(t, w, wh)
@@ -86,8 +82,6 @@ func (m *Mocker) ModifyWebhook(d api.ModifyWebhookData, wh discord.Webhook) {
 //
 // This method will sanitize Webhook.User.ID and Webhook.ChannelID.
 func (m *Mocker) ModifyWebhookWithToken(d api.ModifyWebhookData, wh discord.Webhook) {
-	webhook.DefaultHTTPClient.Client = httpdriver.WrapClient(*m.Client)
-
 	m.MockAPI("ModifyWebhookWithToken", http.MethodPatch, "/webhooks/"+wh.ID.String()+"/"+wh.Token,
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
 			mockutil.CheckJSON(t, r.Body, new(api.ModifyWebhookData), &d)
@@ -102,7 +96,5 @@ func (m *Mocker) DeleteWebhook(id discord.WebhookID) {
 
 // DeleteWebhookWithToken mocks a DeleteWebhookWithToken request.
 func (m *Mocker) DeleteWebhookWithToken(id discord.WebhookID, token string) {
-	webhook.DefaultHTTPClient.Client = httpdriver.WrapClient(*m.Client)
-
 	m.MockAPI("DeleteWebhookWithToken", http.MethodDelete, "/webhooks/"+id.String()+"/"+token, nil)
 }

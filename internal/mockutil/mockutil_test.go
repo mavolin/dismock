@@ -12,8 +12,8 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/diamondburned/arikawa/v2/api"
 	"github.com/diamondburned/arikawa/v2/utils/json/option"
+	"github.com/diamondburned/arikawa/v2/utils/sendpart"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -130,7 +130,7 @@ func TestCheckMultipart(t *testing.T) {
 		name   string
 		body   func(mw *multipart.Writer, t *testing.T)
 		expect *testStruct
-		f      []api.SendMessageFile
+		f      []sendpart.File
 	}{
 		{
 			name: "files only",
@@ -159,7 +159,7 @@ func TestCheckMultipart(t *testing.T) {
 
 				require.NoError(t, mw.Close())
 			},
-			f: []api.SendMessageFile{
+			f: []sendpart.File{
 				{
 					Name:   "abc",
 					Reader: bytes.NewBuffer([]byte{1, 2, 4, 8, 16, 32, 64, 128}),
@@ -199,7 +199,7 @@ func TestCheckMultipart(t *testing.T) {
 				Field1: 123,
 				Field2: "abc",
 			},
-			f: []api.SendMessageFile{
+			f: []sendpart.File{
 				{
 					Name:   "abc",
 					Reader: bytes.NewBuffer([]byte{1, 2, 4, 8, 16, 32, 64, 128}),
@@ -231,7 +231,7 @@ func TestCheckMultipart(t *testing.T) {
 		name   string
 		body   func(mw *multipart.Writer, t *testing.T)
 		expect *testStruct
-		f      []api.SendMessageFile
+		f      []sendpart.File
 	}{
 		{
 			name: "no json_payload",
@@ -253,7 +253,7 @@ func TestCheckMultipart(t *testing.T) {
 				Field1: 123,
 				Field2: "abc",
 			},
-			f: []api.SendMessageFile{
+			f: []sendpart.File{
 				{
 					Name:   "abc",
 					Reader: bytes.NewBuffer([]byte{1, 2, 4, 8, 16, 32, 64, 128}),
@@ -285,7 +285,7 @@ func TestCheckMultipart(t *testing.T) {
 
 				require.NoError(t, mw.Close())
 			},
-			f: []api.SendMessageFile{
+			f: []sendpart.File{
 				{
 					Name:   "abc",
 					Reader: bytes.NewBuffer([]byte{1, 2, 4, 8, 16, 32, 64, 128}),
@@ -308,7 +308,7 @@ func TestCheckMultipart(t *testing.T) {
 
 				require.NoError(t, mw.Close())
 			},
-			f: []api.SendMessageFile{
+			f: []sendpart.File{
 				{
 					Name:   "abc",
 					Reader: bytes.NewBuffer([]byte{1, 2, 4, 8, 16, 32, 64, 128}),
@@ -346,7 +346,7 @@ func TestCheckMultipart(t *testing.T) {
 
 				require.NoError(t, mw.Close())
 			},
-			f: []api.SendMessageFile{
+			f: []sendpart.File{
 				{
 					Name:   "abc",
 					Reader: bytes.NewBuffer([]byte{1, 2, 4, 8, 16, 32, 64, 128}),
@@ -393,7 +393,7 @@ func TestCheckMultipart(t *testing.T) {
 
 		tMock := new(testing.T)
 
-		CheckMultipart(tMock, p, h, nil, nil, []api.SendMessageFile{})
+		CheckMultipart(tMock, p, h, nil, nil, []sendpart.File{})
 
 		assert.True(t, tMock.Failed())
 	})
