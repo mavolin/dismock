@@ -45,20 +45,20 @@ func (m *Mocker) Reactions(
 			from = uint(i) * api.MaxMessageReactionFetchLimit
 			to   = uint(math.Min(float64(from+api.MaxMessageReactionFetchLimit), float64(len(u))))
 
-			fetch = to - from // we msg this as the sent limit
+			fetch = to - from // we use this as the sent limit
 		)
 
 		// but if limit != unlimited
 		if limit > 0 {
 			// and the max data we can send (fetch) is smaller than what could be requested max, we
-			// msg either limit or api.MaxMessageReactionFetchLimit, depending on which is smaller, instead.
+			// use either limit or api.MaxMessageReactionFetchLimit, depending on which is smaller, instead.
 			if fetch < api.MaxMessageReactionFetchLimit {
 				fetch = uint(math.Min(float64(limit), float64(api.MaxMessageReactionFetchLimit)))
 			}
 
 			limit -= fetch
 		} else {
-			// this means there is no limit, hence we should msg
+			// this means there is no limit, hence we should use
 			// api.MaxMessageReactionFetchLimit
 			fetch = api.MaxMessageReactionFetchLimit
 		}
@@ -96,19 +96,19 @@ func (m *Mocker) ReactionsBefore(
 		to := from
 		from = uint(math.Max(float64(0), float64(int(to-api.MaxMessageReactionFetchLimit))))
 
-		fetch := to - from // we msg this as the sent limit
+		fetch := to - from // we use this as the sent limit
 
 		// but if limit != unlimited
 		if limit > 0 {
 			// and the max data we can send (fetch) is smaller than what could be requested max, we
-			// msg either limit or api.MaxMessageReactionFetchLimit, depending on which is smaller, instead.
+			// use either limit or api.MaxMessageReactionFetchLimit, depending on which is smaller, instead.
 			if fetch < api.MaxMessageReactionFetchLimit {
 				fetch = uint(math.Min(float64(limit), float64(api.MaxMessageReactionFetchLimit)))
 			}
 
 			limit -= fetch
 		} else {
-			// this means there is no limit, hence we should msg
+			// this means there is no limit, hence we should use
 			// api.MaxMessageReactionFetchLimit
 			fetch = api.MaxMessageReactionFetchLimit
 		}
@@ -141,20 +141,20 @@ func (m *Mocker) ReactionsAfter(
 			from = uint(i) * api.MaxMessageReactionFetchLimit
 			to   = uint(math.Min(float64(from+api.MaxMessageReactionFetchLimit), float64(len(u))))
 
-			fetch = to - from // we msg this as the sent limit
+			fetch = to - from // we use this as the sent limit
 		)
 
 		// but if limit != unlimited
 		if limit > 0 {
 			// and the max data we can send (fetch) is smaller than what could be requested max, we
-			// msg either limit or api.MaxMessageReactionFetchLimit, depending on which is smaller, instead.
+			// use either limit or api.MaxMessageReactionFetchLimit, depending on which is smaller, instead.
 			if fetch < api.MaxMessageReactionFetchLimit {
 				fetch = uint(math.Min(float64(limit), float64(api.MaxMessageReactionFetchLimit)))
 			}
 
 			limit -= fetch
 		} else {
-			// this means there is no limit, hence we should msg
+			// this means there is no limit, hence we should use
 			// api.MaxMessageReactionFetchLimit
 			fetch = api.MaxMessageReactionFetchLimit
 		}
