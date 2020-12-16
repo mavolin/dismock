@@ -43,20 +43,20 @@ func (m *Mocker) Members(guildID discord.GuildID, limit uint, members []discord.
 			from = uint(i) * maxFetchMembers
 			to   = uint(math.Min(float64(from+maxFetchMembers), float64(len(members))))
 
-			fetch = to - from // we msg this as the sent limit
+			fetch = to - from // we use this as the sent limit
 		)
 
 		// but if limit != unlimited
 		if limit > 0 {
 			// and the max data we can send (fetch) is smaller than what could be requested max, we
-			// msg either limit or maxFetchMembers, depending on which is smaller, instead.
+			// use either limit or maxFetchMembers, depending on which is smaller, instead.
 			if fetch < maxFetchMembers {
 				fetch = uint(math.Min(float64(limit), float64(maxFetchMembers)))
 			}
 
 			limit -= fetch
 		} else {
-			// this means there is no limit, hence we should msg
+			// this means there is no limit, hence we should use
 			// maxFetchMembers
 			fetch = maxFetchMembers
 		}
@@ -86,20 +86,20 @@ func (m *Mocker) MembersAfter(guildID discord.GuildID, after discord.UserID, lim
 			from = uint(i) * maxFetchMembers
 			to   = uint(math.Min(float64(from+maxFetchMembers), float64(len(members))))
 
-			fetch = to - from // we msg this as the sent limit
+			fetch = to - from // we use this as the sent limit
 		)
 
 		// but if limit != unlimited
 		if limit > 0 {
 			// and the max data we can send (fetch) is smaller than what could be requested max, we
-			// msg either limit or maxFetchMembers, depending on which is smaller, instead.
+			// use either limit or maxFetchMembers, depending on which is smaller, instead.
 			if fetch < maxFetchMembers {
 				fetch = uint(math.Min(float64(limit), float64(maxFetchMembers)))
 			}
 
 			limit -= fetch
 		} else {
-			// this means there is no limit, hence we should msg
+			// this means there is no limit, hence we should use
 			// maxFetchMembers
 			fetch = maxFetchMembers
 		}

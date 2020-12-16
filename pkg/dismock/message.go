@@ -35,19 +35,19 @@ func (m *Mocker) Messages(channelID discord.ChannelID, limit uint, messages []di
 			to   = uint(math.Min(float64(from+maxFetchMessages), float64(len(messages))))
 		)
 
-		fetch := to - from // we msg this as the sent limit
+		fetch := to - from // we use this as the sent limit
 
 		// but if limit != unlimited
 		if limit > 0 {
 			// and the max data we can send (fetch) is smaller than what could be requested max, we
-			// msg either limit or maxFetchMessages, depending on which is smaller, instead.
+			// use either limit or maxFetchMessages, depending on which is smaller, instead.
 			if fetch < maxFetchMessages {
 				fetch = uint(math.Min(float64(limit), float64(maxFetchMessages)))
 			}
 
 			limit -= fetch
 		} else {
-			// this means there is no limit, hence we should msg
+			// this means there is no limit, hence we should use
 			// maxFetchMessages
 			fetch = maxFetchMessages
 		}
@@ -105,19 +105,19 @@ func (m *Mocker) MessagesBefore(
 			to   = uint(math.Min(float64(from+maxFetchMessages), float64(len(messages))))
 		)
 
-		fetch := to - from // we msg this as the sent limit
+		fetch := to - from // we use this as the sent limit
 
 		// but if limit != unlimited
 		if limit > 0 {
 			// and the max data we can send (fetch) is smaller than what could be requested max, we
-			// msg either limit or maxFetchMessages, depending on which is smaller, instead.
+			// use either limit or maxFetchMessages, depending on which is smaller, instead.
 			if fetch < maxFetchMessages {
 				fetch = uint(math.Min(float64(limit), float64(maxFetchMessages)))
 			}
 
 			limit -= fetch
 		} else {
-			// this means there is no limit, hence we should msg
+			// this means there is no limit, hence we should use
 			// maxFetchMessages
 			fetch = maxFetchMessages
 		}
@@ -153,20 +153,20 @@ func (m *Mocker) MessagesAfter(
 			to   = len(messages) - i*maxFetchMessages
 			from = int(math.Max(float64(to-maxFetchMessages), float64(0)))
 
-			fetch = from - to // we msg this as the sent limit
+			fetch = from - to // we use this as the sent limit
 		)
 
 		// but if limit != unlimited
 		if limit > 0 {
 			// and the max data we can send (fetch) is smaller than what could be requested max, we
-			// msg either limit or maxFetchMessages, depending on which is smaller, instead.
+			// use either limit or maxFetchMessages, depending on which is smaller, instead.
 			if fetch < maxFetchMessages {
 				fetch = int(math.Min(float64(limit), float64(maxFetchMessages)))
 			}
 
 			limit -= uint(fetch)
 		} else {
-			// this means there is no limit, hence we should msg
+			// this means there is no limit, hence we should use
 			// maxFetchMessages
 			fetch = maxFetchMessages
 		}

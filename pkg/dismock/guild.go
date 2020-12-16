@@ -78,20 +78,20 @@ func (m *Mocker) Guilds(limit uint, g []discord.Guild) {
 			from = uint(i) * maxFetchGuilds
 			to   = uint(math.Min(float64(from+maxFetchGuilds), float64(len(g))))
 
-			fetch = to - from // we msg this as the sent limit
+			fetch = to - from // we use this as the sent limit
 		)
 
 		// but if limit != unlimited
 		if limit > 0 {
 			// and the max data we can send (fetch) is smaller than what could be requested max, we
-			// msg either limit or mexFetchGuild, depending on which is smaller, instead.
+			// use either limit or mexFetchGuild, depending on which is smaller, instead.
 			if fetch < maxFetchGuilds {
 				fetch = uint(math.Min(float64(limit), float64(maxFetchGuilds)))
 			}
 
 			limit -= fetch
 		} else {
-			// this means there is no limit, hence we should msg
+			// this means there is no limit, hence we should use
 			// maxFetchGuilds
 			fetch = maxFetchGuilds
 		}
@@ -129,19 +129,19 @@ func (m *Mocker) GuildsBefore(before discord.GuildID, limit uint, g []discord.Gu
 		to := from
 		from = uint(math.Max(float64(0), float64(int(to-maxFetchGuilds))))
 
-		fetch := to - from // we msg this as the sent limit
+		fetch := to - from // we use this as the sent limit
 
 		// but if limit != unlimited
 		if limit > 0 {
 			// and the max data we can send (fetch) is smaller than what could be requested max, we
-			// msg either limit or mexFetchGuild, depending on which is smaller, instead.
+			// use either limit or mexFetchGuild, depending on which is smaller, instead.
 			if fetch < maxFetchGuilds {
 				fetch = uint(math.Min(float64(limit), float64(maxFetchGuilds)))
 			}
 
 			limit -= fetch
 		} else {
-			// this means there is no limit, hence we should msg
+			// this means there is no limit, hence we should use
 			// maxFetchGuilds
 			fetch = maxFetchGuilds
 		}
@@ -174,20 +174,20 @@ func (m *Mocker) GuildsAfter(after discord.GuildID, limit uint, g []discord.Guil
 			from = uint(i) * maxFetchGuilds
 			to   = uint(math.Min(float64(from+maxFetchGuilds), float64(len(g))))
 
-			fetch = to - from // we msg this as the sent limit
+			fetch = to - from // we use this as the sent limit
 		)
 
 		// but if limit != unlimited
 		if limit > 0 {
 			// and the max data we can send (fetch) is smaller than what could be requested max, we
-			// msg either limit or maxFetchGuilds, depending on which is smaller, instead.
+			// use either limit or maxFetchGuilds, depending on which is smaller, instead.
 			if fetch < maxFetchGuilds {
 				fetch = uint(math.Min(float64(limit), float64(maxFetchGuilds)))
 			}
 
 			limit -= fetch
 		} else {
-			// this means there is no limit, hence we should msg
+			// this means there is no limit, hence we should use
 			// maxFetchGuilds
 			fetch = maxFetchGuilds
 		}
