@@ -137,6 +137,8 @@ func New(t *testing.T) *Mocker {
 	return m
 }
 
+// HTTPClient wraps the http client of the mocker in a *httputil.Client, as
+// used by arikawa.
 func (m *Mocker) HTTPClient() *httputil.Client {
 	c := httputil.NewClient()
 	c.Client = (*httpdriver.DefaultClient)(m.Client)
