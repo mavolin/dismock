@@ -17,7 +17,7 @@ Although, dismock uses [arikawa](https://github.com/diamondburned/arikawa) as a 
 
 #### Basic Testing
 
-You can create a mock, by calling the method that corresponds to the API request you made in your code.
+You can create a mock by calling the method that corresponds to the API request you made in your code.
 Below is a simple example of a ping command, and it's unit test.
 
 ```go
@@ -34,7 +34,9 @@ func (b *Bot) Ping(e *gateway.MessageCreateEvent) (error) {
 
 ```go
 func TestBot_Ping(t *testing.T) {
-    m, s := dismock.NewState(t) // you can also mock a Session by using dismock.NewSession(t)
+    // you can also mock a Session by using dismock.NewSession(t), or dismock.New(t) 
+    // to only create a Mocker
+    m, s := dismock.NewState(t)
     
     // at the end of every test m.Eval() must be called, to check that all 
     // handlers were invoked
@@ -43,8 +45,8 @@ func TestBot_Ping(t *testing.T) {
     var channelID discord.ChannelID = 123
 
     m.SendText(discord.Message{
-        // The doc of m.SendText tell you, what fields are required.
-    	// All other fields not relevant to your test can be omitted.
+        // the doc of every mock specifies what fields are required, all other
+        // fields not relevant to your test can be omitted
         ChannelID: channelID,
         Content: "🏓",
     })
