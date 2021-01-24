@@ -1,7 +1,7 @@
 # Contributing
 
 We would love to see the ideas you want to bring in to improve this project.
-Before you get started, make sure to read the guidelines below. 
+Before you get started, make sure to read the guidelines below.
 
 ## Contributing through issues
 
@@ -11,11 +11,7 @@ The issue templates will take care of most of the requirements, but there is one
 ### Titles
 
 We not only use [conventional commits](https://www.conventionalcommits.org/en/v1.0.0/) for commits, but also for issue titles.
-If you propose a feature, use `feat(PACKAGE_NAME): TITLE`, for a bug replace the `feat` with a `fix`, for `docs` use `docs` etc.
-Other types are `style`, `refactor` and `test`.
-If your change is breaking (in the semantic versioning sense) add an exclamation mark behind the scope, e.g. `feat(package)!: title`.
-
-If your issue proposes changes to multiple packages, or you don't know which package is affected, leave the `(PACKAGE_NAME)` part out, e.g. `feat: that one thing that's missing`.
+If you propose a feature use `feat`, for bug fixes use `fix`, etc.
 
 
 ## Code Contributions
@@ -31,25 +27,20 @@ Please make small, thoughtful commits, a commit like `feat: add xy` with 20 new 
 
 #### Conventional Commits
 
-Please use [conventional commits](https://www.conventionalcommits.org/en/v1.0.0/) for your contributions, once you get the hang of it, you'll see that they are pretty easy to use.
-Just have a look at the [quick start guide](https://www.conventionalcommits.org/en/v1.0.0/#summary) on their website.
-The scope is typically the package name, but for non-go files appropriate scopes may also be: `git`, `readme`, `golangci`, or `go.mod`.
+Please use [conventional commits](https://www.conventionalcommits.org/en/v1.0.0/) for your contributions.
 
 ##### Types
 We use the following types:
 
-- ci: changes to our CI configuration files and scripts
-- docs: changes to the documentation
-- feat: a new feature
-- fix: a bug fix
-- perf: an improvement to performance
-- refactor: a code change that neither fixes a bug nor adds a feature
-- style: a change that does not affect the meaning of the code
-- test: a change to an existing test, or a new test
-
-##### Breaking Changes
-
-Breaking changes must have a `!` after the type/scope and a `BREAKING CHANGE:` footer.
+- **build**: Changes that affect the build system or external dependencies
+- **ci**: changes to our CI configuration files and scripts
+- **docs**: changes to the documentation
+- **feat**: a new feature
+- **fix**: a bug fix
+- **perf**: an improvement to performance
+- **refactor**: a code change that neither fixes a bug nor adds a feature
+- **style**: a change that does not affect the meaning of the code
+- **test**: a change to an existing test, or a new test
 
 ### Fixing a Bug
 
@@ -66,11 +57,9 @@ If your code fails a lint task, but the way you did it is justified, add a `//no
 If possible and appropriate you should fully test the code you submit.
 Each function exposed and unexposed should have a single test, which either tests directly or is split into subtests, preferably table-driven.
 
-In an effort to ease the writing of tests, we use [testify](https://github.com/stretchr/testify) for all testing.
-
 #### Table-Driven Tests
 
-If there is a single table, it should be called `testCases`, multiple use the name `<type>Cases`, e.g. `successCases` and `failureCases`, for tests that test the output for a valid input (a success case), and those that aim to provoke an error (a failure case) and therefore work different from a success case.
+If there is a single table, it should be called `testCases`, multiple use the name `{{type}}Cases`, e.g. `successCases` and `failureCases`, for tests that test the output for a valid input (a success case), and those that aim to provoke an error (a failure case) and therefore work different from a success case.
 The same goes if there is a table that's only testing a portion of a function, and multiple non-table-driven tests in addition.
 
 The structs used in tables should always anonymous.
