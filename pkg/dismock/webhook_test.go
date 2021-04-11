@@ -14,11 +14,8 @@ import (
 func TestMocker_CreateWebhook(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		m, s := NewSession(t)
-		defer m.Eval()
 
-		data := api.CreateWebhookData{
-			Name: "abc",
-		}
+		data := api.CreateWebhookData{Name: "abc"}
 
 		expect := discord.Webhook{
 			ID:        123,
@@ -61,7 +58,6 @@ func TestMocker_CreateWebhook(t *testing.T) {
 
 func TestMocker_ChannelWebhooks(t *testing.T) {
 	m, s := NewSession(t)
-	defer m.Eval()
 
 	var channelID discord.ChannelID = 123
 
@@ -89,7 +85,6 @@ func TestMocker_ChannelWebhooks(t *testing.T) {
 func TestMocker_GuildWebhooks(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		m, s := NewSession(t)
-		defer m.Eval()
 
 		var guildID discord.GuildID = 123
 
@@ -118,18 +113,10 @@ func TestMocker_GuildWebhooks(t *testing.T) {
 
 	t.Run("auto guild id", func(t *testing.T) {
 		m, s := NewSession(t)
-		defer m.Eval()
 
 		var guildID discord.GuildID = 123
 
-		in := []discord.Webhook{
-			{
-				ID: 456,
-			},
-			{
-				ID: 789,
-			},
-		}
+		in := []discord.Webhook{{ID: 456}, {ID: 789}}
 
 		m.GuildWebhooks(guildID, in)
 
@@ -144,7 +131,6 @@ func TestMocker_GuildWebhooks(t *testing.T) {
 
 func TestMocker_Webhook(t *testing.T) {
 	m, s := NewSession(t)
-	defer m.Eval()
 
 	expect := discord.Webhook{
 		ID:        123,
@@ -181,11 +167,8 @@ func TestMocker_WebhookWithToken(t *testing.T) {
 func TestMocker_ModifyWebhook(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		m, s := NewSession(t)
-		defer m.Eval()
 
-		data := api.ModifyWebhookData{
-			Name: option.NewString("abc"),
-		}
+		data := api.ModifyWebhookData{Name: option.NewString("abc")}
 
 		expect := discord.Webhook{
 			ID:        456,
@@ -232,9 +215,7 @@ func TestMocker_ModifyWebhookWithTokenWithToken(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		m := New(t)
 
-		data := api.ModifyWebhookData{
-			Name: option.NewString("abc"),
-		}
+		data := api.ModifyWebhookData{Name: option.NewString("abc")}
 
 		expect := discord.Webhook{
 			ID:        123,
@@ -281,10 +262,8 @@ func TestMocker_ModifyWebhookWithTokenWithToken(t *testing.T) {
 
 func TestMocker_DeleteWebhook(t *testing.T) {
 	m, s := NewSession(t)
-	defer m.Eval()
 
 	var id discord.WebhookID = 123
-
 	m.DeleteWebhook(id)
 
 	err := s.DeleteWebhook(id)

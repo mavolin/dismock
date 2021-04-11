@@ -10,7 +10,6 @@ import (
 
 func TestMocker_React(t *testing.T) {
 	m, s := NewSession(t)
-	defer m.Eval()
 
 	var (
 		channelID discord.ChannelID = 123
@@ -26,7 +25,6 @@ func TestMocker_React(t *testing.T) {
 
 func TestMocker_Unreact(t *testing.T) {
 	m, s := NewSession(t)
-	defer m.Eval()
 
 	var (
 		channelID discord.ChannelID = 123
@@ -62,7 +60,6 @@ func TestMocker_Reactions(t *testing.T) {
 		for _, c := range successCases {
 			t.Run(c.name, func(t *testing.T) {
 				m, s := NewSession(t)
-				defer m.Eval()
 
 				var (
 					channelID discord.ChannelID = 123
@@ -88,7 +85,6 @@ func TestMocker_Reactions(t *testing.T) {
 
 	t.Run("nil users", func(t *testing.T) {
 		m, s := NewSession(t)
-		defer m.Eval()
 
 		var (
 			channelID discord.ChannelID = 123
@@ -101,11 +97,11 @@ func TestMocker_Reactions(t *testing.T) {
 		actual, err := s.Reactions(channelID, messageID, emoji, 100)
 		require.NoError(t, err)
 
-		assert.Len(t, actual, 0)
+		assert.Empty(t, actual)
 	})
 
 	t.Run("limit smaller than guilds", func(t *testing.T) {
-		m, _ := NewSession(t)
+		m := New(t)
 
 		assert.Panics(t, func() {
 			m.Reactions(123, 456, 1, "abc", []discord.User{{}, {}})
@@ -135,7 +131,6 @@ func TestMocker_ReactionsBefore(t *testing.T) {
 		for _, c := range successCases {
 			t.Run(c.name, func(t *testing.T) {
 				m, s := NewSession(t)
-				defer m.Eval()
 
 				var (
 					channelID discord.ChannelID = 123
@@ -163,7 +158,6 @@ func TestMocker_ReactionsBefore(t *testing.T) {
 
 	t.Run("nil users", func(t *testing.T) {
 		m, s := NewSession(t)
-		defer m.Eval()
 
 		var (
 			channelID discord.ChannelID = 123
@@ -176,12 +170,11 @@ func TestMocker_ReactionsBefore(t *testing.T) {
 		actual, err := s.ReactionsBefore(channelID, messageID, 0, emoji, 100)
 		require.NoError(t, err)
 
-		assert.Len(t, actual, 0)
+		assert.Empty(t, actual)
 	})
 
 	t.Run("failure", func(t *testing.T) {
 		tMock := new(testing.T)
-
 		m, s := NewSession(tMock)
 
 		var (
@@ -202,7 +195,7 @@ func TestMocker_ReactionsBefore(t *testing.T) {
 	})
 
 	t.Run("limit smaller than guilds", func(t *testing.T) {
-		m, _ := NewSession(t)
+		m := New(t)
 
 		assert.Panics(t, func() {
 			m.ReactionsBefore(123, 456, 0, 1, "abc", []discord.User{{}, {}})
@@ -232,7 +225,6 @@ func TestMocker_ReactionsAfter(t *testing.T) {
 		for _, c := range successCases {
 			t.Run(c.name, func(t *testing.T) {
 				m, s := NewSession(t)
-				defer m.Eval()
 
 				var (
 					channelID discord.ChannelID = 123
@@ -260,7 +252,6 @@ func TestMocker_ReactionsAfter(t *testing.T) {
 
 	t.Run("nil users", func(t *testing.T) {
 		m, s := NewSession(t)
-		defer m.Eval()
 
 		var (
 			channelID discord.ChannelID = 123
@@ -273,12 +264,11 @@ func TestMocker_ReactionsAfter(t *testing.T) {
 		actual, err := s.ReactionsAfter(channelID, messageID, 0, emoji, 100)
 		require.NoError(t, err)
 
-		assert.Len(t, actual, 0)
+		assert.Empty(t, actual)
 	})
 
 	t.Run("failure", func(t *testing.T) {
 		tMock := new(testing.T)
-
 		m, s := NewSession(tMock)
 
 		var (
@@ -299,7 +289,7 @@ func TestMocker_ReactionsAfter(t *testing.T) {
 	})
 
 	t.Run("limit smaller than guilds", func(t *testing.T) {
-		m, _ := NewSession(t)
+		m := New(t)
 
 		assert.Panics(t, func() {
 			m.ReactionsAfter(123, 456, 0, 1, "abc", []discord.User{{}, {}})
@@ -309,7 +299,6 @@ func TestMocker_ReactionsAfter(t *testing.T) {
 
 func TestMocker_DeleteUserReaction(t *testing.T) {
 	m, s := NewSession(t)
-	defer m.Eval()
 
 	var (
 		channelID discord.ChannelID = 123
@@ -326,7 +315,6 @@ func TestMocker_DeleteUserReaction(t *testing.T) {
 
 func TestMocker_DeleteReactions(t *testing.T) {
 	m, s := NewSession(t)
-	defer m.Eval()
 
 	var (
 		channelID discord.ChannelID = 123
@@ -342,7 +330,6 @@ func TestMocker_DeleteReactions(t *testing.T) {
 
 func TestMocker_DeleteAllReactions(t *testing.T) {
 	m, s := NewSession(t)
-	defer m.Eval()
 
 	var (
 		channelID discord.ChannelID = 123

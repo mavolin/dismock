@@ -12,7 +12,6 @@ import (
 
 func TestMocker_AddRole(t *testing.T) {
 	m, s := NewSession(t)
-	defer m.Eval()
 
 	var (
 		guildID discord.GuildID = 123
@@ -28,7 +27,6 @@ func TestMocker_AddRole(t *testing.T) {
 
 func TestMocker_RemoveRole(t *testing.T) {
 	m, s := NewSession(t)
-	defer m.Eval()
 
 	var (
 		guildID discord.GuildID = 123
@@ -44,7 +42,6 @@ func TestMocker_RemoveRole(t *testing.T) {
 
 func TestMocker_Roles(t *testing.T) {
 	m, s := NewSession(t)
-	defer m.Eval()
 
 	var guildID discord.GuildID = 123
 
@@ -61,7 +58,6 @@ func TestMocker_Roles(t *testing.T) {
 func TestMocker_CreateRole(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		m, s := NewSession(t)
-		defer m.Eval()
 
 		var guildID discord.GuildID = 123
 
@@ -82,7 +78,6 @@ func TestMocker_CreateRole(t *testing.T) {
 
 	t.Run("failure", func(t *testing.T) {
 		tMock := new(testing.T)
-
 		m, s := NewSession(tMock)
 
 		var guildID discord.GuildID = 123
@@ -105,32 +100,17 @@ func TestMocker_CreateRole(t *testing.T) {
 func TestMocker_MoveRole(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		m, s := NewSession(t)
-		defer m.Eval()
 
 		var guildID discord.GuildID = 123
 
 		data := []api.MoveRoleData{
-			{
-				ID:       456,
-				Position: option.NewNullableInt(1),
-			},
-			{
-				ID:       789,
-				Position: option.NewNullableInt(0),
-			},
+			{ID: 456, Position: option.NewNullableInt(1)},
+			{ID: 789, Position: option.NewNullableInt(0)},
 		}
 
 		expect := []discord.Role{
-			{
-				ID:       456,
-				Name:     "abc",
-				Position: 1,
-			},
-			{
-				ID:       789,
-				Name:     "def",
-				Position: 0,
-			},
+			{ID: 456, Name: "abc", Position: 1},
+			{ID: 789, Name: "def", Position: 0},
 		}
 
 		m.MoveRole(guildID, data, expect)
@@ -143,44 +123,23 @@ func TestMocker_MoveRole(t *testing.T) {
 
 	t.Run("failure", func(t *testing.T) {
 		tMock := new(testing.T)
-
 		m, s := NewSession(tMock)
 
 		var guildID discord.GuildID = 123
 
 		expect := []discord.Role{
-			{
-				ID:       456,
-				Name:     "abc",
-				Position: 1,
-			},
-			{
-				ID:       789,
-				Name:     "def",
-				Position: 0,
-			},
+			{ID: 456, Name: "abc", Position: 1},
+			{ID: 789, Name: "def", Position: 0},
 		}
 
 		m.MoveRole(guildID, []api.MoveRoleData{
-			{
-				ID:       456,
-				Position: option.NewNullableInt(1),
-			},
-			{
-				ID:       789,
-				Position: option.NewNullableInt(0),
-			},
+			{ID: 456, Position: option.NewNullableInt(1)},
+			{ID: 789, Position: option.NewNullableInt(0)},
 		}, expect)
 
 		actual, err := s.MoveRole(guildID, []api.MoveRoleData{
-			{
-				ID:       654,
-				Position: option.NewNullableInt(1),
-			},
-			{
-				ID:       987,
-				Position: option.NewNullableInt(0),
-			},
+			{ID: 654, Position: option.NewNullableInt(1)},
+			{ID: 987, Position: option.NewNullableInt(0)},
 		})
 		require.NoError(t, err)
 
@@ -192,7 +151,6 @@ func TestMocker_MoveRole(t *testing.T) {
 func TestMocker_ModifyRole(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		m, s := NewSession(t)
-		defer m.Eval()
 
 		var guildID discord.GuildID = 123
 
@@ -214,16 +172,11 @@ func TestMocker_ModifyRole(t *testing.T) {
 
 	t.Run("failure", func(t *testing.T) {
 		tMock := new(testing.T)
-
 		m, s := NewSession(tMock)
 
 		var guildID discord.GuildID = 123
 
-		expect := discord.Role{
-			ID:       456,
-			Name:     "abc",
-			Position: 1,
-		}
+		expect := discord.Role{ID: 456, Name: "abc", Position: 1}
 
 		m.ModifyRole(guildID, api.ModifyRoleData{
 			Name: option.NewNullableString("abc"),
@@ -241,7 +194,6 @@ func TestMocker_ModifyRole(t *testing.T) {
 
 func TestMocker_DeleteRole(t *testing.T) {
 	m, s := NewSession(t)
-	defer m.Eval()
 
 	var (
 		guildID discord.GuildID = 123

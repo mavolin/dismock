@@ -20,18 +20,13 @@ func TestMocker_SendMessageComplex(t *testing.T) {
 	}{
 		{
 			name: "no files",
-			data: api.SendMessageData{
-				Content: "abc",
-			},
+			data: api.SendMessageData{Content: "abc"},
 		},
 		{
 			name: "with file",
 			data: api.SendMessageData{
 				Files: []sendpart.File{
-					{
-						Name:   "abc",
-						Reader: bytes.NewBufferString("def"),
-					},
+					{Name: "abc", Reader: bytes.NewBufferString("def")},
 				},
 			},
 		},
@@ -41,7 +36,6 @@ func TestMocker_SendMessageComplex(t *testing.T) {
 		for _, c := range successCases {
 			t.Run(c.name, func(t *testing.T) {
 				m, s := NewSession(t)
-				defer m.Eval()
 
 				expect := discord.Message{
 					ID:        123,
@@ -89,18 +83,12 @@ func TestMocker_SendMessageComplex(t *testing.T) {
 			name: "different file",
 			data1: api.SendMessageData{
 				Files: []sendpart.File{
-					{
-						Name:   "abc",
-						Reader: bytes.NewBufferString("def"),
-					},
+					{Name: "abc", Reader: bytes.NewBufferString("def")},
 				},
 			},
 			data2: api.SendMessageData{
 				Files: []sendpart.File{
-					{
-						Name:   "abc",
-						Reader: bytes.NewBufferString("fed"),
-					},
+					{Name: "abc", Reader: bytes.NewBufferString("fed")},
 				},
 			},
 		},
@@ -136,18 +124,12 @@ func TestMocker_ExecuteWebhook(t *testing.T) {
 		name string
 		data webhook.ExecuteData
 	}{
-		{
-			name: "no files",
-			data: webhook.ExecuteData{Content: "abc"},
-		},
+		{name: "no files", data: webhook.ExecuteData{Content: "abc"}},
 		{
 			name: "with file",
 			data: webhook.ExecuteData{
 				Files: []sendpart.File{
-					{
-						Name:   "abc",
-						Reader: bytes.NewBufferString("def"),
-					},
+					{Name: "abc", Reader: bytes.NewBufferString("def")},
 				},
 			},
 		},
@@ -201,18 +183,12 @@ func TestMocker_ExecuteWebhook(t *testing.T) {
 			name: "different file",
 			data1: webhook.ExecuteData{
 				Files: []sendpart.File{
-					{
-						Name:   "abc",
-						Reader: bytes.NewBufferString("def"),
-					},
+					{Name: "abc", Reader: bytes.NewBufferString("def")},
 				},
 			},
 			data2: webhook.ExecuteData{
 				Files: []sendpart.File{
-					{
-						Name:   "abc",
-						Reader: bytes.NewBufferString("fed"),
-					},
+					{Name: "abc", Reader: bytes.NewBufferString("fed")},
 				},
 			},
 		},
@@ -222,7 +198,6 @@ func TestMocker_ExecuteWebhook(t *testing.T) {
 		for _, c := range failureCases {
 			t.Run(c.name, func(t *testing.T) {
 				tMock := new(testing.T)
-
 				m := New(tMock)
 
 				var (
@@ -254,10 +229,7 @@ func TestMocker_ExecuteWebhookAndWait(t *testing.T) {
 			name: "with file",
 			data: webhook.ExecuteData{
 				Files: []sendpart.File{
-					{
-						Name:   "abc",
-						Reader: bytes.NewBufferString("def"),
-					},
+					{Name: "abc", Reader: bytes.NewBufferString("def")},
 				},
 			},
 		},
@@ -319,18 +291,12 @@ func TestMocker_ExecuteWebhookAndWait(t *testing.T) {
 			name: "different file",
 			data1: webhook.ExecuteData{
 				Files: []sendpart.File{
-					{
-						Name:   "abc",
-						Reader: bytes.NewBufferString("def"),
-					},
+					{Name: "abc", Reader: bytes.NewBufferString("def")},
 				},
 			},
 			data2: webhook.ExecuteData{
 				Files: []sendpart.File{
-					{
-						Name:   "abc",
-						Reader: bytes.NewBufferString("fed"),
-					},
+					{Name: "abc", Reader: bytes.NewBufferString("fed")},
 				},
 			},
 		},
