@@ -39,10 +39,6 @@ func TestBot_Ping(t *testing.T) {
     // you can also mock a Session by using dismock.NewSession(t), or dismock.New(t) 
     // to only create a Mocker
     m, s := dismock.NewState(t)
-    
-    // at the end of every test m.Eval() must be called, to check that all 
-    // handlers were invoked
-    defer m.Eval()
 
     var channelID discord.ChannelID = 123
 
@@ -62,7 +58,6 @@ func TestBot_Ping(t *testing.T) {
     })
 
     b := NewBot(s)
-
     b.Ping(&gateway.MessageCreateEvent{
         Message: discord.Message{ChannelID: channelID}
     })
@@ -81,7 +76,6 @@ func (b *Bot) Ping(e *gateway.MessageCreateEvent) (error) {
     }
 
     _, err := b.Ctx.SendText(e.ChannelID, e.Author.Mention()+" Pong!")
-    
     return err
 }
 ```
@@ -97,7 +91,7 @@ func TestBot_Ping(t *testing.T) {
         ChannelID: channelID,
         Content: "🏓",
     })
-    
+
     t.Run("test1", func(t *testing.T) {
         // If you have multiple tests that make the same requests, you can
         // create a mocker, and add those API calls.
@@ -114,7 +108,7 @@ func TestBot_Ping(t *testing.T) {
     t.Run("test2", func(t *testing.T) {
         m, s := m.CloneState(t)
         defer m.Eval()
-        
+
         ...
     })
 }
