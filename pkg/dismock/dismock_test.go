@@ -19,14 +19,12 @@ var testHandler = Handler{
 }
 
 // tests the Server started in New.
-func TestMocker_Server(t *testing.T) {
+func TestMocker_New(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		t.Run("session", func(t *testing.T) {
 			m, s := NewSession(t)
-			defer m.Eval()
 
 			expect := discord.Channel{ID: 123}
-
 			m.Channel(expect)
 
 			actual, err := s.Channel(123)
@@ -53,7 +51,6 @@ func TestMocker_Server(t *testing.T) {
 
 	t.Run("unhandled path", func(t *testing.T) {
 		tMock := new(testing.T)
-
 		m := New(tMock)
 
 		url := "https://" + m.Server.Listener.Addr().String() + "/unhandled/path"
@@ -66,6 +63,7 @@ func TestMocker_Server(t *testing.T) {
 
 		_, _ = client.Get(url) // this will error
 
+		//goland:noinspection ALL
 		m.Eval()
 
 		assert.True(t, tMock.Failed())
@@ -112,7 +110,7 @@ func TestMocker_Server(t *testing.T) {
 			_, err := client.Get(url)
 			require.NoError(t, err)
 
-			assert.Len(t, m.handlers, 0)
+			assert.Empty(t, m.handlers)
 		})
 
 		t.Run("only handler multiple methods", func(t *testing.T) {
@@ -139,6 +137,8 @@ func TestMocker_Server(t *testing.T) {
 
 			_, ok := m.handlers["/path"][http.MethodPost]
 			assert.True(t, ok)
+
+			m.Close() // prevent m.Eval from failing
 		})
 
 		t.Run("multiple handlers", func(t *testing.T) {
@@ -162,17 +162,19 @@ func TestMocker_Server(t *testing.T) {
 			assert.Len(t, m.handlers, 1)
 			assert.Len(t, m.handlers["/path"], 1)
 			assert.Len(t, m.handlers["/path"][http.MethodGet], 1)
+
+			m.Close() // prevent m.Eval from failing
 		})
 	})
 }
 
-func TestMocker_Mock(t *testing.T) {
+func TestMocker_MockAPI(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		m := New(t)
 
 		invoked := false
 
-		method := http.MethodPost
+		method := http.MethodGet
 		path := "/path/123"
 		f := func(w http.ResponseWriter, r *http.Request, t *testing.T) {
 			invoked = true
@@ -180,17 +182,19 @@ func TestMocker_Mock(t *testing.T) {
 
 		m.MockAPI("handler", method, path, f)
 
-		h, ok := m.handlers["/api/v8"+path][method]
+		_, ok := m.handlers["/api/v8"+path][method]
 		require.True(t, ok)
 
-		h[0].ServeHTTP(new(httptest.ResponseRecorder), new(http.Request))
+		_, err := m.Client.Get("https://" + m.Server.Listener.Addr().String() + "/api/v8" + path)
+		require.NoError(t, err)
+
 		assert.True(t, invoked)
 	})
 
-	t.Run("nil support", func(t *testing.T) {
+	t.Run("nil handler", func(t *testing.T) {
 		m := New(t)
 
-		method := http.MethodPost
+		method := http.MethodGet
 		path := "/path/123"
 
 		m.MockAPI("handler", method, path, nil)
@@ -199,19 +203,17 @@ func TestMocker_Mock(t *testing.T) {
 		require.True(t, ok)
 
 		r := new(httptest.ResponseRecorder)
-
 		h[0].ServeHTTP(r, new(http.Request)) // if unsuccessful, this would panic
 
 		assert.Equal(t, http.StatusNoContent, r.Code)
+
+		m.Close() // prevent m.Eval from failing
 	})
 }
 
 func TestMocker_Clone(t *testing.T) {
 	m1 := New(t)
-
-	m1.handlers["path"] = map[string][]Handler{
-		http.MethodGet: {},
-	}
+	m1.handlers["path"] = map[string][]Handler{http.MethodGet: {}}
 
 	m2 := m1.Clone(t)
 
@@ -221,6 +223,8 @@ func TestMocker_Clone(t *testing.T) {
 	m1.handlers["path2"] = map[string][]Handler{http.MethodPatch: {}}
 
 	assert.NotEqual(t, m1.handlers, m2.handlers)
+
+	m2.Close() // prevent m2.Eval from failing
 }
 
 func TestMocker_CloneSession(t *testing.T) {
@@ -238,6 +242,8 @@ func TestMocker_CloneSession(t *testing.T) {
 	m1.handlers["path2"] = map[string][]Handler{http.MethodPatch: {}}
 
 	assert.NotEqual(t, m1.handlers, m2.handlers)
+
+	m2.Close() // prevent m2.Eval from failing
 }
 
 func TestMocker_CloneState(t *testing.T) {
@@ -255,6 +261,8 @@ func TestMocker_CloneState(t *testing.T) {
 	m1.handlers["path2"] = map[string][]Handler{http.MethodPatch: {}}
 
 	assert.NotEqual(t, m1.handlers, m2.handlers)
+
+	m2.Close() // prevent m2.Eval from failing
 }
 
 func TestMocker_deepCopyHandlers(t *testing.T) {
@@ -263,12 +271,12 @@ func TestMocker_deepCopyHandlers(t *testing.T) {
 	m1.handlers["path"] = map[string][]Handler{http.MethodGet: {}}
 
 	cp := m1.deepCopyHandlers()
-
 	assert.Equal(t, m1.handlers, cp)
 
 	cp["path2"] = map[string][]Handler{http.MethodPatch: {}}
-
 	assert.NotEqual(t, m1.handlers, cp)
+
+	m1.Close() // prevent m1.Eval from failing
 }
 
 func TestMocker_Eval(t *testing.T) {
@@ -277,10 +285,23 @@ func TestMocker_Eval(t *testing.T) {
 
 		m := New(tMock)
 
+		//goland:noinspection ALL
 		m.Eval()
 
 		// although we would never reach this point if tMock.Failed == true, we leave it in for clarity
 		assert.False(t, tMock.Failed())
+	})
+
+	t.Run("closed", func(t *testing.T) {
+		m := New(t)
+
+		m.Mock("", http.MethodGet, "/path", func(http.ResponseWriter, *http.Request, *testing.T) {})
+		m.Close()
+
+		// this is here for clarity, but would obviously get called
+		// automatically, as it is part of t's cleanup
+		//goland:noinspection ALL
+		m.Eval()
 	})
 
 	t.Run("failure", func(t *testing.T) {
@@ -294,6 +315,8 @@ func TestMocker_Eval(t *testing.T) {
 
 		go func() { // prevent failure caused by t.Fatal's runtime.Goexit
 			defer func() { c <- struct{}{} }()
+
+			//goland:noinspection ALL
 			m.Eval()
 		}()
 

@@ -12,19 +12,12 @@ import (
 func TestMocker_Emojis(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		m, s := NewSession(t)
-		defer m.Eval()
 
 		var guildID discord.GuildID = 123
 
 		expect := []discord.Emoji{
-			{
-				ID:   456,
-				User: discord.User{ID: 1},
-			},
-			{
-				ID:   789,
-				User: discord.User{ID: 1},
-			},
+			{ID: 456, User: discord.User{ID: 1}},
+			{ID: 789, User: discord.User{ID: 1}},
 		}
 
 		m.Emojis(guildID, expect)
@@ -37,25 +30,19 @@ func TestMocker_Emojis(t *testing.T) {
 
 	t.Run("nil emojis", func(t *testing.T) {
 		m, s := NewSession(t)
-		defer m.Eval()
 
 		var guildID discord.GuildID = 123
-
-		//noinspection GoPreferNilSlice
-		expect := []discord.Emoji{}
-
 		m.Emojis(guildID, nil)
 
 		actual, err := s.Emojis(guildID)
 		require.NoError(t, err)
 
-		assert.Equal(t, expect, actual)
+		assert.Empty(t, actual)
 	})
 }
 
 func TestMocker_Emoji(t *testing.T) {
 	m, s := NewSession(t)
-	defer m.Eval()
 
 	var guildID discord.GuildID = 123
 
@@ -76,7 +63,6 @@ func TestMocker_Emoji(t *testing.T) {
 func TestMocker_CreateEmoji(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		m, s := NewSession(t)
-		defer m.Eval()
 
 		var (
 			guildID discord.GuildID = 123
@@ -106,7 +92,6 @@ func TestMocker_CreateEmoji(t *testing.T) {
 
 	t.Run("failure", func(t *testing.T) {
 		tMock := new(testing.T)
-
 		m, s := NewSession(tMock)
 
 		var guildID discord.GuildID = 123
@@ -142,7 +127,6 @@ func TestMocker_CreateEmoji(t *testing.T) {
 func TestMocker_ModifyEmoji(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		m, s := NewSession(t)
-		defer m.Eval()
 
 		var (
 			guildID discord.GuildID = 123
@@ -158,7 +142,6 @@ func TestMocker_ModifyEmoji(t *testing.T) {
 
 	t.Run("failure", func(t *testing.T) {
 		tMock := new(testing.T)
-
 		m, s := NewSession(tMock)
 
 		var (
@@ -181,7 +164,6 @@ func TestMocker_ModifyEmoji(t *testing.T) {
 
 func TestMocker_DeleteEmoji(t *testing.T) {
 	m, s := NewSession(t)
-	defer m.Eval()
 
 	var (
 		guildID discord.GuildID = 123

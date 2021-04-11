@@ -56,6 +56,7 @@ type (
 		// Client is a mocked *http.Client that redirects all requests to the
 		// Server.
 		Client *http.Client
+
 		// handlers is a map containing all handlers.
 		// The outer map is sorted by path, the inner one by method.
 		// This ensures that different requests don't share the same Handler
@@ -67,6 +68,11 @@ type (
 		mut *sync.Mutex
 		// t is the test type called on error.
 		t *testing.T
+
+		// closed is used to determine if the server was closed before Eval has
+		// been called.
+		// If so, Eval will not fail.
+		closed bool
 	}
 
 	// Handler is a named handler for mocked endpoints.
@@ -134,15 +140,10 @@ func New(t *testing.T) *Mocker {
 		},
 	}
 
-	return m
-}
+	//goland:noinspection ALL
+	t.Cleanup(m.Eval)
 
-// HTTPClient wraps the http client of the mocker in a *httputil.Client, as
-// used by arikawa.
-func (m *Mocker) HTTPClient() *httputil.Client {
-	c := httputil.NewClient()
-	c.Client = (*httpdriver.DefaultClient)(m.Client)
-	return c
+	return m
 }
 
 // NewSession creates a new Mocker, starts its test server and returns a
@@ -166,6 +167,14 @@ func NewSession(t *testing.T) (*Mocker, *session.Session) {
 func NewState(t *testing.T) (*Mocker, *state.State) {
 	m, se := NewSession(t)
 	return m, state.NewFromSession(se, store.NoopCabinet)
+}
+
+// HTTPClient wraps the http client of the mocker in a *httputil.Client, as
+// used by arikawa.
+func (m *Mocker) HTTPClient() *httputil.Client {
+	c := httputil.NewClient()
+	c.Client = (*httpdriver.DefaultClient)(m.Client)
+	return c
 }
 
 // Mock uses the passed MockFunc to create a mock for the passed path using the
@@ -230,7 +239,6 @@ func (m *Mocker) Clone(t *testing.T) (clone *Mocker) {
 	m.Close()
 
 	clone = New(t)
-
 	clone.handlers = m.deepCopyHandlers()
 
 	return
@@ -244,7 +252,6 @@ func (m *Mocker) CloneSession(t *testing.T) (clone *Mocker, s *session.Session) 
 	m.Close()
 
 	clone, s = NewSession(t)
-
 	clone.handlers = m.deepCopyHandlers()
 
 	return
@@ -259,7 +266,6 @@ func (m *Mocker) CloneState(t *testing.T) (clone *Mocker, s *state.State) {
 	m.Close()
 
 	clone, s = NewState(t)
-
 	clone.handlers = m.deepCopyHandlers()
 
 	return
@@ -290,20 +296,32 @@ func (m *Mocker) deepCopyHandlers() (cp map[string]map[string][]Handler) {
 // invoked.
 // If not it will call testing.T.Fatal, printing an error message with all
 // uninvoked handlers.
-// This must be called at the end of every test.
+//
+// If Close was called before Eval, e.g. by calling Clone, Eval will always
+// pass.
+//
+// Deprecated: When creating a Mocker, Eval will automatically be added as
+// a Cleanup function.
+// Effectively, this means that there is no more need to manually Eval, as it
+// is done at the end of every test.
 func (m *Mocker) Eval() {
-	m.Close()
-
-	if len(m.handlers) == 0 {
+	if m.closed {
 		return
 	}
 
-	m.t.Fatal("there are uninvoked handlers:\n\n" + m.genUninvokedMsg())
+	m.Close()
+
+	if len(m.handlers) > 0 {
+		m.t.Fatal("there are uninvoked handlers:\n\n" + m.genUninvokedMsg())
+	}
 }
 
 // Close shuts down the server and blocks until all current requests are
 // completed.
-func (m *Mocker) Close() { m.Server.Close() }
+func (m *Mocker) Close() {
+	m.closed = true
+	m.Server.Close()
+}
 
 // genUninvokedMsg generates an error message stating the unused handlers.
 //

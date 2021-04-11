@@ -22,7 +22,6 @@ func TestMocker_ChannelIconURL(t *testing.T) {
 	}
 
 	expect := []byte{1, 30, 0, 15, 24}
-
 	img := bytes.NewBuffer(expect)
 
 	m.ChannelIcon(channel.ID, channel.Icon, img)
@@ -48,7 +47,6 @@ func TestMocker_ChannelIconURLWithType(t *testing.T) {
 	)
 
 	expect := []byte{1, 30, 0, 15, 24}
-
 	img := bytes.NewBuffer(expect)
 
 	m.ChannelIconWithType(channel.ID, channel.Icon, imgType, img)
@@ -83,10 +81,7 @@ func TestMocker_EmojiURL(t *testing.T) {
 		t.Run(c.name, func(t *testing.T) {
 			m := New(t)
 
-			emoji := discord.Emoji{
-				ID:       123,
-				Animated: c.animated,
-			}
+			emoji := discord.Emoji{ID: 123, Animated: c.animated}
 
 			expect := []byte{1, 30, 0, 15, 24}
 
@@ -132,10 +127,7 @@ func TestMocker_EmojiURLWithType(t *testing.T) {
 		t.Run(c.name, func(t *testing.T) {
 			m := New(t)
 
-			emoji := discord.Emoji{
-				ID:       123,
-				Animated: c.animated,
-			}
+			emoji := discord.Emoji{ID: 123, Animated: c.animated}
 
 			expect := []byte{1, 30, 0, 15, 24}
 
@@ -183,10 +175,7 @@ func TestMocker_GuildIconURLWithType(t *testing.T) {
 	m := New(t)
 
 	var (
-		guild = discord.Guild{
-			ID:   123,
-			Icon: "abc",
-		}
+		guild   = discord.Guild{ID: 123, Icon: "abc"}
 		imgType = discord.JPEGImage
 	)
 
@@ -208,10 +197,7 @@ func TestMocker_GuildIconURLWithType(t *testing.T) {
 func TestMocker_BannerURL(t *testing.T) {
 	m := New(t)
 
-	guild := discord.Guild{
-		ID:     123,
-		Banner: "abc",
-	}
+	guild := discord.Guild{ID: 123, Banner: "abc"}
 
 	expect := []byte{1, 30, 0, 15, 24}
 
@@ -232,15 +218,11 @@ func TestMocker_BannerURLWithType(t *testing.T) {
 	m := New(t)
 
 	var (
-		guild = discord.Guild{
-			ID:     123,
-			Banner: "abc",
-		}
+		guild   = discord.Guild{ID: 123, Banner: "abc"}
 		imgType = discord.JPEGImage
 	)
 
 	expect := []byte{1, 30, 0, 15, 24}
-
 	img := bytes.NewBuffer(expect)
 
 	m.BannerWithType(guild.ID, guild.Banner, imgType, img)
@@ -257,13 +239,9 @@ func TestMocker_BannerURLWithType(t *testing.T) {
 func TestMocker_SplashURL(t *testing.T) {
 	m := New(t)
 
-	guild := discord.Guild{
-		ID:     123,
-		Splash: "abc",
-	}
+	guild := discord.Guild{ID: 123, Splash: "abc"}
 
 	expect := []byte{1, 30, 0, 15, 24}
-
 	img := bytes.NewBuffer(expect)
 
 	m.Splash(guild.ID, guild.Splash, img)
@@ -281,15 +259,11 @@ func TestMocker_SplashURLWithType(t *testing.T) {
 	m := New(t)
 
 	var (
-		guild = discord.Guild{
-			ID:     123,
-			Splash: "abc",
-		}
+		guild   = discord.Guild{ID: 123, Splash: "abc"}
 		imgType = discord.JPEGImage
 	)
 
 	expect := []byte{1, 30, 0, 15, 24}
-
 	img := bytes.NewBuffer(expect)
 
 	m.SplashWithType(guild.ID, guild.Splash, imgType, img)
@@ -306,13 +280,9 @@ func TestMocker_SplashURLWithType(t *testing.T) {
 func TestMocker_DiscoverySplashURL(t *testing.T) {
 	m := New(t)
 
-	guild := discord.GuildPreview{
-		ID:              123,
-		DiscoverySplash: "abc",
-	}
+	guild := discord.GuildPreview{ID: 123, DiscoverySplash: "abc"}
 
 	expect := []byte{1, 30, 0, 15, 24}
-
 	img := bytes.NewBuffer(expect)
 
 	m.DiscoverySplash(guild.ID, guild.DiscoverySplash, img)
@@ -330,15 +300,11 @@ func TestMocker_DiscoverySplashURLWithType(t *testing.T) {
 	m := New(t)
 
 	var (
-		guild = discord.Guild{
-			ID:              123,
-			DiscoverySplash: "abc",
-		}
+		guild   = discord.Guild{ID: 123, DiscoverySplash: "abc"}
 		imgType = discord.JPEGImage
 	)
 
 	expect := []byte{1, 30, 0, 15, 24}
-
 	img := bytes.NewBuffer(expect)
 
 	m.DiscoverySplashWithType(guild.ID, guild.DiscoverySplash, imgType, img)
@@ -382,7 +348,6 @@ func TestFormatImageType(t *testing.T) {
 	for _, c := range testCases {
 		t.Run(c.name, func(t *testing.T) {
 			format := formatImageType(c.formatName, c.imgType)
-
 			assert.True(t, strings.HasSuffix(format, c.expectExtension))
 		})
 	}

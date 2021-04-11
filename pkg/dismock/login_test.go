@@ -11,7 +11,6 @@ import (
 func TestMocker_Login(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		m, s := NewSession(t)
-		defer m.Eval()
 
 		var (
 			email    = "abc@def.ghi"
@@ -30,7 +29,6 @@ func TestMocker_Login(t *testing.T) {
 
 	t.Run("failure", func(t *testing.T) {
 		tMock := new(testing.T)
-
 		m, s := NewSession(tMock)
 
 		expect := api.LoginResponse{Token: "mno"}
@@ -48,7 +46,6 @@ func TestMocker_Login(t *testing.T) {
 func TestMocker_TOTP(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		m, s := NewSession(t)
-		defer m.Eval()
 
 		var (
 			code   = "abc"
