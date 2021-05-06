@@ -52,9 +52,9 @@ func (m *Mocker) sendMessageComplex(name string, d api.SendMessageData, msg disc
 			d.Files = nil
 
 			if len(files) == 0 {
-				mockutil.CheckJSON(t, r.Body, new(api.SendMessageData), &d)
+				mockutil.CheckJSON(t, r.Body, &d)
 			} else {
-				mockutil.CheckMultipart(t, r.Body, r.Header, new(api.SendMessageData), &d, files)
+				mockutil.CheckMultipart(t, r.Body, r.Header, &d, files)
 			}
 
 			mockutil.WriteJSON(t, w, msg)
@@ -93,9 +93,9 @@ func (m *Mocker) executeWebhook(
 			d.Files = nil
 
 			if len(files) == 0 {
-				mockutil.CheckJSON(t, r.Body, new(webhook.ExecuteData), &d)
+				mockutil.CheckJSON(t, r.Body, &d)
 			} else {
-				mockutil.CheckMultipart(t, r.Body, r.Header, new(webhook.ExecuteData), &d, files)
+				mockutil.CheckMultipart(t, r.Body, r.Header, &d, files)
 			}
 
 			if wait {

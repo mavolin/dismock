@@ -40,7 +40,7 @@ func (m *Mocker) Emoji(guildID discord.GuildID, e discord.Emoji) {
 func (m *Mocker) CreateEmoji(guildID discord.GuildID, d api.CreateEmojiData, e discord.Emoji) {
 	m.MockAPI("CreateEmoji", http.MethodPost, "/guilds/"+guildID.String()+"/emojis",
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
-			mockutil.CheckJSON(t, r.Body, new(api.CreateEmojiData), &d)
+			mockutil.CheckJSON(t, r.Body, &d)
 			mockutil.WriteJSON(t, w, e)
 		})
 }
@@ -49,7 +49,7 @@ func (m *Mocker) CreateEmoji(guildID discord.GuildID, d api.CreateEmojiData, e d
 func (m *Mocker) ModifyEmoji(guildID discord.GuildID, emojiID discord.EmojiID, d api.ModifyEmojiData) {
 	m.MockAPI("ModifyEmoji", http.MethodPatch, "/guilds/"+guildID.String()+"/emojis/"+emojiID.String(),
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
-			mockutil.CheckJSON(t, r.Body, new(api.ModifyEmojiData), &d)
+			mockutil.CheckJSON(t, r.Body, &d)
 			w.WriteHeader(http.StatusNoContent)
 		})
 }

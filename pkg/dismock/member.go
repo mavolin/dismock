@@ -139,7 +139,7 @@ func (m *Mocker) membersAfter(
 func (m *Mocker) AddMember(guildID discord.GuildID, d api.AddMemberData, member discord.Member) {
 	m.MockAPI("AddMember", http.MethodPut, "/guilds/"+guildID.String()+"/members/"+member.User.ID.String(),
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
-			mockutil.CheckJSON(t, r.Body, new(api.AddMemberData), &d)
+			mockutil.CheckJSON(t, r.Body, &d)
 			mockutil.WriteJSON(t, w, member)
 		})
 }
@@ -148,7 +148,7 @@ func (m *Mocker) AddMember(guildID discord.GuildID, d api.AddMemberData, member 
 func (m *Mocker) ModifyMember(guildID discord.GuildID, userID discord.UserID, d api.ModifyMemberData) {
 	m.MockAPI("ModifyMember", http.MethodPatch, "/guilds/"+guildID.String()+"/members/"+userID.String(),
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
-			mockutil.CheckJSON(t, r.Body, new(api.ModifyMemberData), &d)
+			mockutil.CheckJSON(t, r.Body, &d)
 			w.WriteHeader(http.StatusNoContent)
 		})
 }

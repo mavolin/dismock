@@ -34,7 +34,7 @@ func (m *Mocker) Roles(guildID discord.GuildID, roles []discord.Role) {
 func (m *Mocker) CreateRole(guildID discord.GuildID, d api.CreateRoleData, role discord.Role) {
 	m.MockAPI("CreateRole", http.MethodPost, "/guilds/"+guildID.String()+"/roles",
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
-			mockutil.CheckJSON(t, r.Body, new(api.CreateRoleData), &d)
+			mockutil.CheckJSON(t, r.Body, &d)
 			mockutil.WriteJSON(t, w, role)
 		})
 }
@@ -43,7 +43,7 @@ func (m *Mocker) CreateRole(guildID discord.GuildID, d api.CreateRoleData, role 
 func (m *Mocker) MoveRole(guildID discord.GuildID, d []api.MoveRoleData, roles []discord.Role) {
 	m.MockAPI("MoveRole", http.MethodPatch, "/guilds/"+guildID.String()+"/roles",
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
-			mockutil.CheckJSON(t, r.Body, &[]api.MoveRoleData{}, &d)
+			mockutil.CheckJSON(t, r.Body, &d)
 			mockutil.WriteJSON(t, w, roles)
 		})
 }
@@ -52,7 +52,7 @@ func (m *Mocker) MoveRole(guildID discord.GuildID, d []api.MoveRoleData, roles [
 func (m *Mocker) ModifyRole(guildID discord.GuildID, d api.ModifyRoleData, role discord.Role) {
 	m.MockAPI("ModifyRole", http.MethodPatch, "/guilds/"+guildID.String()+"/roles/"+role.ID.String(),
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
-			mockutil.CheckJSON(t, r.Body, new(api.ModifyRoleData), &d)
+			mockutil.CheckJSON(t, r.Body, &d)
 			mockutil.WriteJSON(t, w, role)
 		})
 }

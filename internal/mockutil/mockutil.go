@@ -43,21 +43,17 @@ var (
 	nilColor  = reflect.ValueOf((*option.NullableColorData)(nil))
 )
 
-// CheckJSON checks the body extracted from the passed io.ReadCloser against
-// the passed expected value, assuming the body contains JSON data.
-// v will be used to decode into and should not contain any data.
-func CheckJSON(t *testing.T, r io.ReadCloser, v interface{}, expect interface{}) {
-	checkJSON(t, r, v, expect)
-
-	require.NoError(t, r.Close())
+// CheckJSON checks if body contains the JSON data matching the passed expected
+// value.
+func CheckJSON(t *testing.T, body io.ReadCloser, expect interface{}) {
+	checkJSON(t, body, expect)
+	require.NoError(t, body.Close())
 }
 
-// CheckMultipart checks if the passed request contains the passed JSON body
-// and the passed []api.SendMessageFile.
-//
-// The expectJSON parameter may be nil, indicating no JSON body.
+// CheckMultipart checks if the body contains multipart data including the
+// passed files and optionally the passed JSON data.
 func CheckMultipart(
-	t *testing.T, body io.ReadCloser, h http.Header, v interface{}, expectJSON interface{}, f []sendpart.File,
+	t *testing.T, body io.ReadCloser, h http.Header, expectJSON interface{}, expectFiles []sendpart.File,
 ) {
 	_, p, err := mime.ParseMediaType(h.Get("Content-Type"))
 	require.NoError(t, err)
@@ -70,9 +66,9 @@ func CheckMultipart(
 	jsonChecked := false
 	// we store the numbers of the missingFiles in a set, so that we know later on,
 	// which missingFiles didn't got sent, if any
-	missingFiles := make(map[int]struct{}, len(f))
+	missingFiles := make(map[int]struct{}, len(expectFiles))
 
-	for i := range f {
+	for i := range expectFiles {
 		missingFiles[i] = struct{}{}
 	}
 
@@ -88,20 +84,23 @@ func CheckMultipart(
 
 		switch {
 		case name == "payload_json":
-			checkJSON(t, part, v, expectJSON)
-
-			jsonChecked = true
+			if expectJSON != nil {
+				checkJSON(t, part, expectJSON)
+				jsonChecked = true
+			} else {
+				assert.Failf(t, "error when checking multipart body", "expected no json payload, but got: %+v", part)
+			}
 		case strings.HasPrefix(name, "file"):
 			no, err := strconv.Atoi(strings.TrimLeft(name, "file"))
 			require.NoErrorf(t, err, `unexpected part with name "%s"`, name)
 
-			if !assert.Lessf(t, no, len(f), "reading file %d, but expected only %d missingFiles", no, len(f)) {
+			if !assert.Lessf(t, no, len(expectFiles), "reading file %d, but expected only %d missingFiles", no, len(expectFiles)) {
 				break
 			}
 
-			assert.Equal(t, f[no].Name, part.FileName(), "unequal file names")
+			assert.Equal(t, expectFiles[no].Name, part.FileName(), "unequal file names")
 
-			err = equalReader(f[no].Reader, part)
+			err = equalReader(expectFiles[no].Reader, part)
 			assert.NoErrorf(t, err, "file %d is not equal to received file", no)
 
 			delete(missingFiles, no)
@@ -118,7 +117,6 @@ func CheckMultipart(
 
 	if len(missingFiles) > 0 {
 		s := joinIntSet(missingFiles, ", ")
-
 		assert.Fail(t, fmt.Sprintf("the files %s did not get sent", s))
 	}
 }
@@ -145,17 +143,18 @@ func CheckQuery(t *testing.T, query url.Values, expect url.Values) {
 	}
 }
 
-// checkJSON compares the JSON data from the passed io.Reader against the
-// passed expected value.
-// v will be used to decode into and should not contain any data.
-func checkJSON(t *testing.T, r io.Reader, v interface{}, expect interface{}) {
-	err := json.NewDecoder(r).Decode(v)
+// checkJSON checks if body contains the JSON data matching the passed expected
+// value.
+func checkJSON(t *testing.T, r io.Reader, expect interface{}) {
+	decodeVal := reflect.New(reflect.TypeOf(expect))
+
+	err := json.NewDecoder(r).Decode(decodeVal.Interface())
 	require.NoError(t, err)
 
-	val := reflect.ValueOf(expect)
-	replaceNullables(val)
+	expectVal := reflect.ValueOf(expect)
+	replaceNullables(expectVal)
 
-	assert.Equal(t, expect, v)
+	assert.Equal(t, expect, decodeVal.Elem().Interface())
 }
 
 // replacesNullables replaces the values of all nullable types with nil, if

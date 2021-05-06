@@ -24,7 +24,7 @@ func (m *Mocker) Channels(guildID discord.GuildID, c []discord.Channel) {
 func (m *Mocker) CreateChannel(d api.CreateChannelData, c discord.Channel) {
 	m.MockAPI("CreateChannel", http.MethodPost, "/guilds/"+c.GuildID.String()+"/channels",
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
-			mockutil.CheckJSON(t, r.Body, new(api.CreateChannelData), &d)
+			mockutil.CheckJSON(t, r.Body, &d)
 			mockutil.WriteJSON(t, w, c)
 		})
 }
@@ -33,7 +33,7 @@ func (m *Mocker) CreateChannel(d api.CreateChannelData, c discord.Channel) {
 func (m *Mocker) MoveChannel(guildID discord.GuildID, d []api.MoveChannelData) {
 	m.MockAPI("CreateChannel", http.MethodPatch, "/guilds/"+guildID.String()+"/channels",
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
-			mockutil.CheckJSON(t, r.Body, &[]api.MoveChannelData{}, &d)
+			mockutil.CheckJSON(t, r.Body, &d)
 			w.WriteHeader(http.StatusNoContent)
 		})
 }
@@ -52,7 +52,7 @@ func (m *Mocker) Channel(c discord.Channel) {
 func (m *Mocker) ModifyChannel(id discord.ChannelID, d api.ModifyChannelData) {
 	m.MockAPI("ModifyChannel", http.MethodPatch, "/channels/"+id.String(),
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
-			mockutil.CheckJSON(t, r.Body, new(api.ModifyChannelData), &d)
+			mockutil.CheckJSON(t, r.Body, &d)
 			w.WriteHeader(http.StatusNoContent)
 		})
 }
@@ -69,7 +69,7 @@ func (m *Mocker) EditChannelPermission(
 	m.MockAPI("EditChannelPermission", http.MethodPut,
 		"/channels/"+channelID.String()+"/permissions/"+overwriteID.String(),
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
-			mockutil.CheckJSON(t, r.Body, new(api.EditChannelPermissionData), &d)
+			mockutil.CheckJSON(t, r.Body, &d)
 			w.WriteHeader(http.StatusNoContent)
 		})
 }
@@ -121,7 +121,7 @@ func (m *Mocker) AddRecipient(channelID discord.ChannelID, userID discord.UserID
 				Nickname:    nickname,
 			}
 
-			mockutil.CheckJSON(t, r.Body, new(addRecipientPayload), &expect)
+			mockutil.CheckJSON(t, r.Body, &expect)
 
 			w.WriteHeader(http.StatusNoContent)
 		})
@@ -136,7 +136,7 @@ func (m *Mocker) RemoveRecipient(channelID discord.ChannelID, userID discord.Use
 func (m *Mocker) Ack(channelID discord.ChannelID, messageID discord.MessageID, send, ret api.Ack) {
 	m.MockAPI("Ack", http.MethodPost, "/channels/"+channelID.String()+"/messages/"+messageID.String()+"/ack",
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
-			mockutil.CheckJSON(t, r.Body, new(api.Ack), &send)
+			mockutil.CheckJSON(t, r.Body, &send)
 			mockutil.WriteJSON(t, w, ret)
 		})
 }

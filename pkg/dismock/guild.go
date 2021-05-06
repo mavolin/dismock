@@ -22,7 +22,7 @@ const maxFetchGuilds = 100
 func (m *Mocker) CreateGuild(d api.CreateGuildData, g discord.Guild) {
 	m.MockAPI("CreateGuild", http.MethodPost, "/guilds",
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
-			mockutil.CheckJSON(t, r.Body, new(api.CreateGuildData), &d)
+			mockutil.CheckJSON(t, r.Body, &d)
 			mockutil.WriteJSON(t, w, g)
 		})
 }
@@ -234,7 +234,7 @@ func (m *Mocker) LeaveGuild(id discord.GuildID) {
 func (m *Mocker) ModifyGuild(d api.ModifyGuildData, g discord.Guild) {
 	m.MockAPI("ModifyGuild", http.MethodPatch, "/guilds/"+g.ID.String(),
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
-			mockutil.CheckJSON(t, r.Body, new(api.ModifyGuildData), &d)
+			mockutil.CheckJSON(t, r.Body, &d)
 			mockutil.WriteJSON(t, w, g)
 		})
 }
@@ -316,7 +316,7 @@ func (m *Mocker) AttachIntegration(
 				ID:   integrationID,
 			}
 
-			mockutil.CheckJSON(t, r.Body, new(attachIntegrationPayload), expect)
+			mockutil.CheckJSON(t, r.Body, expect)
 			w.WriteHeader(http.StatusNoContent)
 		})
 }
@@ -328,7 +328,7 @@ func (m *Mocker) ModifyIntegration(
 	m.MockAPI("ModifyIntegration", http.MethodPatch,
 		"/guilds/"+guildID.String()+"/integrations/"+integrationID.String(),
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
-			mockutil.CheckJSON(t, r.Body, new(api.ModifyIntegrationData), &d)
+			mockutil.CheckJSON(t, r.Body, &d)
 			w.WriteHeader(http.StatusNoContent)
 		})
 }
@@ -353,7 +353,7 @@ func (m *Mocker) ModifyGuildWidget(
 ) {
 	m.MockAPI("ModifyGuildWidget", http.MethodPatch, "/guilds/"+guildID.String()+"/widget",
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
-			mockutil.CheckJSON(t, r.Body, new(api.ModifyGuildWidgetData), &d)
+			mockutil.CheckJSON(t, r.Body, &d)
 			mockutil.WriteJSON(t, w, s)
 		})
 }

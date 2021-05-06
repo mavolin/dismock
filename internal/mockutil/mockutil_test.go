@@ -101,8 +101,7 @@ func TestCheckJSON(t *testing.T) {
 			Field2: "Hello World!",
 		}
 
-		CheckJSON(t, r, new(testStruct), expect)
-
+		CheckJSON(t, r, expect)
 		assert.True(t, r.closed)
 	})
 
@@ -118,7 +117,7 @@ func TestCheckJSON(t *testing.T) {
 
 		tMock := new(testing.T)
 
-		CheckJSON(tMock, r, &testStruct{}, expect)
+		CheckJSON(tMock, r, expect)
 
 		assert.True(t, tMock.Failed())
 		assert.True(t, r.closed)
@@ -223,7 +222,7 @@ func TestCheckMultipart(t *testing.T) {
 				expect = c.expect
 			}
 
-			CheckMultipart(t, p, h, new(testStruct), expect, c.f)
+			CheckMultipart(t, p, h, expect, c.f)
 		})
 	}
 
@@ -372,8 +371,7 @@ func TestCheckMultipart(t *testing.T) {
 
 			tMock := new(testing.T)
 
-			CheckMultipart(tMock, p, h, new(testStruct), expect, c.f)
-
+			CheckMultipart(tMock, p, h, expect, c.f)
 			assert.True(t, tMock.Failed())
 		})
 	}
@@ -393,7 +391,7 @@ func TestCheckMultipart(t *testing.T) {
 
 		tMock := new(testing.T)
 
-		CheckMultipart(tMock, p, h, nil, nil, []sendpart.File{})
+		CheckMultipart(tMock, p, h, nil, []sendpart.File{})
 
 		assert.True(t, tMock.Failed())
 	})

@@ -325,7 +325,7 @@ func (m *Mocker) editMessageComplex(name string, d api.EditMessageData, msg disc
 
 	m.MockAPI(name, http.MethodPatch, "/channels/"+msg.ChannelID.String()+"/messages/"+msg.ID.String(),
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
-			mockutil.CheckJSON(t, r.Body, new(api.EditMessageData), &d)
+			mockutil.CheckJSON(t, r.Body, &d)
 			mockutil.WriteJSON(t, w, msg)
 		})
 }
@@ -347,7 +347,7 @@ func (m *Mocker) DeleteMessages(channelID discord.ChannelID, messageIDs []discor
 				Messages: messageIDs,
 			}
 
-			mockutil.CheckJSON(t, r.Body, new(deleteMessagesPayload), &expect)
+			mockutil.CheckJSON(t, r.Body, &expect)
 			w.WriteHeader(http.StatusNoContent)
 		})
 }

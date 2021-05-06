@@ -64,7 +64,7 @@ func (m *Mocker) GuildInvites(guildID discord.GuildID, invites []discord.Invite)
 func (m *Mocker) CreateInvite(d api.CreateInviteData, i discord.Invite) {
 	m.MockAPI("CreateInvite", http.MethodPost, "/channels/"+i.Channel.ID.String()+"/invites",
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
-			mockutil.CheckJSON(t, r.Body, new(api.CreateInviteData), &d)
+			mockutil.CheckJSON(t, r.Body, &d)
 			mockutil.WriteJSON(t, w, i)
 		})
 }

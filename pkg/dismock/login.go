@@ -23,7 +23,7 @@ func (m *Mocker) Login(email, password string, response api.LoginResponse) {
 				Password: password,
 			}
 
-			mockutil.CheckJSON(t, r.Body, new(loginPayload), &expect)
+			mockutil.CheckJSON(t, r.Body, &expect)
 			mockutil.WriteJSON(t, w, response)
 		})
 }
@@ -42,7 +42,7 @@ func (m *Mocker) TOTP(code, ticket string, response api.LoginResponse) {
 				Ticket: ticket,
 			}
 
-			mockutil.CheckJSON(t, r.Body, new(totpPayload), &expect)
+			mockutil.CheckJSON(t, r.Body, &expect)
 			mockutil.WriteJSON(t, w, response)
 		})
 }
