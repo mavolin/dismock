@@ -11,7 +11,7 @@ import (
 	"github.com/diamondburned/arikawa/v2/api"
 	"github.com/diamondburned/arikawa/v2/discord"
 
-	"github.com/mavolin/dismock/v2/internal/mockutil"
+	"github.com/mavolin/dismock/v2/internal/check"
 )
 
 const maxFetchMembers = 1000
@@ -22,7 +22,7 @@ const maxFetchMembers = 1000
 func (m *Mocker) Member(guildID discord.GuildID, member discord.Member) {
 	m.MockAPI("Member", http.MethodGet, "/guilds/"+guildID.String()+"/members/"+member.User.ID.String(),
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
-			mockutil.WriteJSON(t, w, member)
+			check.WriteJSON(t, w, member)
 		})
 }
 
@@ -128,8 +128,8 @@ func (m *Mocker) membersAfter(
 				expect["after"] = []string{after.String()}
 			}
 
-			mockutil.CheckQuery(t, r.URL.Query(), expect)
-			mockutil.WriteJSON(t, w, g)
+			check.Query(t, r.URL.Query(), expect)
+			check.WriteJSON(t, w, g)
 		})
 }
 
@@ -139,8 +139,8 @@ func (m *Mocker) membersAfter(
 func (m *Mocker) AddMember(guildID discord.GuildID, d api.AddMemberData, member discord.Member) {
 	m.MockAPI("AddMember", http.MethodPut, "/guilds/"+guildID.String()+"/members/"+member.User.ID.String(),
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
-			mockutil.CheckJSON(t, r.Body, new(api.AddMemberData), &d)
-			mockutil.WriteJSON(t, w, member)
+			check.JSON(t, r.Body, &d)
+			check.WriteJSON(t, w, member)
 		})
 }
 
@@ -148,7 +148,7 @@ func (m *Mocker) AddMember(guildID discord.GuildID, d api.AddMemberData, member 
 func (m *Mocker) ModifyMember(guildID discord.GuildID, userID discord.UserID, d api.ModifyMemberData) {
 	m.MockAPI("ModifyMember", http.MethodPatch, "/guilds/"+guildID.String()+"/members/"+userID.String(),
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
-			mockutil.CheckJSON(t, r.Body, new(api.ModifyMemberData), &d)
+			check.JSON(t, r.Body, &d)
 			w.WriteHeader(http.StatusNoContent)
 		})
 }
@@ -181,8 +181,8 @@ func (m *Mocker) PruneCount(guildID discord.GuildID, d api.PruneCountData, prune
 				Pruned: pruned,
 			}
 
-			mockutil.CheckQuery(t, r.URL.Query(), expect)
-			mockutil.WriteJSON(t, w, resp)
+			check.Query(t, r.URL.Query(), expect)
+			check.WriteJSON(t, w, resp)
 		})
 }
 
@@ -211,8 +211,8 @@ func (m *Mocker) Prune(guildID discord.GuildID, d api.PruneData, pruned uint) {
 				Pruned: pruned,
 			}
 
-			mockutil.CheckQuery(t, r.URL.Query(), expect)
-			mockutil.WriteJSON(t, w, resp)
+			check.Query(t, r.URL.Query(), expect)
+			check.WriteJSON(t, w, resp)
 		})
 }
 
@@ -225,7 +225,7 @@ func (m *Mocker) Kick(guildID discord.GuildID, userID discord.UserID) {
 func (m *Mocker) Bans(guildID discord.GuildID, b []discord.Ban) {
 	m.MockAPI("Bans", http.MethodGet, "/guilds/"+guildID.String()+"/bans",
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
-			mockutil.WriteJSON(t, w, b)
+			check.WriteJSON(t, w, b)
 		})
 }
 
@@ -235,7 +235,7 @@ func (m *Mocker) Bans(guildID discord.GuildID, b []discord.Ban) {
 func (m *Mocker) GetBan(guildID discord.GuildID, b discord.Ban) {
 	m.MockAPI("GetBan", http.MethodGet, "/guilds/"+guildID.String()+"/bans/"+b.User.ID.String(),
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
-			mockutil.WriteJSON(t, w, b)
+			check.WriteJSON(t, w, b)
 		})
 }
 
@@ -257,7 +257,7 @@ func (m *Mocker) Ban(guildID discord.GuildID, userID discord.UserID, d api.BanDa
 				expect["reason"] = []string{*d.Reason}
 			}
 
-			mockutil.CheckQuery(t, r.URL.Query(), expect)
+			check.Query(t, r.URL.Query(), expect)
 			w.WriteHeader(http.StatusNoContent)
 		})
 }

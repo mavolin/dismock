@@ -13,7 +13,7 @@ import (
 	"github.com/diamondburned/arikawa/v2/discord"
 	"github.com/stretchr/testify/require"
 
-	"github.com/mavolin/dismock/v2/internal/mockutil"
+	"github.com/mavolin/dismock/v2/internal/check"
 )
 
 const maxFetchGuilds = 100
@@ -22,8 +22,8 @@ const maxFetchGuilds = 100
 func (m *Mocker) CreateGuild(d api.CreateGuildData, g discord.Guild) {
 	m.MockAPI("CreateGuild", http.MethodPost, "/guilds",
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
-			mockutil.CheckJSON(t, r.Body, new(api.CreateGuildData), &d)
-			mockutil.WriteJSON(t, w, g)
+			check.JSON(t, r.Body, &d)
+			check.WriteJSON(t, w, g)
 		})
 }
 
@@ -33,7 +33,7 @@ func (m *Mocker) CreateGuild(d api.CreateGuildData, g discord.Guild) {
 func (m *Mocker) Guild(g discord.Guild) {
 	m.MockAPI("Guild", http.MethodGet, "/guilds/"+g.ID.String(),
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
-			mockutil.WriteJSON(t, w, g)
+			check.WriteJSON(t, w, g)
 		})
 }
 
@@ -43,10 +43,10 @@ func (m *Mocker) Guild(g discord.Guild) {
 func (m *Mocker) GuildWithCount(g discord.Guild) {
 	m.MockAPI("GuildWithCount", http.MethodGet, "/guilds/"+g.ID.String(),
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
-			mockutil.CheckQuery(t, r.URL.Query(), url.Values{
+			check.Query(t, r.URL.Query(), url.Values{
 				"with_counts": {"true"},
 			})
-			mockutil.WriteJSON(t, w, g)
+			check.WriteJSON(t, w, g)
 		})
 }
 
@@ -54,7 +54,7 @@ func (m *Mocker) GuildWithCount(g discord.Guild) {
 func (m *Mocker) GuildPreview(p discord.GuildPreview) {
 	m.MockAPI("GuildPreview", http.MethodGet, "/guilds/"+p.ID.String()+"/preview",
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
-			mockutil.WriteJSON(t, w, p)
+			check.WriteJSON(t, w, p)
 		})
 }
 
@@ -218,8 +218,8 @@ func (m *Mocker) guildsRange(before, after discord.GuildID, name string, limit u
 				expect["before"] = []string{before.String()}
 			}
 
-			mockutil.CheckQuery(t, r.URL.Query(), expect)
-			mockutil.WriteJSON(t, w, g)
+			check.Query(t, r.URL.Query(), expect)
+			check.WriteJSON(t, w, g)
 		})
 }
 
@@ -234,8 +234,8 @@ func (m *Mocker) LeaveGuild(id discord.GuildID) {
 func (m *Mocker) ModifyGuild(d api.ModifyGuildData, g discord.Guild) {
 	m.MockAPI("ModifyGuild", http.MethodPatch, "/guilds/"+g.ID.String(),
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
-			mockutil.CheckJSON(t, r.Body, new(api.ModifyGuildData), &d)
-			mockutil.WriteJSON(t, w, g)
+			check.JSON(t, r.Body, &d)
+			check.WriteJSON(t, w, g)
 		})
 }
 
@@ -252,7 +252,7 @@ func (m *Mocker) VoiceRegionsGuild(guildID discord.GuildID, vr []discord.VoiceRe
 
 	m.MockAPI("VoiceRegionsGuild", http.MethodGet, "/guilds/"+guildID.String()+"/regions",
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
-			mockutil.WriteJSON(t, w, vr)
+			check.WriteJSON(t, w, vr)
 		})
 }
 
@@ -283,8 +283,8 @@ func (m *Mocker) AuditLog(guildID discord.GuildID, d api.AuditLogData, al discor
 				expect["before"] = []string{d.Before.String()}
 			}
 
-			mockutil.CheckQuery(t, r.URL.Query(), expect)
-			mockutil.WriteJSON(t, w, al)
+			check.Query(t, r.URL.Query(), expect)
+			check.WriteJSON(t, w, al)
 		})
 }
 
@@ -296,7 +296,7 @@ func (m *Mocker) Integrations(guildID discord.GuildID, integrations []discord.In
 
 	m.MockAPI("Integrations", http.MethodGet, "/guilds/"+guildID.String()+"/integrations",
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
-			mockutil.WriteJSON(t, w, integrations)
+			check.WriteJSON(t, w, integrations)
 		})
 }
 
@@ -316,7 +316,7 @@ func (m *Mocker) AttachIntegration(
 				ID:   integrationID,
 			}
 
-			mockutil.CheckJSON(t, r.Body, new(attachIntegrationPayload), expect)
+			check.JSON(t, r.Body, expect)
 			w.WriteHeader(http.StatusNoContent)
 		})
 }
@@ -328,7 +328,7 @@ func (m *Mocker) ModifyIntegration(
 	m.MockAPI("ModifyIntegration", http.MethodPatch,
 		"/guilds/"+guildID.String()+"/integrations/"+integrationID.String(),
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
-			mockutil.CheckJSON(t, r.Body, new(api.ModifyIntegrationData), &d)
+			check.JSON(t, r.Body, &d)
 			w.WriteHeader(http.StatusNoContent)
 		})
 }
@@ -343,7 +343,7 @@ func (m *Mocker) SyncIntegration(guildID discord.GuildID, integrationID discord.
 func (m *Mocker) GuildWidgetSettings(guildID discord.GuildID, s discord.GuildWidgetSettings) {
 	m.MockAPI("GuildWidgetSettings", http.MethodGet, "/guilds/"+guildID.String()+"/widget",
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
-			mockutil.WriteJSON(t, w, s)
+			check.WriteJSON(t, w, s)
 		})
 }
 
@@ -353,8 +353,8 @@ func (m *Mocker) ModifyGuildWidget(
 ) {
 	m.MockAPI("ModifyGuildWidget", http.MethodPatch, "/guilds/"+guildID.String()+"/widget",
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
-			mockutil.CheckJSON(t, r.Body, new(api.ModifyGuildWidgetData), &d)
-			mockutil.WriteJSON(t, w, s)
+			check.JSON(t, r.Body, &d)
+			check.WriteJSON(t, w, s)
 		})
 }
 
@@ -362,7 +362,7 @@ func (m *Mocker) ModifyGuildWidget(
 func (m *Mocker) GuildWidget(guildID discord.GuildID, widget discord.GuildWidget) {
 	m.MockAPI("GuildWidgetSettings", http.MethodGet, "/guilds/"+guildID.String()+"/widget.json",
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
-			mockutil.WriteJSON(t, w, widget)
+			check.WriteJSON(t, w, widget)
 		})
 }
 
@@ -370,7 +370,7 @@ func (m *Mocker) GuildWidget(guildID discord.GuildID, widget discord.GuildWidget
 func (m *Mocker) GuildVanityInvite(guildID discord.GuildID, i discord.Invite) {
 	m.MockAPI("GuildVanityURL", http.MethodGet, "/guilds/"+guildID.String()+"/vanity-url",
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
-			mockutil.WriteJSON(t, w, i)
+			check.WriteJSON(t, w, i)
 		})
 }
 
@@ -378,7 +378,7 @@ func (m *Mocker) GuildVanityInvite(guildID discord.GuildID, i discord.Invite) {
 func (m *Mocker) GuildWidgetImage(guildID discord.GuildID, style api.GuildWidgetImageStyle, img io.Reader) {
 	m.MockAPI("GuildWidgetImage", http.MethodGet, "/guilds/"+guildID.String()+"/widget.png",
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
-			mockutil.CheckQuery(t, r.URL.Query(), url.Values{
+			check.Query(t, r.URL.Query(), url.Values{
 				"style": {string(style)},
 			})
 

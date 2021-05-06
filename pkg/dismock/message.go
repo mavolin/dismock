@@ -12,7 +12,7 @@ import (
 	"github.com/diamondburned/arikawa/v2/discord"
 	"github.com/diamondburned/arikawa/v2/utils/json/option"
 
-	"github.com/mavolin/dismock/v2/internal/mockutil"
+	"github.com/mavolin/dismock/v2/internal/check"
 )
 
 const maxFetchMessages = 100
@@ -204,8 +204,8 @@ func (m *Mocker) messagesRange(
 				expect["around"] = []string{around.String()}
 			}
 
-			mockutil.CheckQuery(t, r.URL.Query(), expect)
-			mockutil.WriteJSON(t, w, messages)
+			check.Query(t, r.URL.Query(), expect)
+			check.WriteJSON(t, w, messages)
 		})
 }
 
@@ -216,7 +216,7 @@ func (m *Mocker) messagesRange(
 func (m *Mocker) Message(msg discord.Message) {
 	m.MockAPI("Message", http.MethodGet, "/channels/"+msg.ChannelID.String()+"/messages/"+msg.ID.String(),
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
-			mockutil.WriteJSON(t, w, msg)
+			check.WriteJSON(t, w, msg)
 		})
 }
 
@@ -325,8 +325,8 @@ func (m *Mocker) editMessageComplex(name string, d api.EditMessageData, msg disc
 
 	m.MockAPI(name, http.MethodPatch, "/channels/"+msg.ChannelID.String()+"/messages/"+msg.ID.String(),
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
-			mockutil.CheckJSON(t, r.Body, new(api.EditMessageData), &d)
-			mockutil.WriteJSON(t, w, msg)
+			check.JSON(t, r.Body, &d)
+			check.WriteJSON(t, w, msg)
 		})
 }
 
@@ -347,7 +347,7 @@ func (m *Mocker) DeleteMessages(channelID discord.ChannelID, messageIDs []discor
 				Messages: messageIDs,
 			}
 
-			mockutil.CheckJSON(t, r.Body, new(deleteMessagesPayload), &expect)
+			check.JSON(t, r.Body, &expect)
 			w.WriteHeader(http.StatusNoContent)
 		})
 }

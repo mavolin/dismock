@@ -11,7 +11,7 @@ import (
 	"github.com/diamondburned/arikawa/v2/api"
 	"github.com/diamondburned/arikawa/v2/discord"
 
-	"github.com/mavolin/dismock/v2/internal/mockutil"
+	"github.com/mavolin/dismock/v2/internal/check"
 )
 
 // React mocks a React request.
@@ -189,8 +189,8 @@ func (m *Mocker) reactionsRange(
 				expect["before"] = []string{before.String()}
 			}
 
-			mockutil.CheckQuery(t, r.URL.Query(), expect)
-			mockutil.WriteJSON(t, w, u)
+			check.Query(t, r.URL.Query(), expect)
+			check.WriteJSON(t, w, u)
 		})
 }
 

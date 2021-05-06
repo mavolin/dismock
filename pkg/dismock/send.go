@@ -10,7 +10,7 @@ import (
 	"github.com/diamondburned/arikawa/v2/discord"
 	"github.com/diamondburned/arikawa/v2/utils/sendpart"
 
-	"github.com/mavolin/dismock/v2/internal/mockutil"
+	"github.com/mavolin/dismock/v2/internal/check"
 )
 
 // SendMessageComplex mocks a SendMessageComplex request.
@@ -52,12 +52,12 @@ func (m *Mocker) sendMessageComplex(name string, d api.SendMessageData, msg disc
 			d.Files = nil
 
 			if len(files) == 0 {
-				mockutil.CheckJSON(t, r.Body, new(api.SendMessageData), &d)
+				check.JSON(t, r.Body, &d)
 			} else {
-				mockutil.CheckMultipart(t, r.Body, r.Header, new(api.SendMessageData), &d, files)
+				check.Multipart(t, r.Body, r.Header, &d, files)
 			}
 
-			mockutil.WriteJSON(t, w, msg)
+			check.WriteJSON(t, w, msg)
 		})
 }
 
@@ -82,7 +82,7 @@ func (m *Mocker) executeWebhook(
 	m.MockAPI("ExecuteWebhook", http.MethodPost, "/webhooks/"+webhookID.String()+"/"+token,
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
 			if wait {
-				mockutil.CheckQuery(t, r.URL.Query(), url.Values{
+				check.Query(t, r.URL.Query(), url.Values{
 					"wait": {"true"},
 				})
 			}
@@ -93,13 +93,13 @@ func (m *Mocker) executeWebhook(
 			d.Files = nil
 
 			if len(files) == 0 {
-				mockutil.CheckJSON(t, r.Body, new(webhook.ExecuteData), &d)
+				check.JSON(t, r.Body, &d)
 			} else {
-				mockutil.CheckMultipart(t, r.Body, r.Header, new(webhook.ExecuteData), &d, files)
+				check.Multipart(t, r.Body, r.Header, &d, files)
 			}
 
 			if wait {
-				mockutil.WriteJSON(t, w, msg)
+				check.WriteJSON(t, w, msg)
 			} else {
 				w.WriteHeader(http.StatusNoContent)
 			}

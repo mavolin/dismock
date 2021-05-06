@@ -7,15 +7,15 @@ import (
 	"github.com/diamondburned/arikawa/v2/api"
 	"github.com/diamondburned/arikawa/v2/discord"
 
-	"github.com/mavolin/dismock/v2/internal/mockutil"
+	"github.com/mavolin/dismock/v2/internal/check"
 )
 
 // CreateWebhook mocks a CreateWebhook request.
 func (m *Mocker) CreateWebhook(d api.CreateWebhookData, wh discord.Webhook) {
 	m.MockAPI("CreateWebhook", http.MethodPost, "/channels/"+wh.ChannelID.String()+"/webhooks",
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
-			mockutil.CheckJSON(t, r.Body, new(api.CreateWebhookData), &d)
-			mockutil.WriteJSON(t, w, wh)
+			check.JSON(t, r.Body, &d)
+			check.WriteJSON(t, w, wh)
 		})
 }
 
@@ -23,7 +23,7 @@ func (m *Mocker) CreateWebhook(d api.CreateWebhookData, wh discord.Webhook) {
 func (m *Mocker) ChannelWebhooks(channelID discord.ChannelID, webhooks []discord.Webhook) {
 	m.MockAPI("ChannelWebhooks", http.MethodGet, "/channels/"+channelID.String()+"/webhooks",
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
-			mockutil.WriteJSON(t, w, webhooks)
+			check.WriteJSON(t, w, webhooks)
 		})
 }
 
@@ -37,7 +37,7 @@ func (m *Mocker) GuildWebhooks(guildID discord.GuildID, webhooks []discord.Webho
 
 	m.MockAPI("GuildWebhooks", http.MethodGet, "/guilds/"+guildID.String()+"/webhooks",
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
-			mockutil.WriteJSON(t, w, webhooks)
+			check.WriteJSON(t, w, webhooks)
 		})
 }
 
@@ -47,7 +47,7 @@ func (m *Mocker) GuildWebhooks(guildID discord.GuildID, webhooks []discord.Webho
 func (m *Mocker) Webhook(webhook discord.Webhook) {
 	m.MockAPI("Webhook", http.MethodGet, "/webhooks/"+webhook.ID.String(),
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
-			mockutil.WriteJSON(t, w, webhook)
+			check.WriteJSON(t, w, webhook)
 		})
 }
 
@@ -59,7 +59,7 @@ func (m *Mocker) Webhook(webhook discord.Webhook) {
 func (m *Mocker) WebhookWithToken(wh discord.Webhook) {
 	m.MockAPI("WebhookWithToken", http.MethodGet, "/webhooks/"+wh.ID.String()+"/"+wh.Token,
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
-			mockutil.WriteJSON(t, w, wh)
+			check.WriteJSON(t, w, wh)
 		})
 }
 
@@ -71,8 +71,8 @@ func (m *Mocker) WebhookWithToken(wh discord.Webhook) {
 func (m *Mocker) ModifyWebhook(d api.ModifyWebhookData, wh discord.Webhook) {
 	m.MockAPI("ModifyWebhook", http.MethodPatch, "/webhooks/"+wh.ID.String(),
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
-			mockutil.CheckJSON(t, r.Body, new(api.ModifyWebhookData), &d)
-			mockutil.WriteJSON(t, w, wh)
+			check.JSON(t, r.Body, &d)
+			check.WriteJSON(t, w, wh)
 		})
 }
 
@@ -84,8 +84,8 @@ func (m *Mocker) ModifyWebhook(d api.ModifyWebhookData, wh discord.Webhook) {
 func (m *Mocker) ModifyWebhookWithToken(d api.ModifyWebhookData, wh discord.Webhook) {
 	m.MockAPI("ModifyWebhookWithToken", http.MethodPatch, "/webhooks/"+wh.ID.String()+"/"+wh.Token,
 		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
-			mockutil.CheckJSON(t, r.Body, new(api.ModifyWebhookData), &d)
-			mockutil.WriteJSON(t, w, wh)
+			check.JSON(t, r.Body, &d)
+			check.WriteJSON(t, w, wh)
 		})
 }
 
