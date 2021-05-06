@@ -1,4 +1,4 @@
-package mockutil
+package check
 
 import (
 	"bytes"
@@ -101,7 +101,7 @@ func TestCheckJSON(t *testing.T) {
 			Field2: "Hello World!",
 		}
 
-		CheckJSON(t, r, expect)
+		JSON(t, r, expect)
 		assert.True(t, r.closed)
 	})
 
@@ -117,7 +117,7 @@ func TestCheckJSON(t *testing.T) {
 
 		tMock := new(testing.T)
 
-		CheckJSON(tMock, r, expect)
+		JSON(tMock, r, expect)
 
 		assert.True(t, tMock.Failed())
 		assert.True(t, r.closed)
@@ -222,7 +222,7 @@ func TestCheckMultipart(t *testing.T) {
 				expect = c.expect
 			}
 
-			CheckMultipart(t, p, h, expect, c.f)
+			Multipart(t, p, h, expect, c.f)
 		})
 	}
 
@@ -371,7 +371,7 @@ func TestCheckMultipart(t *testing.T) {
 
 			tMock := new(testing.T)
 
-			CheckMultipart(tMock, p, h, expect, c.f)
+			Multipart(tMock, p, h, expect, c.f)
 			assert.True(t, tMock.Failed())
 		})
 	}
@@ -391,7 +391,7 @@ func TestCheckMultipart(t *testing.T) {
 
 		tMock := new(testing.T)
 
-		CheckMultipart(tMock, p, h, nil, []sendpart.File{})
+		Multipart(tMock, p, h, nil, []sendpart.File{})
 
 		assert.True(t, tMock.Failed())
 	})
@@ -440,7 +440,7 @@ func TestCheckQuery(t *testing.T) {
 	}
 
 	t.Run("success", func(t *testing.T) {
-		CheckQuery(t, url.Values{
+		Query(t, url.Values{
 			"foo": {"present"},
 			"bar": {"123"},
 		}, url.Values{
@@ -454,7 +454,7 @@ func TestCheckQuery(t *testing.T) {
 			t.Run(c.name, func(t *testing.T) {
 				tMock := new(testing.T)
 
-				CheckQuery(tMock, c.query, c.falseExpect)
+				Query(tMock, c.query, c.falseExpect)
 
 				assert.True(t, tMock.Failed())
 			})

@@ -1,4 +1,4 @@
-package mockutil
+package check
 
 import (
 	"bytes"
@@ -43,16 +43,16 @@ var (
 	nilColor  = reflect.ValueOf((*option.NullableColorData)(nil))
 )
 
-// CheckJSON checks if body contains the JSON data matching the passed expected
+// JSON checks if body contains the JSON data matching the passed expected
 // value.
-func CheckJSON(t *testing.T, body io.ReadCloser, expect interface{}) {
+func JSON(t *testing.T, body io.ReadCloser, expect interface{}) {
 	checkJSON(t, body, expect)
 	require.NoError(t, body.Close())
 }
 
-// CheckMultipart checks if the body contains multipart data including the
-// passed files and optionally the passed JSON data.
-func CheckMultipart(
+// Multipart checks if the body contains multipart data including the passed
+// files and optionally the passed JSON data.
+func Multipart(
 	t *testing.T, body io.ReadCloser, h http.Header, expectJSON interface{}, expectFiles []sendpart.File,
 ) {
 	_, p, err := mime.ParseMediaType(h.Get("Content-Type"))
@@ -121,8 +121,8 @@ func CheckMultipart(
 	}
 }
 
-// CheckQuery checks if the passed query contains the values found in except.
-func CheckQuery(t *testing.T, query url.Values, expect url.Values) {
+// Query checks if the passed query contains the values found in except.
+func Query(t *testing.T, query url.Values, expect url.Values) {
 	for name, vals := range query {
 		if len(vals) == 0 {
 			continue
@@ -209,7 +209,7 @@ func replaceNullables(val reflect.Value) { //nolint:gocognit
 	}
 }
 
-// equalReader checks if the values of the two readers are the same.
+// equalReader checks if the values of the two readers contain the same data.
 func equalReader(r1, r2 io.Reader) error {
 	const size = 16
 
@@ -261,7 +261,6 @@ func joinIntSet(set map[int]struct{}, delim string) string {
 		}
 
 		s += strconv.Itoa(no)
-
 		first = false
 	}
 

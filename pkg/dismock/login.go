@@ -6,7 +6,7 @@ import (
 
 	"github.com/diamondburned/arikawa/v2/api"
 
-	"github.com/mavolin/dismock/v2/internal/mockutil"
+	"github.com/mavolin/dismock/v2/internal/check"
 )
 
 type loginPayload struct {
@@ -23,8 +23,8 @@ func (m *Mocker) Login(email, password string, response api.LoginResponse) {
 				Password: password,
 			}
 
-			mockutil.CheckJSON(t, r.Body, &expect)
-			mockutil.WriteJSON(t, w, response)
+			check.JSON(t, r.Body, &expect)
+			check.WriteJSON(t, w, response)
 		})
 }
 
@@ -42,7 +42,7 @@ func (m *Mocker) TOTP(code, ticket string, response api.LoginResponse) {
 				Ticket: ticket,
 			}
 
-			mockutil.CheckJSON(t, r.Body, &expect)
-			mockutil.WriteJSON(t, w, response)
+			check.JSON(t, r.Body, &expect)
+			check.WriteJSON(t, w, response)
 		})
 }
