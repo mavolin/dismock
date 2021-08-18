@@ -1,0 +1,4 @@
+            _wrappedResp := struct {
+                Resp {{.ReturnType.String}} `json:"{{.WrappedResponseField}}"`
+            }{Resp: _ret}
+            check.WriteJSON(_t, _w, _wrappedResp)

@@ -1,0 +1,32 @@
+            _params := struct {
+{{- range $e := .}}
+                {{.GoName}} {{.Type.String}} `schema:"{{.Name}}{{if .Omitempty}},omitempty{{end}}"`
+{{- end}}
+            }{
+{{- $hasLiteral := false}}
+{{- $hasSrc := false}}
+{{- range $e := .}}
+    {{- if .Literal}}
+                {{- $hasLiteral = true}}
+                {{.GoName}}: {{.Value}},
+    {{- else}}
+                {{- $hasSrc = true}}
+    {{- end}}
+{{- end}}
+{{- if $hasLiteral}}{{println}}{{end}}
+{{- indent 3 "}"}}
+
+{{- if $hasSrc}}
+    {{println}}
+    {{- range $e := .}}
+        {{- if not .Literal}}
+            {{- indent 3 .Value}}
+        {{- end}}
+    {{- end}}
+{{- end}}
+
+            var _values url.Values
+            err := schema.NewEncoder().Encode(_params, _values)
+            assert.NoError(_t, err)
+
+            check.Query(_t, _values, _r.URL.Query())
