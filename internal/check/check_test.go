@@ -12,8 +12,8 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/diamondburned/arikawa/v2/utils/json/option"
-	"github.com/diamondburned/arikawa/v2/utils/sendpart"
+	"github.com/diamondburned/arikawa/v3/utils/json/option"
+	"github.com/diamondburned/arikawa/v3/utils/sendpart"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -101,7 +101,7 @@ func TestCheckJSON(t *testing.T) {
 			Field2: "Hello World!",
 		}
 
-		JSON(t, r, expect)
+		JSON(t, expect, r)
 		assert.True(t, r.closed)
 	})
 
@@ -117,7 +117,7 @@ func TestCheckJSON(t *testing.T) {
 
 		tMock := new(testing.T)
 
-		JSON(tMock, r, expect)
+		JSON(tMock, expect, r)
 
 		assert.True(t, tMock.Failed())
 		assert.True(t, r.closed)
@@ -454,7 +454,7 @@ func TestCheckQuery(t *testing.T) {
 			t.Run(c.name, func(t *testing.T) {
 				tMock := new(testing.T)
 
-				Query(tMock, c.query, c.falseExpect)
+				Query(tMock, c.falseExpect, c.query)
 
 				assert.True(t, tMock.Failed())
 			})
@@ -638,7 +638,7 @@ func TestJoinIntSet(t *testing.T) {
 				}
 			}
 
-			assert.Equal(t, c.expect[0], join) // gen automatic diff
+			assert.Equal(t, c.expect[0], join) // mockgen automatic diff
 		})
 	}
 }

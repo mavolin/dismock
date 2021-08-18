@@ -39,14 +39,20 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/diamondburned/arikawa/v2/gateway"
-	"github.com/diamondburned/arikawa/v2/session"
-	"github.com/diamondburned/arikawa/v2/state"
-	"github.com/diamondburned/arikawa/v2/state/store"
-	"github.com/diamondburned/arikawa/v2/utils/httputil"
-	"github.com/diamondburned/arikawa/v2/utils/httputil/httpdriver"
+	"github.com/diamondburned/arikawa/v3/api"
+	"github.com/diamondburned/arikawa/v3/gateway"
+	"github.com/diamondburned/arikawa/v3/session"
+	"github.com/diamondburned/arikawa/v3/state"
+	"github.com/diamondburned/arikawa/v3/state/store"
+	"github.com/diamondburned/arikawa/v3/utils/httputil"
+	"github.com/diamondburned/arikawa/v3/utils/httputil/httpdriver"
 	"github.com/stretchr/testify/assert"
 )
+
+// to be able to run this go:generate statement, you must first install
+// dismockgen
+// 	go install github.com/mavolin/dismock/tools/codegen/mock/cmd/dismockgen
+//go:generate dismockgen ../../dismockgen_config.yml
 
 type (
 	// Mocker handles the mocking of arikawa's API calls.
@@ -69,9 +75,9 @@ type (
 		// t is the test type called on error.
 		t *testing.T
 
-		// closed is used to determine if the server was closed before Eval has
+		// closed is used to determine if the server was closed before eval has
 		// been called.
-		// If so, Eval will not fail.
+		// If so, eval will not fail.
 		closed bool
 	}
 
@@ -141,7 +147,7 @@ func New(t *testing.T) *Mocker {
 	}
 
 	//goland:noinspection ALL
-	t.Cleanup(m.Eval)
+	t.Cleanup(m.eval)
 
 	return m
 }
@@ -191,7 +197,7 @@ func (m *Mocker) HTTPClient() *httputil.Client {
 //
 // The MockFunc may be nil if only the NoContent status shall be returned.
 func (m *Mocker) Mock(name, method, path string, f MockFunc) {
-	path = strings.TrimRight(path, "/")
+	path = "/" + strings.TrimRight(path, "/")
 
 	if m.handlers[path] == nil {
 		m.handlers[path] = make(map[string][]Handler)
@@ -213,7 +219,7 @@ func (m *Mocker) Mock(name, method, path string, f MockFunc) {
 
 // MockAPI uses the passed MockFunc to as handler for the passed path and
 // method.
-// The path must not include the api version, i.e. '/api/v6' must be stripped.
+// The path must not include the api version, i.e. '/api/v9' must be stripped.
 // If there are already handlers for this path with the same method, the
 // handler will be queued up behind the other handlers with the same path and
 // method.
@@ -226,7 +232,7 @@ func (m *Mocker) Mock(name, method, path string, f MockFunc) {
 //
 // The MockFunc may be nil if only the NoContent status shall be returned.
 func (m *Mocker) MockAPI(name, method, path string, f MockFunc) {
-	path = "/api/v8" + path
+	path = "api/v" + api.Version + "/" + path
 
 	m.Mock(name, method, path, f)
 }
@@ -292,19 +298,14 @@ func (m *Mocker) deepCopyHandlers() (cp map[string]map[string][]Handler) {
 	return
 }
 
-// Eval closes the server and evaluates if all registered handlers were
+// eval closes the server and evaluates if all registered handlers were
 // invoked.
 // If not it will call testing.T.Fatal, printing an error message with all
 // uninvoked handlers.
 //
-// If Close was called before Eval, e.g. by calling Clone, Eval will always
+// If Close was called before eval, e.g. by calling Clone, eval will always
 // pass.
-//
-// Deprecated: When creating a Mocker, Eval will automatically be added as
-// a Cleanup function.
-// Effectively, this means that there is no more need to manually Eval, as it
-// is done at the end of every test.
-func (m *Mocker) Eval() {
+func (m *Mocker) eval() {
 	if m.closed {
 		return
 	}

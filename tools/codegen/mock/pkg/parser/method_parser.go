@@ -97,7 +97,7 @@ func (p *methodParser) resolveRequestMeta() error {
 	xident, ok := funSel.X.(*ast.Ident)
 	if !ok {
 		return fmt.Errorf("expected return function call to either be function of package sendpart or method of "+
-			"api.Client, but found %+v", funSel.X)
+			"api.Client, but found %+v (%T)", funSel.X, funSel.X)
 	}
 
 	if xident.Name == "sendpart" {
@@ -111,7 +111,7 @@ func (p *methodParser) resolveRequestMeta() error {
 	case "RequestJSON":
 		offset = 1
 	default:
-		return fmt.Errorf("unexpected return function call %+v", funSel)
+		return fmt.Errorf("unexpected return function call %s", funSel.Sel.Name)
 	}
 
 	if err := p.resolveHTTPMethod(call.Args[0+offset]); err != nil {
@@ -160,25 +160,59 @@ func (p *methodParser) resolveOptions(optionExprs ...ast.Expr) error {
 
 		switch sel.Sel.Name {
 		case "WithJSONBody":
-			bodyIdent, ok := call.Args[0].(*ast.Ident)
-			if !ok {
-				return fmt.Errorf("expected the WithJSONBody option to take in a variable, but found %+v",
-					call.Args[0])
-			}
+			switch body := call.Args[0].(type) {
+			case *ast.Ident:
+				p.JSONParam = body.Name
 
-			p.JSONParam = bodyIdent.Name
+			// some methods wrap the data in a struct, to accommodate a reason
+			// param -- check for that
+			case *ast.SelectorExpr:
+				bodyXIdent, ok := body.X.(*ast.Ident)
+				if !ok {
+					return fmt.Errorf("expected the WithJSONBody option selector to reference a field, "+
+						"but found %+v (%T)", body.X, body.X)
+				}
+
+				p.ReasonParam = body.Sel.Name + "." + bodyXIdent.Name
+			default:
+				return fmt.Errorf("expected the WithJSONBody option to take in a variable or a top-level struct"+
+					" field, but found %+v (%T)",
+					call.Args[0], call.Args[0])
+			}
 		case "WithSchema":
 			schemaIdent, ok := call.Args[1].(*ast.Ident)
 			if ok { // no error checks, since sometimes url.Values literals are used
 				p.QueryParam = schemaIdent.Name
 			}
 		case "WithHeaders":
-			headerSel, ok := call.Args[0].(*ast.SelectorExpr)
+			// Even though we need special handling for WithJSONBody,
+			// AuditLogReasons are embedded, and will therefore still be
+			// regularly available
+
+			headerCall, ok := call.Args[0].(*ast.CallExpr)
 			if !ok {
-				return fmt.Errorf("expected the WithHeaders option to take in a selector, but found %+v", call.Args[0])
+				return fmt.Errorf("expected the WithHeaders option to take in a function call, but found %+v (%T)",
+					call.Args[0], call.Args[0])
 			}
 
-			p.ReasonParam = headerSel.Sel.Name
+			if len(headerCall.Args) > 0 {
+				return fmt.Errorf("expected the WithHeaders option function call to accept no arguments, "+
+					"but found %d (%+v)", len(headerCall.Args), headerCall.Args)
+			}
+
+			funSel, ok := headerCall.Fun.(*ast.SelectorExpr)
+			if !ok {
+				return fmt.Errorf("expected the WithHeaders option's function to be a selector but found %+v (%T)",
+					headerCall.Fun, headerCall.Fun)
+			}
+
+			funXIdent, ok := funSel.X.(*ast.Ident)
+			if !ok {
+				return fmt.Errorf("expected the WithHeaders option to be a method call on a variable, "+
+					"but found %+v (%T)", funSel.X, funSel.X)
+			}
+
+			p.ReasonParam = funXIdent.Name + "." + funSel.Sel.Name + "()"
 		}
 	}
 
@@ -194,6 +228,7 @@ func (p *methodParser) resolveMultipart(httpMethod string, call *ast.CallExpr) e
 	}
 
 	p.JSONParam = bodyIdent.Name
+	p.Multipart = true
 	p.EndpointExpr = call.Args[3]
 
 	return nil
