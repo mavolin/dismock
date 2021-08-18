@@ -15,8 +15,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/diamondburned/arikawa/v2/utils/json/option"
-	"github.com/diamondburned/arikawa/v2/utils/sendpart"
+	"github.com/diamondburned/arikawa/v3/utils/json/option"
+	"github.com/diamondburned/arikawa/v3/utils/sendpart"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -45,13 +45,14 @@ var (
 
 // JSON checks if body contains the JSON data matching the passed expected
 // value.
-func JSON(t *testing.T, body io.ReadCloser, expect interface{}) {
-	checkJSON(t, body, expect)
-	require.NoError(t, body.Close())
+func JSON(t *testing.T, expect interface{}, actualReader io.ReadCloser) {
+	checkJSON(t, expect, actualReader)
+	require.NoError(t, actualReader.Close())
 }
 
 // Multipart checks if the body contains multipart data including the passed
 // files and optionally the passed JSON data.
+//nolint:funlen
 func Multipart(
 	t *testing.T, body io.ReadCloser, h http.Header, expectJSON interface{}, expectFiles []sendpart.File,
 ) {
@@ -64,8 +65,8 @@ func Multipart(
 	mr := multipart.NewReader(body, bound)
 
 	jsonChecked := false
-	// we store the numbers of the missingFiles in a set, so that we know later on,
-	// which missingFiles didn't got sent, if any
+	// we store the numbers of the missingFiles in a set, so that we know later
+	// on which missingFiles didn't get sent, if any
 	missingFiles := make(map[int]struct{}, len(expectFiles))
 
 	for i := range expectFiles {
@@ -85,7 +86,7 @@ func Multipart(
 		switch {
 		case name == "payload_json":
 			if expectJSON != nil {
-				checkJSON(t, part, expectJSON)
+				checkJSON(t, expectJSON, part)
 				jsonChecked = true
 			} else {
 				assert.Failf(t, "error when checking multipart body", "expected no json payload, but got: %+v", part)
@@ -94,7 +95,9 @@ func Multipart(
 			no, err := strconv.Atoi(strings.TrimLeft(name, "file"))
 			require.NoErrorf(t, err, `unexpected part with name "%s"`, name)
 
-			if !assert.Lessf(t, no, len(expectFiles), "reading file %d, but expected only %d missingFiles", no, len(expectFiles)) {
+			if !assert.Lessf(
+				t, no, len(expectFiles), "reading file %d, but expected only %d missingFiles", no, len(expectFiles),
+			) {
 				break
 			}
 
@@ -112,7 +115,7 @@ func Multipart(
 	require.NoError(t, body.Close())
 
 	if !jsonChecked && expectJSON != nil {
-		assert.Fail(t, "no json_payload was received, although it was expected")
+		assert.Fail(t, "no json_payload was received, but was expected")
 	}
 
 	if len(missingFiles) > 0 {
@@ -122,14 +125,14 @@ func Multipart(
 }
 
 // Query checks if the passed query contains the values found in except.
-func Query(t *testing.T, query url.Values, expect url.Values) {
-	for name, vals := range query {
+func Query(t *testing.T, expect url.Values, actual url.Values) {
+	for name, vals := range actual {
 		if len(vals) == 0 {
 			continue
 		}
 
 		expectVal, ok := expect[name]
-		if !assert.True(t, ok, "unexpected query field: '"+name+"' with value '"+vals[0]+"'") {
+		if !assert.Truef(t, ok, "unexpected query field: '%s' with value '%s'", name, vals[0]) {
 			continue
 		}
 
@@ -143,12 +146,19 @@ func Query(t *testing.T, query url.Values, expect url.Values) {
 	}
 }
 
+// Header checks if the expected http.Header are contained in actual.
+func Header(t *testing.T, expect http.Header, actual http.Header) {
+	for _, expect := range expect {
+		assert.Contains(t, actual, expect)
+	}
+}
+
 // checkJSON checks if body contains the JSON data matching the passed expected
 // value.
-func checkJSON(t *testing.T, r io.Reader, expect interface{}) {
+func checkJSON(t *testing.T, expect interface{}, actualReader io.Reader) {
 	decodeVal := reflect.New(reflect.TypeOf(expect))
 
-	err := json.NewDecoder(r).Decode(decodeVal.Interface())
+	err := json.NewDecoder(actualReader).Decode(decodeVal.Interface())
 	require.NoError(t, err)
 
 	expectVal := reflect.ValueOf(expect)
@@ -210,15 +220,15 @@ func replaceNullables(val reflect.Value) { //nolint:gocognit
 }
 
 // equalReader checks if the values of the two readers contain the same data.
-func equalReader(r1, r2 io.Reader) error {
+func equalReader(a, b io.Reader) error {
 	const size = 16
 
 	b1 := make([]byte, size)
 	b2 := make([]byte, size)
 
 	for i := 1; ; i++ {
-		_, err1 := r1.Read(b1)
-		_, err2 := r2.Read(b2)
+		_, err1 := a.Read(b1)
+		_, err2 := b.Read(b2)
 
 		if !bytes.Equal(b1, b2) {
 			return fmt.Errorf("%d. chunk is not equal:\n%v\nvs.\n%v", i, b1, b2)
@@ -228,14 +238,14 @@ func equalReader(r1, r2 io.Reader) error {
 		case err1 == io.EOF && err2 == io.EOF:
 			return nil
 		case err1 == io.EOF:
-			_, err2 = r2.Read(b2)
+			_, err2 = b.Read(b2)
 			if err2 == io.EOF {
 				return nil
 			}
 
 			return errors.New("reader 1's stream ended unexpectedly")
 		case err2 == io.EOF:
-			_, err1 = r1.Read(b1)
+			_, err1 = a.Read(b1)
 			if err1 == io.EOF {
 				return nil
 			}

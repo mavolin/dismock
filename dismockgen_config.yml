@@ -1,0 +1,494 @@
+# In this file all methods that need custom handling are listed.
+#
+# To add a method to this list, add an entry using the name of the method
+# to the section with the corresponding file name. Methods are listed in the
+# order they appear in the file.
+#
+# Below are the options, that can be applied to each method:
+#
+#                                   exclude
+#
+# exclude may be set to true, in which case no mock function will be generated
+# for the method.
+#
+# It cannot be combined with other options.
+#
+#                                 infer_params
+#
+# infer_params is a list of parameters of the method, that can be inferred from
+# struct returned by that method. Any parameter that appears in that list will
+# be omitted from the mock function's signature.
+#
+# Each item in the list hast the following required fields:
+#
+# infer:  The name of the parameter whose value can be inferred.
+# from:   The dot-separated path to the value to infer from. It will format as
+#         'foo.{{from}}', so from could be the name of a Field, or even a slice
+#         getter expression, e.g. 'Foo.Bar[0]'.
+# 
+# Example: For an api.Client method with the signature
+#   func (*Client) Foo(
+#       guildID discord.GuildID, channelID discord.ChannelID,
+#   ) (*discord.Foo, error)
+# where discord.Foo is defined as
+#   type Foo struct {
+#       BarID discord.GuildID
+#   }
+# and discord.Foo.BarID is the same id as the guildID parameter supplied to
+# api.Client.Foo, one could write in this config
+#   Foo:
+#     infer_params:
+#       - infer: guildID
+#         from: BarID
+# to omit the guildID parameter from the generated mock function, and instead
+# infer its value from the discord.Foo struct given to the mock function.
+#
+#                                  url_params
+#
+# url_params is a list of url query parameters that must be present in the
+# request url. They can either be static, or constructed from parameters given
+# to the method.
+#
+# Note, however, that url_params cannot be used for methods that already send
+# url query parameters using a data struct.
+#
+# Each item in the list has the following fields:
+#
+# param:      The name of the parameter that the query parameter's value will
+#             be derived from.
+# name:       The name (key) of the query parameter. If param is set, this will
+#             default to the snake_case version of param. Otherwise, it is
+#             required.
+# type:       The go type of the url parameter. It must be a go primitive,
+#             except for complex, or a slice thereof.
+#             If param is set, the type will automatically be inferred from the
+#             parameter param corresponds to.
+# omitempty:  If set to true, the query parameter will be expected to be
+#             omitted, if empty. For the definition of empty, refer to
+#             github.com/gorilla/schema.
+# val:        A go text/template used to generate the value of the query
+#             parameter. Variables available via the dot-syntax are 'Param' and
+#             'Var'.
+#             Param is the name of the parameter. Prefer this variable over a
+#             literal, as it takes into account inferred parameters.
+#             Var is the name of the go variable the query parameter will be
+#             stored in.
+#             If you don't use {{.Var}} in the template, the resolved value of
+#             val will be used to fill the {{.Var}}.
+#             If you do use {{.Var}}, you can write a full block of code in
+#            which you must set the var yourself.
+#
+#                                   json_body
+#
+# json_body is a list of json object fields that must be present in the body.
+# They can either be static, or constructed from parameters given to the
+# method.
+#
+# Note, however, that json_body cannot be used for methods that already send a
+# json body using a data struct.
+#
+# Each item in the list has the following fields:
+#
+# param:      The name of the parameter that the field's value will be derived
+#             from.
+# name:       The name (key) of the field. If param is set, this will default
+#             to the snake_case version of param. Otherwise, it is required.
+# type:       The go type of the field.
+#             If param is set, the type will automatically be inferred from
+#             the parameter param corresponds to.
+# omitempty:  If set to true, the field will be expected to be omitted, if
+#             empty. For the definition of empty, refer to encoding/json.
+# val:        A go text/template used to generate the value of the field.
+#             Variables available via the dot-syntax are 'Param' and 'Var'.
+#             Param is the name of the parameter. Prefer this variable over a
+#             literal, as it takes into account inferred parameters.
+#             Var is the name of the go variable the query parameter will be
+#             stored in.
+#             If you don't use {{.Var}} in the template, the resolved value
+#             of val will be used to fill the {{.Var}}.
+#             If you do use {{.Var}}, you can write a full block of code in
+#             which you must set the var yourself.
+#
+#                               wrapped_response.tmpl
+#
+# The wrapped_response.tmpl option can be used, if Discord sends their response
+# wrapped in a single field json object, and the arikawa source method returns
+# the value of that field instead of the object itself.
+#
+# To use it, set it to the name of the field.
+#
+# It cannot be combined with json_body.
+
+################################################################################################
+######################################## application.go ########################################
+################################################################################################
+
+Command:
+  infer_params:
+    - infer: appID
+      from: AppID
+    - infer: commandID
+      from: ID
+CreateCommand:
+  infer_params:
+    - infer: appID
+      from: AppID
+EditCommand:
+  infer_params:
+    - infer: appID
+      from: AppID
+    - infer: commandID
+      from: ID
+GuildCommand:
+  infer_params:
+    - infer: appID
+      from: AppID
+    - infer: guildID
+      from: GuildID
+    - infer: commandID
+      from: ID
+CreateGuildCommand:
+  infer_params:
+    - infer: appID
+      from: AppID
+    - infer: guildID
+      from: GuildID
+EditGuildCommand:
+  infer_params:
+    - infer: appID
+      from: AppID
+    - infer: guildID
+      from: GuildID
+    - infer: commandID
+      from: ID
+CommandPermissions:
+  infer_params:
+    - infer: appID
+      from: AppID
+    - infer: guildID
+      from: GuildID
+    - infer: commandID
+      from: ID
+EditCommandPermissions:
+  infer_params:
+    - infer: appID
+      from: AppID
+    - infer: guildID
+      from: GuildID
+    - infer: commandID
+      from: ID
+  json_body:
+    - param: permissions
+
+
+########################################################################################
+######################################## bot.go ########################################
+########################################################################################
+
+BotURL:
+  exclude: true # no mock
+GatewayURL:
+  exclude: true # no mock
+
+############################################################################################
+######################################## channel.go ########################################
+############################################################################################
+
+CreateChannel:
+  infer_params:
+    - infer: guildID
+      from: GuildID
+Channel:
+  infer_params:
+    - infer: channelID
+      from: ID
+AddRecipient:
+  json_body:
+    - param: accessToken
+    - param: nickname
+Ack:
+  exclude: true # custom impl
+StartThreadWithMessage:
+  infer_params:
+    - infer: channelID
+      from: ParentID
+StartThreadWithoutMessage:
+  infer_params:
+    - infer: channelID
+      from: ParentID
+PublicArchivedThreadsBefore:
+  url_params:
+    - param: before
+      type: string
+      omitempty: true
+      val: |
+        if {{.Param}}.IsValid() {
+            {{.Var}} = {{.Param}}.Format(discord.TimestampFormat)
+        }
+    - param: limit
+PrivateArchivedThreadsBefore:
+  url_params:
+    - param: before
+      type: string
+      omitempty: true
+      val: |
+        if {{.Param}}.IsValid() {
+            {{.Var}} = {{.Param}}.Format(discord.TimestampFormat)
+        }
+    - param: limit
+JoinedPrivateArchivedThreadsBefore:
+  url_params:
+    - param: before
+      type: string
+      omitempty: true
+      val: |
+        if {{.Param}}.IsValid() {
+            {{.Var}} = {{.Param}}.Format(discord.TimestampFormat)
+        }
+    - param: limit
+
+
+##########################################################################################
+######################################## emoji.go ########################################
+##########################################################################################
+
+Emoji:
+  infer_params:
+    - infer: emojiID
+      from: ID
+
+
+##########################################################################################
+######################################## guild.go ########################################
+##########################################################################################
+
+Guild:
+  infer_params:
+    - infer: id
+      from: ID
+GuildPreview:
+  infer_params:
+    - infer: id
+      from: ID
+GuildWithCount:
+  url_params:
+    - name: with_counts
+      val: true
+      type: bool
+  infer_params:
+    - infer: id
+      from: ID
+Guilds:
+  exclude: true
+GuildsBefore:
+  exclude: true
+GuildsAfter:
+  exclude: true
+ModifyGuild:
+  infer_params:
+    - infer: id
+      from: ID
+AttachIntegration:
+  json_body:
+    - param: integrationType
+      name: type
+    - param: integrationID
+      name: id
+GuildWidgetImageURL:
+  exclude: true # not an api action
+GuildWidgetImage:
+  exclude: true # custom impl in meta.go
+
+
+################################################################################################
+######################################## interaction.go ########################################
+################################################################################################
+
+RespondInteraction:
+  exclude: true
+
+
+###########################################################################################
+######################################## invite.go ########################################
+###########################################################################################
+
+Invite:
+  infer_params:
+    - infer: code
+      from: Code
+InviteWithCounts:
+  url_params:
+    - name: with_counts
+      val: true
+      type: bool
+  infer_params:
+    - infer: code
+      from: Code
+JoinInvite:
+  infer_params:
+    - infer: code
+      from: Code
+DeleteInvite:
+  infer_params:
+    - infer: code
+      from: Code
+
+
+##########################################################################################
+######################################## login.go ########################################
+##########################################################################################
+
+Login:
+  json_body:
+    - param: email
+    - param: password
+TOTP:
+  json_body:
+    - param: code
+    - param: ticket
+
+
+###########################################################################################
+######################################## member.go ########################################
+###########################################################################################
+
+Member:
+  infer_params:
+    - infer: userID
+      from: User.ID
+Members:
+  exclude: true
+MembersAfter:
+  exclude: true
+AddMember:
+  infer_params:
+    - infer: userID
+      from: User.ID
+PruneCount:
+  wrapped_response: pruned
+Prune:
+  wrapped_response: pruned
+GetBan:
+  infer_params:
+    - infer: userID
+      from: User.ID
+Kick: # todo: rm this when #269 is merged
+  exclude: true # will be changed in future release
+
+
+############################################################################################
+######################################## message.go ########################################
+############################################################################################
+
+Messages:
+  exclude: true
+MessagesAround:
+  exclude: true
+MessagesBefore:
+  exclude: true
+MessagesAfter:
+  exclude: true
+Message:
+  infer_params:
+    - infer: channelID
+      from: ChannelID
+    - infer: messageID
+      from: ID
+SendTextReply:
+  exclude: true
+SendEmbeds:
+  exclude: true
+SendEmbedReply:
+  exclude: true
+SendMessage:
+  exclude: true
+SendMessageReply:
+  exclude: true
+EditText:
+  exclude: true
+EditEmbeds:
+  exclude: true
+EditMessage:
+  exclude: true
+EditMessageComplex:
+  exclude: true
+DeleteMessages:
+  exclude: true
+  
+  
+#####################################################################################################
+######################################## message_reaction.go ########################################
+#####################################################################################################
+
+Unreact:
+  exclude: true
+Reactions:
+  exclude: true
+ReactionsBefore:
+  exclude: true
+ReactionsAfter:
+  exclude: true
+DeleteUserReaction:
+  exclude: true
+
+
+#########################################################################################
+######################################## role.go ########################################
+#########################################################################################
+
+ModifyRole:
+  infer_params:
+    - infer: roleID
+      from: ID
+
+
+#########################################################################################
+######################################## send.go ########################################
+#########################################################################################
+
+SendMessageComplex:
+  exclude: true
+
+
+#########################################################################################
+######################################## user.go ########################################
+#########################################################################################
+
+User:
+  infer_params:
+    - infer: userID
+      from: ID
+ChangeOwnNickname:
+  json_body:
+    - param: nick
+CreatePrivateChannel:
+  json_body:
+    - param: recipientID
+  infer_params:
+    - infer: recipientID
+      from: DMRecipients[0].ID
+SetNote:
+  json_body:
+    - param: note
+SetRelationship:
+  json_body:
+  - param: t
+    name: type
+
+
+############################################################################################
+######################################## webhook.go ########################################
+############################################################################################
+
+CreateWebhook:
+  infer_params:
+    - infer: channelID
+      from: ChannelID
+Webhook:
+  infer_params:
+    - infer: webhookID
+      from: ID
+ModifyWebhook:
+  infer_params:
+    - infer: webhookID
+      from: ID

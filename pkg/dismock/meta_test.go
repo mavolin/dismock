@@ -6,7 +6,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/diamondburned/arikawa/v2/discord"
+	"github.com/diamondburned/arikawa/v3/api"
+	"github.com/diamondburned/arikawa/v3/discord"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -316,6 +317,51 @@ func TestMocker_DiscoverySplashURLWithType(t *testing.T) {
 	require.NoError(t, err)
 
 	assert.Equal(t, expect, actual)
+}
+
+func TestMocker_GuildWidgetImage(t *testing.T) {
+	t.Run("success", func(t *testing.T) {
+		m, s := NewSession(t)
+
+		var (
+			guildID discord.GuildID = 123
+			style                   = api.GuildBanner3
+		)
+
+		expect := []byte{1, 30, 0, 15, 24}
+		reader := bytes.NewBuffer(expect)
+
+		m.GuildWidgetImage(guildID, style, reader)
+
+		actualReader, err := s.GuildWidgetImage(guildID, style)
+		require.NoError(t, err)
+
+		actual, err := ioutil.ReadAll(actualReader)
+		require.NoError(t, err)
+
+		assert.Equal(t, expect, actual)
+	})
+
+	t.Run("failure", func(t *testing.T) {
+		tMock := new(testing.T)
+		m, s := NewSession(tMock)
+
+		var guildID discord.GuildID = 123
+
+		expect := []byte{1, 30, 0, 15, 24}
+		reader := bytes.NewBuffer(expect)
+
+		m.GuildWidgetImage(guildID, api.GuildBanner1, reader)
+
+		actualReader, err := s.GuildWidgetImage(guildID, api.GuildBanner2)
+		require.NoError(t, err)
+
+		actual, err := ioutil.ReadAll(actualReader)
+		require.NoError(t, err)
+
+		assert.Equal(t, expect, actual)
+		assert.True(t, tMock.Failed())
+	})
 }
 
 func TestFormatImageType(t *testing.T) {

@@ -1,0 +1,28 @@
+            _body := struct {
+{{- range $e := .}}
+                {{.GoName}} {{.Type.String}} `json:"{{.Name}}{{if .Omitempty}},omitempty{{end}}"`
+{{- end}}
+            }{
+{{- $hasLiteral := false}}
+{{- $hasSrc := false}}
+{{- range $e := .}}
+    {{- if .Literal}}
+                {{- $hasLiteral = true}}
+                {{.GoName}}: {{.Value}},
+    {{- else}}
+                {{- $hasSrc = true}}
+    {{- end}}
+{{- end}}
+{{- if $hasLiteral}}{{println}}{{end}}
+{{- indent 3 "}"}}
+
+{{- if $hasSrc}}
+    {{println}}
+    {{- range $e := .}}
+        {{- if not .Literal}}
+            {{- indent 3 .Value}}
+        {{- end}}
+    {{- end}}
+{{- end}}
+
+            check.JSON(_t, _body, _r.Body)

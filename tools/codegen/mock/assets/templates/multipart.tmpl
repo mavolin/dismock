@@ -1,0 +1,11 @@
+            if {{.JSONParam}}.NeedMultipart() {
+                _files := make([]sendpart.File, len({{.JSONParam}}.Files))
+                copy(_files, d.Files)
+
+                {{.JSONParam}}.Files = nil
+
+                check.Multipart(_t, _r.Body, _r.Header, {{.JSONParam}}, _files)
+            } else {
+                {{.JSONParam}}.Files = nil
+                check.JSON(_t, {{.JSONParam}}, _r.Body)
+            }
