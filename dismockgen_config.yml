@@ -372,8 +372,6 @@ GetBan:
   infer_params:
     - infer: userID
       from: User.ID
-Kick: # todo: rm this when #269 is merged
-  exclude: true # will be changed in future release
 
 
 ############################################################################################

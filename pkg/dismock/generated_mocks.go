@@ -92,7 +92,8 @@ func (m *Mocker) GuildCommands(appID discord.AppID, guildID discord.GuildID, _re
 
 // GuildCommand mocks api.Client.GuildCommand.
 func (m *Mocker) GuildCommand(_ret discord.Command) {
-	m.MockAPI("GuildCommand", http.MethodGet, "applications/"+_ret.AppID.String()+"/guilds/"+_ret.GuildID.String()+"/commands/"+_ret.ID.String(),
+	m.MockAPI("GuildCommand", http.MethodGet,
+		"applications/"+_ret.AppID.String()+"/guilds/"+_ret.GuildID.String()+"/commands/"+_ret.ID.String(),
 		func(_w http.ResponseWriter, _r *http.Request, _t *testing.T) {
 			check.WriteJSON(_t, _w, _ret)
 		})
@@ -100,7 +101,8 @@ func (m *Mocker) GuildCommand(_ret discord.Command) {
 
 // CreateGuildCommand mocks api.Client.CreateGuildCommand.
 func (m *Mocker) CreateGuildCommand(data api.CreateCommandData, _ret discord.Command) {
-	m.MockAPI("CreateGuildCommand", http.MethodPost, "applications/"+_ret.AppID.String()+"/guilds/"+_ret.GuildID.String()+"/commands",
+	m.MockAPI("CreateGuildCommand", http.MethodPost,
+		"applications/"+_ret.AppID.String()+"/guilds/"+_ret.GuildID.String()+"/commands",
 		func(_w http.ResponseWriter, _r *http.Request, _t *testing.T) {
 			check.JSON(_t, data, _r.Body)
 
@@ -110,7 +112,8 @@ func (m *Mocker) CreateGuildCommand(data api.CreateCommandData, _ret discord.Com
 
 // EditGuildCommand mocks api.Client.EditGuildCommand.
 func (m *Mocker) EditGuildCommand(data api.CreateCommandData, _ret discord.Command) {
-	m.MockAPI("EditGuildCommand", http.MethodPatch, "applications/"+_ret.AppID.String()+"/guilds/"+_ret.GuildID.String()+"/commands/"+_ret.ID.String(),
+	m.MockAPI("EditGuildCommand", http.MethodPatch,
+		"applications/"+_ret.AppID.String()+"/guilds/"+_ret.GuildID.String()+"/commands/"+_ret.ID.String(),
 		func(_w http.ResponseWriter, _r *http.Request, _t *testing.T) {
 			check.JSON(_t, data, _r.Body)
 
@@ -120,16 +123,20 @@ func (m *Mocker) EditGuildCommand(data api.CreateCommandData, _ret discord.Comma
 
 // DeleteGuildCommand mocks api.Client.DeleteGuildCommand.
 func (m *Mocker) DeleteGuildCommand(appID discord.AppID, guildID discord.GuildID, commandID discord.CommandID) {
-	m.MockAPI("DeleteGuildCommand", http.MethodDelete, "applications/"+appID.String()+"/guilds/"+guildID.String()+"/commands/"+commandID.String(), nil)
+	m.MockAPI("DeleteGuildCommand", http.MethodDelete,
+		"applications/"+appID.String()+"/guilds/"+guildID.String()+"/commands/"+commandID.String(), nil)
 }
 
 // BulkOverwriteGuildCommands mocks api.Client.BulkOverwriteGuildCommands.
-func (m *Mocker) BulkOverwriteGuildCommands(appID discord.AppID, guildID discord.GuildID, commands []discord.Command, _ret []discord.Command) {
+func (m *Mocker) BulkOverwriteGuildCommands(
+	appID discord.AppID, guildID discord.GuildID, commands []discord.Command, _ret []discord.Command,
+) {
 	if _ret == nil {
 		_ret = []discord.Command{}
 	}
 
-	m.MockAPI("BulkOverwriteGuildCommands", http.MethodPut, "applications/"+appID.String()+"/guilds/"+guildID.String()+"/commands",
+	m.MockAPI("BulkOverwriteGuildCommands", http.MethodPut,
+		"applications/"+appID.String()+"/guilds/"+guildID.String()+"/commands",
 		func(_w http.ResponseWriter, _r *http.Request, _t *testing.T) {
 			check.JSON(_t, commands, _r.Body)
 
@@ -138,12 +145,15 @@ func (m *Mocker) BulkOverwriteGuildCommands(appID discord.AppID, guildID discord
 }
 
 // GuildCommandPermissions mocks api.Client.GuildCommandPermissions.
-func (m *Mocker) GuildCommandPermissions(appID discord.AppID, guildID discord.GuildID, _ret []discord.GuildCommandPermissions) {
+func (m *Mocker) GuildCommandPermissions(
+	appID discord.AppID, guildID discord.GuildID, _ret []discord.GuildCommandPermissions,
+) {
 	if _ret == nil {
 		_ret = []discord.GuildCommandPermissions{}
 	}
 
-	m.MockAPI("GuildCommandPermissions", http.MethodGet, "applications/"+appID.String()+"/guilds/"+guildID.String()+"/commands/permissions",
+	m.MockAPI("GuildCommandPermissions", http.MethodGet,
+		"applications/"+appID.String()+"/guilds/"+guildID.String()+"/commands/permissions",
 		func(_w http.ResponseWriter, _r *http.Request, _t *testing.T) {
 			check.WriteJSON(_t, _w, _ret)
 		})
@@ -151,15 +161,19 @@ func (m *Mocker) GuildCommandPermissions(appID discord.AppID, guildID discord.Gu
 
 // CommandPermissions mocks api.Client.CommandPermissions.
 func (m *Mocker) CommandPermissions(_ret discord.GuildCommandPermissions) {
-	m.MockAPI("CommandPermissions", http.MethodGet, "applications/"+_ret.AppID.String()+"/guilds/"+_ret.GuildID.String()+"/commands/"+_ret.ID.String()+"/permissions",
+	m.MockAPI("CommandPermissions", http.MethodGet,
+		"applications/"+_ret.AppID.String()+"/guilds/"+_ret.GuildID.String()+"/commands/"+_ret.ID.String()+"/permissions",
 		func(_w http.ResponseWriter, _r *http.Request, _t *testing.T) {
 			check.WriteJSON(_t, _w, _ret)
 		})
 }
 
 // EditCommandPermissions mocks api.Client.EditCommandPermissions.
-func (m *Mocker) EditCommandPermissions(permissions []discord.CommandPermissions, _ret discord.GuildCommandPermissions) {
-	m.MockAPI("EditCommandPermissions", http.MethodPut, "applications/"+_ret.AppID.String()+"/guilds/"+_ret.GuildID.String()+"/commands/"+_ret.ID.String()+"/permissions",
+func (m *Mocker) EditCommandPermissions(
+	permissions []discord.CommandPermissions, _ret discord.GuildCommandPermissions,
+) {
+	m.MockAPI("EditCommandPermissions", http.MethodPut,
+		"applications/"+_ret.AppID.String()+"/guilds/"+_ret.GuildID.String()+"/commands/"+_ret.ID.String()+"/permissions",
 		func(_w http.ResponseWriter, _r *http.Request, _t *testing.T) {
 			_body := struct {
 				Permissions []discord.CommandPermissions `json:"permissions"`
@@ -174,12 +188,16 @@ func (m *Mocker) EditCommandPermissions(permissions []discord.CommandPermissions
 }
 
 // BatchEditCommandPermissions mocks api.Client.BatchEditCommandPermissions.
-func (m *Mocker) BatchEditCommandPermissions(appID discord.AppID, guildID discord.GuildID, data []api.BatchEditCommandPermissionsData, _ret []discord.GuildCommandPermissions) {
+func (m *Mocker) BatchEditCommandPermissions(
+	appID discord.AppID, guildID discord.GuildID, data []api.BatchEditCommandPermissionsData,
+	_ret []discord.GuildCommandPermissions,
+) {
 	if _ret == nil {
 		_ret = []discord.GuildCommandPermissions{}
 	}
 
-	m.MockAPI("BatchEditCommandPermissions", http.MethodPut, "applications/"+appID.String()+"/guilds/"+guildID.String()+"/commands/permissions",
+	m.MockAPI("BatchEditCommandPermissions", http.MethodPut,
+		"applications/"+appID.String()+"/guilds/"+guildID.String()+"/commands/permissions",
 		func(_w http.ResponseWriter, _r *http.Request, _t *testing.T) {
 			check.JSON(_t, data, _r.Body)
 
@@ -250,8 +268,11 @@ func (m *Mocker) DeleteChannel(channelID discord.ChannelID, reason api.AuditLogR
 }
 
 // EditChannelPermission mocks api.Client.EditChannelPermission.
-func (m *Mocker) EditChannelPermission(channelID discord.ChannelID, overwriteID discord.Snowflake, data api.EditChannelPermissionData) {
-	m.MockAPI("EditChannelPermission", http.MethodPut, "channels/"+channelID.String()+"/permissions/"+overwriteID.String(),
+func (m *Mocker) EditChannelPermission(
+	channelID discord.ChannelID, overwriteID discord.Snowflake, data api.EditChannelPermissionData,
+) {
+	m.MockAPI("EditChannelPermission", http.MethodPut,
+		"channels/"+channelID.String()+"/permissions/"+overwriteID.String(),
 		func(_w http.ResponseWriter, _r *http.Request, _t *testing.T) {
 			check.JSON(_t, data, _r.Body)
 
@@ -260,8 +281,11 @@ func (m *Mocker) EditChannelPermission(channelID discord.ChannelID, overwriteID 
 }
 
 // DeleteChannelPermission mocks api.Client.DeleteChannelPermission.
-func (m *Mocker) DeleteChannelPermission(channelID discord.ChannelID, overwriteID discord.Snowflake, reason api.AuditLogReason) {
-	m.MockAPI("DeleteChannelPermission", http.MethodDelete, "channels/"+channelID.String()+"/permissions/"+overwriteID.String(),
+func (m *Mocker) DeleteChannelPermission(
+	channelID discord.ChannelID, overwriteID discord.Snowflake, reason api.AuditLogReason,
+) {
+	m.MockAPI("DeleteChannelPermission", http.MethodDelete,
+		"channels/"+channelID.String()+"/permissions/"+overwriteID.String(),
 		func(_w http.ResponseWriter, _r *http.Request, _t *testing.T) {
 			check.Header(_t, reason.Header(), _r.Header)
 		})
@@ -323,7 +347,8 @@ func (m *Mocker) RemoveRecipient(channelID discord.ChannelID, userID discord.Use
 
 // StartThreadWithMessage mocks api.Client.StartThreadWithMessage.
 func (m *Mocker) StartThreadWithMessage(messageID discord.MessageID, data api.StartThreadData, _ret discord.Channel) {
-	m.MockAPI("StartThreadWithMessage", http.MethodPost, "channels/"+_ret.ParentID.String()+"/messages/"+messageID.String()+"/threads",
+	m.MockAPI("StartThreadWithMessage", http.MethodPost,
+		"channels/"+_ret.ParentID.String()+"/messages/"+messageID.String()+"/threads",
 		func(_w http.ResponseWriter, _r *http.Request, _t *testing.T) {
 			check.JSON(_t, data, _r.Body)
 
@@ -362,7 +387,8 @@ func (m *Mocker) LeaveThread(threadID discord.ChannelID) {
 
 // RemoveThreadMember mocks api.Client.RemoveThreadMember.
 func (m *Mocker) RemoveThreadMember(threadID discord.ChannelID, userID discord.UserID) {
-	m.MockAPI("RemoveThreadMember", http.MethodDelete, "channels/"+threadID.String()+"/thread-members/"+userID.String(), nil)
+	m.MockAPI("RemoveThreadMember", http.MethodDelete, "channels/"+threadID.String()+"/thread-members/"+userID.String(),
+		nil)
 }
 
 // ThreadMembers mocks api.Client.ThreadMembers.
@@ -378,11 +404,7 @@ func (m *Mocker) ThreadMembers(threadID discord.ChannelID, _ret []discord.Thread
 }
 
 // ActiveThreads mocks api.Client.ActiveThreads.
-func (m *Mocker) ActiveThreads(guildID discord.GuildID, _ret []api.ActiveThread) {
-	if _ret == nil {
-		_ret = []api.ActiveThread{}
-	}
-
+func (m *Mocker) ActiveThreads(guildID discord.GuildID, _ret api.ActiveThreads) {
 	m.MockAPI("ActiveThreads", http.MethodGet, "guilds/"+guildID.String()+"/threads/active",
 		func(_w http.ResponseWriter, _r *http.Request, _t *testing.T) {
 			check.WriteJSON(_t, _w, _ret)
@@ -390,7 +412,9 @@ func (m *Mocker) ActiveThreads(guildID discord.GuildID, _ret []api.ActiveThread)
 }
 
 // PublicArchivedThreadsBefore mocks api.Client.PublicArchivedThreadsBefore.
-func (m *Mocker) PublicArchivedThreadsBefore(channelID discord.ChannelID, before discord.Timestamp, limit uint, _ret []api.ArchivedThread) {
+func (m *Mocker) PublicArchivedThreadsBefore(
+	channelID discord.ChannelID, before discord.Timestamp, limit uint, _ret []api.ArchivedThread,
+) {
 	if _ret == nil {
 		_ret = []api.ArchivedThread{}
 	}
@@ -419,12 +443,15 @@ func (m *Mocker) PublicArchivedThreadsBefore(channelID discord.ChannelID, before
 }
 
 // PrivateArchivedThreadsBefore mocks api.Client.PrivateArchivedThreadsBefore.
-func (m *Mocker) PrivateArchivedThreadsBefore(channelID discord.ChannelID, before discord.Timestamp, limit uint, _ret []api.ArchivedThread) {
+func (m *Mocker) PrivateArchivedThreadsBefore(
+	channelID discord.ChannelID, before discord.Timestamp, limit uint, _ret []api.ArchivedThread,
+) {
 	if _ret == nil {
 		_ret = []api.ArchivedThread{}
 	}
 
-	m.MockAPI("PrivateArchivedThreadsBefore", http.MethodGet, "channels/"+channelID.String()+"/threads/archived/private",
+	m.MockAPI("PrivateArchivedThreadsBefore", http.MethodGet,
+		"channels/"+channelID.String()+"/threads/archived/private",
 		func(_w http.ResponseWriter, _r *http.Request, _t *testing.T) {
 			_params := struct {
 				Before string `schema:"before"`
@@ -448,12 +475,15 @@ func (m *Mocker) PrivateArchivedThreadsBefore(channelID discord.ChannelID, befor
 }
 
 // JoinedPrivateArchivedThreadsBefore mocks api.Client.JoinedPrivateArchivedThreadsBefore.
-func (m *Mocker) JoinedPrivateArchivedThreadsBefore(channelID discord.ChannelID, before discord.Timestamp, limit uint, _ret []api.ArchivedThread) {
+func (m *Mocker) JoinedPrivateArchivedThreadsBefore(
+	channelID discord.ChannelID, before discord.Timestamp, limit uint, _ret []api.ArchivedThread,
+) {
 	if _ret == nil {
 		_ret = []api.ArchivedThread{}
 	}
 
-	m.MockAPI("JoinedPrivateArchivedThreadsBefore", http.MethodGet, "channels/"+channelID.String()+"/users/@me/threads/archived/private",
+	m.MockAPI("JoinedPrivateArchivedThreadsBefore", http.MethodGet,
+		"channels/"+channelID.String()+"/users/@me/threads/archived/private",
 		func(_w http.ResponseWriter, _r *http.Request, _t *testing.T) {
 			_params := struct {
 				Before string `schema:"before"`
@@ -641,7 +671,9 @@ func (m *Mocker) Integrations(guildID discord.GuildID, _ret []discord.Integratio
 }
 
 // AttachIntegration mocks api.Client.AttachIntegration.
-func (m *Mocker) AttachIntegration(guildID discord.GuildID, integrationID discord.IntegrationID, integrationType discord.Service) {
+func (m *Mocker) AttachIntegration(
+	guildID discord.GuildID, integrationID discord.IntegrationID, integrationType discord.Service,
+) {
 	m.MockAPI("AttachIntegration", http.MethodPost, "guilds/"+guildID.String()+"/integrations",
 		func(_w http.ResponseWriter, _r *http.Request, _t *testing.T) {
 			_body := struct {
@@ -657,7 +689,9 @@ func (m *Mocker) AttachIntegration(guildID discord.GuildID, integrationID discor
 }
 
 // ModifyIntegration mocks api.Client.ModifyIntegration.
-func (m *Mocker) ModifyIntegration(guildID discord.GuildID, integrationID discord.IntegrationID, data api.ModifyIntegrationData) {
+func (m *Mocker) ModifyIntegration(
+	guildID discord.GuildID, integrationID discord.IntegrationID, data api.ModifyIntegrationData,
+) {
 	m.MockAPI("ModifyIntegration", http.MethodPatch, "guilds/"+guildID.String()+"/integrations/"+integrationID.String(),
 		func(_w http.ResponseWriter, _r *http.Request, _t *testing.T) {
 			check.JSON(_t, data, _r.Body)
@@ -666,7 +700,8 @@ func (m *Mocker) ModifyIntegration(guildID discord.GuildID, integrationID discor
 
 // SyncIntegration mocks api.Client.SyncIntegration.
 func (m *Mocker) SyncIntegration(guildID discord.GuildID, integrationID discord.IntegrationID) {
-	m.MockAPI("SyncIntegration", http.MethodPost, "guilds/"+guildID.String()+"/integrations/"+integrationID.String()+"/sync", nil)
+	m.MockAPI("SyncIntegration", http.MethodPost,
+		"guilds/"+guildID.String()+"/integrations/"+integrationID.String()+"/sync", nil)
 }
 
 // GuildWidgetSettings mocks api.Client.GuildWidgetSettings.
@@ -678,7 +713,9 @@ func (m *Mocker) GuildWidgetSettings(guildID discord.GuildID, _ret discord.Guild
 }
 
 // ModifyGuildWidget mocks api.Client.ModifyGuildWidget.
-func (m *Mocker) ModifyGuildWidget(guildID discord.GuildID, data api.ModifyGuildWidgetData, _ret discord.GuildWidgetSettings) {
+func (m *Mocker) ModifyGuildWidget(
+	guildID discord.GuildID, data api.ModifyGuildWidgetData, _ret discord.GuildWidgetSettings,
+) {
 	m.MockAPI("ModifyGuildWidget", http.MethodPatch, "guilds/"+guildID.String()+"/widget",
 		func(_w http.ResponseWriter, _r *http.Request, _t *testing.T) {
 			check.JSON(_t, data, _r.Body)
@@ -718,7 +755,9 @@ func (m *Mocker) InteractionResponse(appID discord.AppID, token string, _ret dis
 }
 
 // EditInteractionResponse mocks api.Client.EditInteractionResponse.
-func (m *Mocker) EditInteractionResponse(appID discord.AppID, token string, data api.EditInteractionResponseData, _ret discord.Message) {
+func (m *Mocker) EditInteractionResponse(
+	appID discord.AppID, token string, data api.EditInteractionResponseData, _ret discord.Message,
+) {
 	m.MockAPI("EditInteractionResponse", http.MethodPatch, "webhooks/"+appID.String()+"/"+token+"/messages/@original",
 		func(_w http.ResponseWriter, _r *http.Request, _t *testing.T) {
 			if data.NeedsMultipart() {
@@ -735,11 +774,14 @@ func (m *Mocker) EditInteractionResponse(appID discord.AppID, token string, data
 
 // DeleteInteractionResponse mocks api.Client.DeleteInteractionResponse.
 func (m *Mocker) DeleteInteractionResponse(appID discord.AppID, token string) {
-	m.MockAPI("DeleteInteractionResponse", http.MethodDelete, "webhooks/"+appID.String()+"/"+token+"/messages/@original", nil)
+	m.MockAPI("DeleteInteractionResponse", http.MethodDelete,
+		"webhooks/"+appID.String()+"/"+token+"/messages/@original", nil)
 }
 
 // CreateInteractionFollowup mocks api.Client.CreateInteractionFollowup.
-func (m *Mocker) CreateInteractionFollowup(appID discord.AppID, token string, data api.InteractionResponseData, _ret discord.Message) {
+func (m *Mocker) CreateInteractionFollowup(
+	appID discord.AppID, token string, data api.InteractionResponseData, _ret discord.Message,
+) {
 	m.MockAPI("CreateInteractionFollowup", http.MethodPost, "webhooks/"+appID.String()+"/"+token+"?",
 		func(_w http.ResponseWriter, _r *http.Request, _t *testing.T) {
 			if data.NeedsMultipart() {
@@ -755,8 +797,12 @@ func (m *Mocker) CreateInteractionFollowup(appID discord.AppID, token string, da
 }
 
 // EditInteractionFollowup mocks api.Client.EditInteractionFollowup.
-func (m *Mocker) EditInteractionFollowup(appID discord.AppID, messageID discord.MessageID, token string, data api.EditInteractionResponseData, _ret discord.Message) {
-	m.MockAPI("EditInteractionFollowup", http.MethodPatch, "webhooks/"+appID.String()+"/"+token+"/messages/"+messageID.String(),
+func (m *Mocker) EditInteractionFollowup(
+	appID discord.AppID, messageID discord.MessageID, token string, data api.EditInteractionResponseData,
+	_ret discord.Message,
+) {
+	m.MockAPI("EditInteractionFollowup", http.MethodPatch,
+		"webhooks/"+appID.String()+"/"+token+"/messages/"+messageID.String(),
 		func(_w http.ResponseWriter, _r *http.Request, _t *testing.T) {
 			if data.NeedsMultipart() {
 				_files := data.Files
@@ -772,7 +818,8 @@ func (m *Mocker) EditInteractionFollowup(appID discord.AppID, messageID discord.
 
 // DeleteInteractionFollowup mocks api.Client.DeleteInteractionFollowup.
 func (m *Mocker) DeleteInteractionFollowup(appID discord.AppID, messageID discord.MessageID, token string) {
-	m.MockAPI("DeleteInteractionFollowup", http.MethodDelete, "webhooks/"+appID.String()+"/"+token+"/messages/"+messageID.String(), nil)
+	m.MockAPI("DeleteInteractionFollowup", http.MethodDelete,
+		"webhooks/"+appID.String()+"/"+token+"/messages/"+messageID.String(), nil)
 }
 
 // =============================================================================
@@ -969,9 +1016,9 @@ func (m *Mocker) Prune(guildID discord.GuildID, data api.PruneData, _ret uint) {
 		})
 }
 
-// KickWithReason mocks api.Client.KickWithReason.
-func (m *Mocker) KickWithReason(guildID discord.GuildID, userID discord.UserID, reason api.AuditLogReason) {
-	m.MockAPI("KickWithReason", http.MethodDelete, "guilds/"+guildID.String()+"/members/"+userID.String(),
+// Kick mocks api.Client.Kick.
+func (m *Mocker) Kick(guildID discord.GuildID, userID discord.UserID, reason api.AuditLogReason) {
+	m.MockAPI("Kick", http.MethodDelete, "guilds/"+guildID.String()+"/members/"+userID.String(),
 		func(_w http.ResponseWriter, _r *http.Request, _t *testing.T) {
 			check.Header(_t, reason.Header(), _r.Header)
 		})
@@ -1033,7 +1080,8 @@ func (m *Mocker) Message(_ret discord.Message) {
 
 // CrosspostMessage mocks api.Client.CrosspostMessage.
 func (m *Mocker) CrosspostMessage(channelID discord.ChannelID, messageID discord.MessageID, _ret discord.Message) {
-	m.MockAPI("CrosspostMessage", http.MethodPost, "channels/"+channelID.String()+"/messages/"+messageID.String()+"/crosspost",
+	m.MockAPI("CrosspostMessage", http.MethodPost,
+		"channels/"+channelID.String()+"/messages/"+messageID.String()+"/crosspost",
 		func(_w http.ResponseWriter, _r *http.Request, _t *testing.T) {
 			check.WriteJSON(_t, _w, _ret)
 		})
@@ -1053,17 +1101,20 @@ func (m *Mocker) DeleteMessage(channelID discord.ChannelID, messageID discord.Me
 
 // React mocks api.Client.React.
 func (m *Mocker) React(channelID discord.ChannelID, messageID discord.MessageID, emoji discord.APIEmoji) {
-	m.MockAPI("React", http.MethodPut, "channels/"+channelID.String()+"/messages/"+messageID.String()+"/reactions/"+emoji.PathString()+"/@me", nil)
+	m.MockAPI("React", http.MethodPut,
+		"channels/"+channelID.String()+"/messages/"+messageID.String()+"/reactions/"+emoji.PathString()+"/@me", nil)
 }
 
 // DeleteReactions mocks api.Client.DeleteReactions.
 func (m *Mocker) DeleteReactions(channelID discord.ChannelID, messageID discord.MessageID, emoji discord.APIEmoji) {
-	m.MockAPI("DeleteReactions", http.MethodDelete, "channels/"+channelID.String()+"/messages/"+messageID.String()+"/reactions/"+emoji.PathString(), nil)
+	m.MockAPI("DeleteReactions", http.MethodDelete,
+		"channels/"+channelID.String()+"/messages/"+messageID.String()+"/reactions/"+emoji.PathString(), nil)
 }
 
 // DeleteAllReactions mocks api.Client.DeleteAllReactions.
 func (m *Mocker) DeleteAllReactions(channelID discord.ChannelID, messageID discord.MessageID) {
-	m.MockAPI("DeleteAllReactions", http.MethodDelete, "channels/"+channelID.String()+"/messages/"+messageID.String()+"/reactions", nil)
+	m.MockAPI("DeleteAllReactions", http.MethodDelete,
+		"channels/"+channelID.String()+"/messages/"+messageID.String()+"/reactions", nil)
 }
 
 // =============================================================================
@@ -1072,15 +1123,19 @@ func (m *Mocker) DeleteAllReactions(channelID discord.ChannelID, messageID disco
 
 // AddRole mocks api.Client.AddRole.
 func (m *Mocker) AddRole(guildID discord.GuildID, userID discord.UserID, roleID discord.RoleID, data api.AddRoleData) {
-	m.MockAPI("AddRole", http.MethodPut, "guilds/"+guildID.String()+"/members/"+userID.String()+"/roles/"+roleID.String(),
+	m.MockAPI("AddRole", http.MethodPut,
+		"guilds/"+guildID.String()+"/members/"+userID.String()+"/roles/"+roleID.String(),
 		func(_w http.ResponseWriter, _r *http.Request, _t *testing.T) {
 			check.Header(_t, data.Header(), _r.Header)
 		})
 }
 
 // RemoveRole mocks api.Client.RemoveRole.
-func (m *Mocker) RemoveRole(guildID discord.GuildID, userID discord.UserID, roleID discord.RoleID, reason api.AuditLogReason) {
-	m.MockAPI("RemoveRole", http.MethodDelete, "guilds/"+guildID.String()+"/members/"+userID.String()+"/roles/"+roleID.String(),
+func (m *Mocker) RemoveRole(
+	guildID discord.GuildID, userID discord.UserID, roleID discord.RoleID, reason api.AuditLogReason,
+) {
+	m.MockAPI("RemoveRole", http.MethodDelete,
+		"guilds/"+guildID.String()+"/members/"+userID.String()+"/roles/"+roleID.String(),
 		func(_w http.ResponseWriter, _r *http.Request, _t *testing.T) {
 			check.Header(_t, reason.Header(), _r.Header)
 		})

@@ -4,7 +4,7 @@ go 1.16
 
 require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
-	github.com/diamondburned/arikawa/v3 v3.0.0-20210817064836-eece98903ab1
+	github.com/diamondburned/arikawa/v3 v3.0.0-20210820092753-1e9eb4a47334
 	github.com/gorilla/schema v1.2.0
 	github.com/stretchr/testify v1.7.0
 	golang.org/x/time v0.0.0-20210723032227-1f47c861a9ac // indirect

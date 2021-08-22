@@ -59,8 +59,6 @@ func (p *Parser) Parse() ([]File, error) {
 	files := make([]File, 0, len(p.fparsers))
 
 	for _, fp := range p.fparsers {
-		log.Println("parsing", fp.file)
-
 		f, err := fp.parse()
 		if err != nil {
 			return nil, err
