@@ -970,7 +970,7 @@ func TestMocker_MessagesAfter(t *testing.T) {
 						ID:        discord.MessageID(int(after) + c.messages + 1),
 						ChannelID: channelID,
 						GuildID:   789,
-						Author:    discord.User{ID: 012},
+						Author:    discord.User{ID: 12},
 					}
 				}
 
@@ -1037,24 +1037,6 @@ func TestMocker_MessagesAfter(t *testing.T) {
 			m.MessagesAfter(123, 0, 1, []discord.Message{{}, {}})
 		})
 	})
-}
-
-func TestMocker_Message(t *testing.T) {
-	m, s := NewSession(t)
-
-	expect := discord.Message{
-		ID:        123,
-		ChannelID: 465,
-		GuildID:   456,
-		Author:    discord.User{ID: 789},
-	}
-
-	m.Message(expect)
-
-	actual, err := s.Message(expect.ChannelID, expect.ID)
-	require.NoError(t, err)
-
-	assert.Equal(t, expect, *actual)
 }
 
 func TestMocker_SendTextReply(t *testing.T) {

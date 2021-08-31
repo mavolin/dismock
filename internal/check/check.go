@@ -34,13 +34,11 @@ var (
 	nullableUint   = reflect.TypeOf(new(option.NullableUintData))
 	nullableInt    = reflect.TypeOf(new(option.NullableIntData))
 	nullableString = reflect.TypeOf(new(option.NullableStringData))
-	nullableColor  = reflect.TypeOf(new(option.NullableColorData))
 
 	nilBool   = reflect.ValueOf((*option.NullableBoolData)(nil))
 	nilUint   = reflect.ValueOf((*option.NullableUintData)(nil))
 	nilInt    = reflect.ValueOf((*option.NullableIntData)(nil))
 	nilString = reflect.ValueOf((*option.NullableStringData)(nil))
-	nilColor  = reflect.ValueOf((*option.NullableColorData)(nil))
 )
 
 // JSON checks if body contains the JSON data matching the passed expected
@@ -207,10 +205,6 @@ func replaceNullables(val reflect.Value) { //nolint:gocognit
 			case t.AssignableTo(nullableString):
 				if !isNil && !elem.FieldByName(initField).Bool() {
 					field.Set(nilString)
-				}
-			case t.AssignableTo(nullableColor):
-				if !isNil && !elem.FieldByName(initField).Bool() {
-					field.Set(nilColor)
 				}
 			case !isNil && elem.Kind() == reflect.Struct:
 				replaceNullables(field)
