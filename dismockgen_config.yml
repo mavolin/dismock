@@ -109,9 +109,9 @@
 #             If you do use {{.Var}}, you can write a full block of code in
 #             which you must set the var yourself.
 #
-#                               wrapped_response.tmpl
+#                               wrapped_response
 #
-# The wrapped_response.tmpl option can be used, if Discord sends their response
+# The wrapped_response option can be used if Discord sends their response
 # wrapped in a single field json object, and the arikawa source method returns
 # the value of that field instead of the object itself.
 #

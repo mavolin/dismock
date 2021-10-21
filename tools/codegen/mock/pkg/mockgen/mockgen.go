@@ -227,7 +227,7 @@ func resolveEndpointExpr(expr ast.Expr, cfg config.Item, ep *string) error {
 type Action struct {
 	Name       string
 	Params     []Param
-	ReturnType *Type // name is always 'ret'
+	ReturnType *Type // name is always '_ret'
 
 	Multipart                          bool
 	QueryParam, JSONParam, ReasonParam string

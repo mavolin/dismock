@@ -25,7 +25,7 @@ func (m *Mocker) {{.Name}}(
         {{- if gt $i 0}}, {{end}} {{- $param.Name}} {{$param.Type.String}}
     {{- end -}}
 ) {
-{{- if and .ReturnType (or .ReturnType.Variadic | (gt .ReturnType.Slice 0))}}
+{{- if and .ReturnType (or .ReturnType.Variadic (gt .ReturnType.Slice 0))}}
     if _ret == nil {
         _ret = {{.ReturnType.String}}{}
     }

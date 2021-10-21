@@ -24,8 +24,8 @@
 // Furthermore, this tool is a great aid in spotting recently added methods,
 // for which no mocks exist yet.
 // A simple diff between an old and a new version of generated_mocks is
-// sufficient, since the order of mocks will remain the same for multiple
-// invocations of mockgen.
+// sufficient, since the order of mocks will remain the same for subsequent
+// uses of mockgen.
 package main
 
 import (
