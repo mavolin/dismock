@@ -19,6 +19,14 @@ import (
 // application.go
 // =====================================================================================
 
+// CurrentApplication mocks api.Client.CurrentApplication.
+func (m *Mocker) CurrentApplication(_ret discord.Application) {
+	m.MockAPI("CurrentApplication", http.MethodGet, "/oauth2/applications/@me",
+		func(_w http.ResponseWriter, _r *http.Request, _t *testing.T) {
+			check.WriteJSON(_t, _w, _ret)
+		})
+}
+
 // Commands mocks api.Client.Commands.
 func (m *Mocker) Commands(appID discord.AppID, _ret []discord.Command) {
 	if _ret == nil {
@@ -1271,9 +1279,9 @@ func (m *Mocker) Me(_ret discord.User) {
 		})
 }
 
-// ModifyMe mocks api.Client.ModifyMe.
-func (m *Mocker) ModifyMe(data api.ModifySelfData, _ret discord.User) {
-	m.MockAPI("ModifyMe", http.MethodPatch, "users/@me",
+// ModifyCurrentUser mocks api.Client.ModifyCurrentUser.
+func (m *Mocker) ModifyCurrentUser(data api.ModifyCurrentUserData, _ret discord.User) {
+	m.MockAPI("ModifyCurrentUser", http.MethodPatch, "users/@me",
 		func(_w http.ResponseWriter, _r *http.Request, _t *testing.T) {
 			check.JSON(_t, data, _r.Body)
 
@@ -1283,9 +1291,9 @@ func (m *Mocker) ModifyMe(data api.ModifySelfData, _ret discord.User) {
 		})
 }
 
-// ChangeOwnNickname mocks api.Client.ChangeOwnNickname.
-func (m *Mocker) ChangeOwnNickname(guildID discord.GuildID, nick string) {
-	m.MockAPI("ChangeOwnNickname", http.MethodPatch, "guilds/"+guildID.String()+"/members/@me/nick",
+// ModifyCurrentMember mocks api.Client.ModifyCurrentMember.
+func (m *Mocker) ModifyCurrentMember(guildID discord.GuildID, nick string) {
+	m.MockAPI("ModifyCurrentMember", http.MethodPatch, "guilds/"+guildID.String()+"/members/@me",
 		func(_w http.ResponseWriter, _r *http.Request, _t *testing.T) {
 			_body := struct {
 				Nick string `json:"nick"`

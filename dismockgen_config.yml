@@ -456,7 +456,7 @@ User:
   infer_params:
     - infer: userID
       from: ID
-ChangeOwnNickname:
+ModifyCurrentMember:
   json_body:
     - param: nick
 CreatePrivateChannel:
