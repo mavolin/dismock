@@ -18,10 +18,10 @@
 //
 // Important Notes
 //
-// BUG(mavolin): Due to an inconvenient behavior of json.Unmarshal where on
-// JSON null the the UnmarshalJSON method doesn't get called, there is no way
-// to differentiate between option.NullX and omitted, and therefore both will
-// be seen as equal.
+// BUG(mavolin): Due to an inconvenient behavior of json.Unmarshal where
+// sometimes on JSON null the UnmarshalJSON method doesn't get called there is
+// no way to differentiate between option.NullX and an omitted (nil) value.
+// Therefore, both will be seen as equal.
 //
 // BUG(mavolin): Due to the way Snowflakes are serialized, all fields that
 // don't have the omitempty flag and are set to 0, will be sent as JSON null.

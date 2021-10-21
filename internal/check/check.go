@@ -29,18 +29,6 @@ func WriteJSON(t *testing.T, w http.ResponseWriter, v interface{}) {
 	require.NoError(t, err)
 }
 
-var (
-	nullableBool   = reflect.TypeOf(new(option.NullableBoolData))
-	nullableUint   = reflect.TypeOf(new(option.NullableUintData))
-	nullableInt    = reflect.TypeOf(new(option.NullableIntData))
-	nullableString = reflect.TypeOf(new(option.NullableStringData))
-
-	nilBool   = reflect.ValueOf((*option.NullableBoolData)(nil))
-	nilUint   = reflect.ValueOf((*option.NullableUintData)(nil))
-	nilInt    = reflect.ValueOf((*option.NullableIntData)(nil))
-	nilString = reflect.ValueOf((*option.NullableStringData)(nil))
-)
-
 // JSON checks if body contains the JSON data matching the passed expected
 // value.
 func JSON(t *testing.T, expect interface{}, actualReader io.ReadCloser) {
@@ -160,14 +148,41 @@ func checkJSON(t *testing.T, expect interface{}, actualReader io.Reader) {
 	require.NoError(t, err)
 
 	expectVal := reflect.ValueOf(expect)
-	replaceNullables(expectVal)
 
-	assert.Equal(t, expect, decodeVal.Elem().Interface())
+	// do this so we always have an addressable value
+	ptrExpectVal := reflect.New(expectVal.Type())
+	ptrExpectVal = ptrExpectVal.Elem()
+	ptrExpectVal.Set(expectVal)
+
+	replaceNullables(ptrExpectVal)
+
+	assert.Equal(t, ptrExpectVal.Interface(), decodeVal.Elem().Interface())
 }
 
+var (
+	nullableBool   = reflect.TypeOf(new(option.NullableBoolData))
+	nullableUint   = reflect.TypeOf(new(option.NullableUintData))
+	nullableInt    = reflect.TypeOf(new(option.NullableIntData))
+	nullableString = reflect.TypeOf(new(option.NullableStringData))
+
+	nilBool   = reflect.ValueOf((*option.NullableBoolData)(nil))
+	nilUint   = reflect.ValueOf((*option.NullableUintData)(nil))
+	nilInt    = reflect.ValueOf((*option.NullableIntData)(nil))
+	nilString = reflect.ValueOf((*option.NullableStringData)(nil))
+)
+
 // replacesNullables replaces the values of all nullable types with nil, if
-// they have assumed their JSON value.
-func replaceNullables(val reflect.Value) { //nolint:gocognit
+// they represent json null.
+//
+// This is necessary because json.Unmarshal does not call the custom unmarshal
+// methods of pointers and instead just assigns nil to them.
+// This will trigger false positives when comparing api.FooData structs, as
+// fields that use nullable types and that are set to null will get serialized
+// as nil, but the expected value for that field is the null version of the
+// type.
+// To avoid this, we replace all those null versions with nil, so that
+// comparison will pass.
+func replaceNullables(val reflect.Value) {
 	if val.Kind() == reflect.Ptr {
 		val = val.Elem()
 	}
@@ -183,30 +198,30 @@ func replaceNullables(val reflect.Value) { //nolint:gocognit
 				elem = elem.Elem()
 			}
 
-			isNil := field.Kind() == reflect.Ptr && field.IsNil()
+			if field.Kind() == reflect.Ptr && field.IsNil() {
+				continue
+			}
 
 			const initField = "Init"
 
-			// this is a workaround to compensate for json.Unmarshal not calling Unmarshaler
-			// functions on JSON null
 			switch {
 			case t.AssignableTo(nullableBool):
-				if !isNil && !elem.FieldByName(initField).Bool() {
+				if !elem.FieldByName(initField).Bool() {
 					field.Set(nilBool)
 				}
 			case t.AssignableTo(nullableUint):
-				if !isNil && !elem.FieldByName(initField).Bool() {
+				if !elem.FieldByName(initField).Bool() {
 					field.Set(nilUint)
 				}
 			case t.AssignableTo(nullableInt):
-				if !isNil && !elem.FieldByName(initField).Bool() {
+				if !elem.FieldByName(initField).Bool() {
 					field.Set(nilInt)
 				}
 			case t.AssignableTo(nullableString):
-				if !isNil && !elem.FieldByName(initField).Bool() {
+				if !elem.FieldByName(initField).Bool() {
 					field.Set(nilString)
 				}
-			case !isNil && elem.Kind() == reflect.Struct:
+			case elem.Kind() == reflect.Struct:
 				replaceNullables(field)
 			}
 		}

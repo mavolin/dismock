@@ -1,71 +1,61 @@
 linters:
   disable-all: true
   enable:
-    - asciicheck
     - bodyclose
     - deadcode
-    - dogsled
-    - dupl
+    - durationcheck
     - errcheck
     - errorlint
-    - exhaustive
-    - funlen
-    - gochecknoinits
-    - goconst
-    - gocognit
+    - exportloopref
+    - forbidigo
     - gocritic
-    - gocyclo
-    - gofmt
+    - godot
     - gofumpt
     - goimports
-    - golint
     - gosec
     - gosimple
     - govet
     - ineffassign
     - lll
-    - maligned
     - misspell
     - nakedret
     - prealloc
+    - predeclared
+    - revive
     - rowserrcheck
     - staticcheck
     - structcheck
-    - stylecheck
+    - tparallel
     - typecheck
     - unconvert
     - unparam
-    - unconvert
     - unused
     - varcheck
     - whitespace
 
 linters-settings:
-  funlen:
-    lines: 65
+  godot:
+    exclude:
+      - ^\s*.+:.+$
+      - ^\s*(?:=+|/+|-+|\++)
 
 issues:
   exclude-rules:
-    # prevent errors on //noinspection tags
+    # prevent errors on type assertions with field access
     - linters:
-        - gocritic
-        - gofumpt
-      source: "^\\s*//noinspection(?:[^\n]+)?$"
+        - errorlint
+      source: \w\.\(\*?\w+\)\.\w+
     - linters:
         - lll
-      source: //nolint
-    # io.EOF and sql.ErrNoRows should, by doc, never be wrapped
+      source: //(?:nolint|go|goland)
+    # io.EOF and sql.ErrNoRows should, according to the doc, never be wrapped
     - linters:
         - errorlint
       source: "\\w+\\s*==\\s*(io.EOF|sql.ErrNoRows)"
-    - path: _test\.go$
+    - path: (?:_test|test_util)\.go$
       linters:
         - bodyclose
-        - dupl
         - errcheck
         - errorlint
-        - funlen
-        - gocognit
-        - goconst
-        - gocyclo
         - gosec
+        - unparam

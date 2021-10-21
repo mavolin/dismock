@@ -462,7 +462,7 @@ func TestCheckQuery(t *testing.T) {
 	})
 }
 
-func TestReplaceNullables(t *testing.T) {
+func Test_replaceNullables(t *testing.T) {
 	testCases := []struct {
 		name   string
 		in     interface{}
@@ -521,19 +521,6 @@ func TestReplaceNullables(t *testing.T) {
 			},
 			expect: &struct {
 				B option.NullableString
-			}{
-				B: nil,
-			},
-		},
-		{
-			name: "NullableColor",
-			in: &struct {
-				B option.NullableColor
-			}{
-				B: option.NullColor,
-			},
-			expect: &struct {
-				B option.NullableColor
 			}{
 				B: nil,
 			},
