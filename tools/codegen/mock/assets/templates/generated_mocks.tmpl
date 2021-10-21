@@ -25,11 +25,11 @@ func (m *Mocker) {{.Name}}(
         {{- if gt $i 0}}, {{end}} {{- $param.Name}} {{$param.Type.String}}
     {{- end -}}
 ) {
-{{- if and .ReturnType (or .ReturnType.Variadic (gt .ReturnType.Slice 0))}}
+{{- if .ReturnType}}{{if gt .ReturnType.Slice 0 | or .ReturnType.Variadic}}
     if _ret == nil {
         _ret = {{.ReturnType.String}}{}
     }
-{{end}}
+{{end}}{{end}}
     m.MockAPI("{{.Name}}", {{.HTTPMethod.AsHTTPVar}}, {{.EndpointExpr}},
 {{- if or .JSONParam .QueryParam .ReasonParam .URLParams .Multipart .JSONBody .ReturnType | not}}
     {{- print " nil)"}}
