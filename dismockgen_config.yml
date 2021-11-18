@@ -57,10 +57,10 @@
 # param:      The name of the parameter that the query parameter's value will
 #             be derived from.
 # name:       The name (key) of the query parameter. If param is set, this will
-#             default to the snake_case version of param. Otherwise, it is
+#             default to the snake_case version of param. Otherwise, name is
 #             required.
 # type:       The go type of the url parameter. It must be a go primitive,
-#             except for complex, or a slice thereof.
+#             or a slice thereof, the only exception is complex.
 #             If param is set, the type will automatically be inferred from the
 #             parameter param corresponds to.
 # omitempty:  If set to true, the query parameter will be expected to be
@@ -76,7 +76,7 @@
 #             If you don't use {{.Var}} in the template, the resolved value of
 #             val will be used to fill the {{.Var}}.
 #             If you do use {{.Var}}, you can write a full block of code in
-#            which you must set the var yourself.
+#             which you must set the variable yourself.
 #
 #                                   json_body
 #

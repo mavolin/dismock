@@ -246,7 +246,7 @@ func (m *Mocker) Members(guildID discord.GuildID, limit uint, members []discord.
 			from = uint(i) * maxFetchMembers
 			to   = uint(math.Min(float64(from+maxFetchMembers), float64(len(members))))
 
-			fetch = to - from // we use this as the sent limit
+			fetch = to - from // we use this as the send-limit
 		)
 
 		// but if limit != unlimited
@@ -289,7 +289,7 @@ func (m *Mocker) MembersAfter(guildID discord.GuildID, after discord.UserID, lim
 			from = uint(i) * maxFetchMembers
 			to   = uint(math.Min(float64(from+maxFetchMembers), float64(len(members))))
 
-			fetch = to - from // we use this as the sent limit
+			fetch = to - from // we use this as the send-limit
 		)
 
 		// but if limit != unlimited
@@ -352,7 +352,7 @@ func (m *Mocker) Messages(channelID discord.ChannelID, limit uint, messages []di
 		panic(fmt.Sprintf("limit may not be less than the number of sent messages (%d vs. %d)", len(messages), limit))
 	}
 
-	var before discord.MessageID = 0
+	var before discord.MessageID
 
 	for i := 0; i <= len(messages)/maxFetchMessages; i++ {
 		var (
@@ -360,7 +360,7 @@ func (m *Mocker) Messages(channelID discord.ChannelID, limit uint, messages []di
 			to   = uint(math.Min(float64(from+maxFetchMessages), float64(len(messages))))
 		)
 
-		fetch := to - from // we use this as the sent limit
+		fetch := to - from // we use this as the send-limit
 
 		// but if limit != unlimited
 		if limit > 0 {
