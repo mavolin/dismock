@@ -8,7 +8,7 @@ import (
 
 	"github.com/diamondburned/arikawa/v3/api"
 	"github.com/diamondburned/arikawa/v3/discord"
-	dismockTesting "github.com/mavolin/dismock/v3/internal/testing"
+	dismocktesting "github.com/mavolin/dismock/v3/internal/testing"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -176,7 +176,7 @@ func TestMocker_MockAPI(t *testing.T) {
 
 		method := http.MethodGet
 		path := "path/123"
-		f := func(w http.ResponseWriter, r *http.Request, t dismockTesting.TInterface) {
+		f := func(w http.ResponseWriter, r *http.Request, t dismocktesting.TInterface) {
 			invoked = true
 		}
 
@@ -295,7 +295,7 @@ func TestMocker_Eval(t *testing.T) {
 	t.Run("closed", func(t *testing.T) {
 		m := New(t)
 
-		m.Mock("", http.MethodGet, "/path", func(http.ResponseWriter, *http.Request, dismockTesting.TInterface) {})
+		m.Mock("", http.MethodGet, "/path", func(http.ResponseWriter, *http.Request, dismocktesting.TInterface) {})
 		m.Close()
 
 		// this is here for clarity, but would obviously get called

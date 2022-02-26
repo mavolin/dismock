@@ -1,6 +1,6 @@
 package testing
 
-// TInterface is a *testing.T interface for using ginkgo/etc with dismock
+// TInterface is a *testing.T interface for using ginkgo/etc with dismock.
 type TInterface interface {
 	Cleanup(func())
 	Setenv(kev, value string)

@@ -10,3 +10,5 @@ jobs:
       - uses: actions/setup-go@v2
       - name: Test
         run: go test -race ./...
+        with:
+          check-latest: true
