@@ -13,16 +13,16 @@ import (
 	"reflect"
 	"strconv"
 	"strings"
-	"testing"
 
 	"github.com/diamondburned/arikawa/v3/utils/json/option"
 	"github.com/diamondburned/arikawa/v3/utils/sendpart"
+	"github.com/mavolin/dismock/v3/internal/testing"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
 // WriteJSON writes the passed value to the passed http.ResponseWriter.
-func WriteJSON(t *testing.T, w http.ResponseWriter, v interface{}) {
+func WriteJSON(t testing.TInterface, w http.ResponseWriter, v interface{}) {
 	w.Header().Set("Content-Type", "application/json")
 
 	err := json.NewEncoder(w).Encode(v)
@@ -31,7 +31,7 @@ func WriteJSON(t *testing.T, w http.ResponseWriter, v interface{}) {
 
 // JSON checks if body contains the JSON data matching the passed expected
 // value.
-func JSON(t *testing.T, expect interface{}, actualReader io.ReadCloser) {
+func JSON(t testing.TInterface, expect interface{}, actualReader io.ReadCloser) {
 	checkJSON(t, expect, actualReader)
 	require.NoError(t, actualReader.Close())
 }
@@ -40,7 +40,7 @@ func JSON(t *testing.T, expect interface{}, actualReader io.ReadCloser) {
 // files and optionally the passed JSON data.
 //nolint:funlen
 func Multipart(
-	t *testing.T, body io.ReadCloser, h http.Header, expectJSON interface{}, expectFiles []sendpart.File,
+	t testing.TInterface, body io.ReadCloser, h http.Header, expectJSON interface{}, expectFiles []sendpart.File,
 ) {
 	_, p, err := mime.ParseMediaType(h.Get("Content-Type"))
 	require.NoError(t, err)
@@ -111,7 +111,7 @@ func Multipart(
 }
 
 // Query checks if the passed query contains the values found in except.
-func Query(t *testing.T, expect url.Values, actual url.Values) {
+func Query(t testing.TInterface, expect url.Values, actual url.Values) {
 	for name, vals := range actual {
 		if len(vals) == 0 {
 			continue
@@ -133,7 +133,7 @@ func Query(t *testing.T, expect url.Values, actual url.Values) {
 }
 
 // Header checks if the expected http.Header are contained in actual.
-func Header(t *testing.T, expect http.Header, actual http.Header) {
+func Header(t testing.TInterface, expect http.Header, actual http.Header) {
 	for _, expect := range expect {
 		assert.Contains(t, actual, expect)
 	}
@@ -141,7 +141,7 @@ func Header(t *testing.T, expect http.Header, actual http.Header) {
 
 // checkJSON checks if body contains the JSON data matching the passed expected
 // value.
-func checkJSON(t *testing.T, expect interface{}, actualReader io.Reader) {
+func checkJSON(t testing.TInterface, expect interface{}, actualReader io.Reader) {
 	decodeVal := reflect.New(reflect.TypeOf(expect))
 
 	err := json.NewDecoder(actualReader).Decode(decodeVal.Interface())
