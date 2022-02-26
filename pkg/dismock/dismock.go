@@ -30,6 +30,7 @@ package dismock
 import (
 	"context"
 	"crypto/tls"
+	"github.com/diamondburned/arikawa/v3/utils/handler"
 	"math"
 	"net"
 	"net/http"
@@ -157,8 +158,8 @@ func New(t testing.TInterface) *Mocker {
 func NewSession(t testing.TInterface) (*Mocker, *session.Session) {
 	m := New(t)
 
-	gw := gateway.NewCustomGateway("", "")
-	s := session.NewWithGateway(gw)
+	gw := gateway.NewCustom("", "")
+	s := session.NewWithGateway(gw, handler.New())
 
 	s.Client.Client = m.HTTPClient()
 	s.Client.Retries = 1
