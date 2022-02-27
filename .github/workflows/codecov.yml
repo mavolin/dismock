@@ -11,6 +11,8 @@ jobs:
       - uses: actions/setup-go@v2
       - name: Generate coverage report
         run: go test --race -coverprofile=coverage.txt -covermode=atomic ./...
+        with:
+          check-latest: true
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v1
         with:
