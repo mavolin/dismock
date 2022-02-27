@@ -30,6 +30,7 @@ package dismock
 import (
 	"context"
 	"crypto/tls"
+	"github.com/diamondburned/arikawa/v3/utils/handler"
 	"math"
 	"net"
 	"net/http"
@@ -37,7 +38,6 @@ import (
 	"strconv"
 	"strings"
 	"sync"
-	"testing"
 
 	"github.com/diamondburned/arikawa/v3/api"
 	"github.com/diamondburned/arikawa/v3/gateway"
@@ -46,6 +46,7 @@ import (
 	"github.com/diamondburned/arikawa/v3/state/store"
 	"github.com/diamondburned/arikawa/v3/utils/httputil"
 	"github.com/diamondburned/arikawa/v3/utils/httputil/httpdriver"
+	"github.com/mavolin/dismock/v3/internal/testing"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -73,7 +74,7 @@ type (
 		// However, mocks may not be added concurrently.
 		mut *sync.Mutex
 		// t is the test type called on error.
-		t *testing.T
+		t testing.TInterface
 
 		// closed is used to determine if the server was closed before eval has
 		// been called.
@@ -90,12 +91,12 @@ type (
 	}
 
 	// MockFunc is the function used to create a mock.
-	MockFunc func(w http.ResponseWriter, r *http.Request, t *testing.T)
+	MockFunc func(w http.ResponseWriter, r *http.Request, t testing.TInterface)
 )
 
 // New creates a new Mocker with a started server listening on
 // Mocker.Server.Listener.Addr().
-func New(t *testing.T) *Mocker {
+func New(t testing.TInterface) *Mocker {
 	m := &Mocker{
 		handlers: make(map[string]map[string][]Handler, 1),
 		mut:      new(sync.Mutex),
@@ -154,11 +155,11 @@ func New(t *testing.T) *Mocker {
 
 // NewSession creates a new Mocker, starts its test server and returns a
 // manipulated session.Session using the test server.
-func NewSession(t *testing.T) (*Mocker, *session.Session) {
+func NewSession(t testing.TInterface) (*Mocker, *session.Session) {
 	m := New(t)
 
-	gw := gateway.NewCustomGateway("", "")
-	s := session.NewWithGateway(gw)
+	gw := gateway.NewCustom("", "")
+	s := session.NewWithGateway(gw, handler.New())
 
 	s.Client.Client = m.HTTPClient()
 	s.Client.Retries = 1
@@ -170,7 +171,7 @@ func NewSession(t *testing.T) (*Mocker, *session.Session) {
 // manipulated state.State which's Session uses the test server.
 // In order to allow for successful testing, the State's Store, will always
 // return an error, forcing the use of the (mocked) Session.
-func NewState(t *testing.T) (*Mocker, *state.State) {
+func NewState(t testing.TInterface) (*Mocker, *state.State) {
 	m, se := NewSession(t)
 	return m, state.NewFromSession(se, store.NoopCabinet)
 }
@@ -241,7 +242,7 @@ func (m *Mocker) MockAPI(name, method, path string, f MockFunc) {
 // separate server.
 //
 // Creating a clone will automatically close the Mocker's server.
-func (m *Mocker) Clone(t *testing.T) (clone *Mocker) {
+func (m *Mocker) Clone(t testing.TInterface) (clone *Mocker) {
 	m.Close()
 
 	clone = New(t)
@@ -254,7 +255,7 @@ func (m *Mocker) Clone(t *testing.T) (clone *Mocker) {
 // a new session.Session using the new server.
 //
 // Creating a clone will automatically close the Mocker's server.
-func (m *Mocker) CloneSession(t *testing.T) (clone *Mocker, s *session.Session) {
+func (m *Mocker) CloneSession(t testing.TInterface) (clone *Mocker, s *session.Session) {
 	m.Close()
 
 	clone, s = NewSession(t)
@@ -268,7 +269,7 @@ func (m *Mocker) CloneSession(t *testing.T) (clone *Mocker, s *session.Session) 
 // Useful for multiple tests with the same API calls.
 //
 // Creating a clone will automatically close the current server.
-func (m *Mocker) CloneState(t *testing.T) (clone *Mocker, s *state.State) {
+func (m *Mocker) CloneState(t testing.TInterface) (clone *Mocker, s *state.State) {
 	m.Close()
 
 	clone, s = NewState(t)

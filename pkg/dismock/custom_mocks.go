@@ -7,7 +7,6 @@ import (
 	"net/http"
 	"net/url"
 	"strconv"
-	"testing"
 
 	"github.com/diamondburned/arikawa/v3/api"
 	"github.com/diamondburned/arikawa/v3/api/webhook"
@@ -18,11 +17,12 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/mavolin/dismock/v3/internal/check"
+	"github.com/mavolin/dismock/v3/internal/testing"
 )
 
 // Error simulates an error response for the given path using the given method.
 func (m *Mocker) Error(method, path string, e httputil.HTTPError) {
-	m.MockAPI("Error", method, path, func(w http.ResponseWriter, r *http.Request, t *testing.T) {
+	m.MockAPI("Error", method, path, func(w http.ResponseWriter, r *http.Request, t testing.TInterface) {
 		w.WriteHeader(e.Status)
 		err := json.NewEncoder(w).Encode(e)
 		require.NoError(t, err)
@@ -36,7 +36,7 @@ func (m *Mocker) Error(method, path string, e httputil.HTTPError) {
 // Ack mocks api.Client.Ack.
 func (m *Mocker) Ack(channelID discord.ChannelID, messageID discord.MessageID, send, ret api.Ack) {
 	m.MockAPI("Ack", http.MethodPost, "channels/"+channelID.String()+"/messages/"+messageID.String()+"/ack",
-		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
+		func(w http.ResponseWriter, r *http.Request, t testing.TInterface) {
 			check.JSON(t, send, r.Body)
 			check.WriteJSON(t, w, ret)
 		})
@@ -186,7 +186,7 @@ func (m *Mocker) GuildsAfter(after discord.GuildID, limit uint, g []discord.Guil
 // guildsRange mocks a single request to the GET /guilds endpoint.
 func (m *Mocker) guildsRange(before, after discord.GuildID, name string, limit uint, g []discord.Guild) {
 	m.MockAPI(name, http.MethodGet, "users/@me/guilds",
-		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
+		func(w http.ResponseWriter, r *http.Request, t testing.TInterface) {
 			expect := url.Values{
 				"limit": {strconv.FormatUint(uint64(limit), 10)},
 			}
@@ -211,7 +211,7 @@ func (m *Mocker) guildsRange(before, after discord.GuildID, name string, limit u
 // RespondInteraction mocks api.Client.RespondInteraction.
 func (m *Mocker) RespondInteraction(id discord.InteractionID, token string, resp api.InteractionResponse) {
 	m.MockAPI("RespondInteraction", http.MethodPost, "interactions/"+id.String()+"/"+token+"/callback",
-		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
+		func(w http.ResponseWriter, r *http.Request, t testing.TInterface) {
 			if resp.NeedsMultipart() {
 				files := resp.Data.Files
 				resp.Data.Files = nil
@@ -322,7 +322,7 @@ func (m *Mocker) membersAfter(
 	guildID discord.GuildID, after discord.UserID, name string, limit uint, g []discord.Member,
 ) {
 	m.MockAPI(name, http.MethodGet, "guilds/"+guildID.String()+"/members",
-		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
+		func(w http.ResponseWriter, r *http.Request, t testing.TInterface) {
 			expect := url.Values{
 				"limit": {strconv.FormatUint(uint64(limit), 10)},
 			}
@@ -512,7 +512,7 @@ func (m *Mocker) messagesRange(
 	messages []discord.Message,
 ) {
 	m.MockAPI(name, http.MethodGet, "channels/"+channelID.String()+"/messages",
-		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
+		func(w http.ResponseWriter, r *http.Request, t testing.TInterface) {
 			expect := url.Values{
 				"limit": {strconv.FormatUint(uint64(limit), 10)},
 			}
@@ -627,7 +627,7 @@ func (m *Mocker) editMessageComplex(name string, d api.EditMessageData, msg disc
 	}
 
 	m.MockAPI(name, http.MethodPatch, "channels/"+msg.ChannelID.String()+"/messages/"+msg.ID.String(),
-		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
+		func(w http.ResponseWriter, r *http.Request, t testing.TInterface) {
 			check.JSON(t, d, r.Body)
 			check.WriteJSON(t, w, msg)
 		})
@@ -636,7 +636,7 @@ func (m *Mocker) editMessageComplex(name string, d api.EditMessageData, msg disc
 // DeleteMessages mocks api.Client.DeleteMessages.
 func (m *Mocker) DeleteMessages(channelID discord.ChannelID, messageIDs []discord.MessageID) {
 	m.MockAPI("DeleteMessages", http.MethodPost, "channels/"+channelID.String()+"/messages/bulk-delete",
-		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
+		func(w http.ResponseWriter, r *http.Request, t testing.TInterface) {
 			expect := struct {
 				Messages []discord.MessageID `json:"messages"`
 			}{Messages: messageIDs}
@@ -805,7 +805,7 @@ func (m *Mocker) reactionsRange(
 ) {
 	m.MockAPI(name, http.MethodGet,
 		"channels/"+channelID.String()+"/messages/"+messageID.String()+"/reactions/"+e.PathString(),
-		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
+		func(w http.ResponseWriter, r *http.Request, t testing.TInterface) {
 			expect := url.Values{
 				"limit": {strconv.FormatUint(uint64(limit), 10)},
 			}
@@ -878,7 +878,7 @@ func (m *Mocker) sendMessageComplex(name string, d api.SendMessageData, msg disc
 	}
 
 	m.MockAPI(name, http.MethodPost, "channels/"+msg.ChannelID.String()+"/messages",
-		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
+		func(w http.ResponseWriter, r *http.Request, t testing.TInterface) {
 			if d.NeedsMultipart() {
 				files := d.Files
 				d.Files = nil
@@ -910,7 +910,7 @@ func (m *Mocker) executeWebhook(
 	webhookID discord.WebhookID, token string, wait bool, d webhook.ExecuteData, msg discord.Message,
 ) {
 	m.MockAPI("ExecuteWebhook", http.MethodPost, "webhooks/"+webhookID.String()+"/"+token,
-		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
+		func(w http.ResponseWriter, r *http.Request, t testing.TInterface) {
 			if wait {
 				check.Query(t, url.Values{
 					"wait": {"true"},
@@ -947,7 +947,7 @@ func (m *Mocker) executeWebhook(
 // This method will sanitize Webhook.User.ID and Webhook.ChannelID.
 func (m *Mocker) WebhookWithToken(wh discord.Webhook) {
 	m.MockAPI("WebhookWithToken", http.MethodGet, "webhooks/"+wh.ID.String()+"/"+wh.Token,
-		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
+		func(w http.ResponseWriter, r *http.Request, t testing.TInterface) {
 			check.WriteJSON(t, w, wh)
 		})
 }
@@ -955,7 +955,7 @@ func (m *Mocker) WebhookWithToken(wh discord.Webhook) {
 // ModifyWebhookWithToken mocks api.Client.ModifyWebhookWithToken.
 func (m *Mocker) ModifyWebhookWithToken(d api.ModifyWebhookData, wh discord.Webhook) {
 	m.MockAPI("ModifyWebhookWithToken", http.MethodPatch, "webhooks/"+wh.ID.String()+"/"+wh.Token,
-		func(w http.ResponseWriter, r *http.Request, t *testing.T) {
+		func(w http.ResponseWriter, r *http.Request, t testing.TInterface) {
 			check.JSON(t, &d, r.Body)
 			check.WriteJSON(t, w, wh)
 		})
