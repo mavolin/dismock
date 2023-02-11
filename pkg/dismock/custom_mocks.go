@@ -14,6 +14,8 @@ import (
 	"github.com/diamondburned/arikawa/v3/utils/httputil"
 	"github.com/diamondburned/arikawa/v3/utils/json/option"
 	"github.com/diamondburned/arikawa/v3/utils/sendpart"
+	"github.com/gorilla/schema"
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
 	"github.com/mavolin/dismock/v3/internal/check"
@@ -39,6 +41,88 @@ func (m *Mocker) Ack(channelID discord.ChannelID, messageID discord.MessageID, s
 		func(w http.ResponseWriter, r *http.Request, t testing.TInterface) {
 			check.JSON(t, send, r.Body)
 			check.WriteJSON(t, w, ret)
+		})
+}
+
+func (m *Mocker) PublicArchivedThreadsBefore(
+	channelID discord.ChannelID, before discord.Timestamp, limit uint, ret *api.ArchivedThreads,
+) {
+	m.MockAPI("PublicArchivedThreadsBefore", http.MethodGet, "channels/"+channelID.String()+"/threads/archived/public",
+		func(w http.ResponseWriter, r *http.Request, t testing.TInterface) {
+			_params := struct {
+				Before string `schema:"before,omitempty"`
+				Limit  uint   `schema:"limit,omitempty"`
+			}{
+				Limit: limit,
+			}
+
+			if before.IsValid() {
+				_params.Before = before.Format(discord.TimestampFormat)
+			}
+
+			var _values url.Values
+			err := schema.NewEncoder().Encode(_params, _values)
+			assert.NoError(t, err)
+
+			check.Query(t, _values, r.URL.Query())
+
+			check.WriteJSON(t, w, ret)
+		})
+}
+
+// PrivateArchivedThreadsBefore mocks api.Client.PrivateArchivedThreadsBefore.
+func (m *Mocker) PrivateArchivedThreadsBefore(
+	channelID discord.ChannelID, before discord.Timestamp, limit uint, ret *api.ArchivedThreads,
+) {
+	m.MockAPI("PrivateArchivedThreadsBefore", http.MethodGet,
+		"channels/"+channelID.String()+"/threads/archived/private",
+		func(w http.ResponseWriter, r *http.Request, t testing.TInterface) {
+			_params := struct {
+				Before string `schema:"before,omitempty"`
+				Limit  uint   `schema:"limit,omitempty"`
+			}{
+				Limit: limit,
+			}
+
+			if before.IsValid() {
+				_params.Before = before.Format(discord.TimestampFormat)
+			}
+
+			var _values url.Values
+			err := schema.NewEncoder().Encode(_params, _values)
+			assert.NoError(t, err)
+
+			check.Query(t, _values, r.URL.Query())
+
+			check.WriteJSON(t, w, ret)
+		})
+}
+
+// JoinedPrivateArchivedThreadsBefore mocks api.Client.JoinedPrivateArchivedThreadsBefore.
+func (m *Mocker) JoinedPrivateArchivedThreadsBefore(
+	channelID discord.ChannelID, before discord.Timestamp, limit uint, ret api.ArchivedThreads,
+) {
+	m.MockAPI("JoinedPrivateArchivedThreadsBefore", http.MethodGet,
+		"channels/"+channelID.String()+"/users/@me/threads/archived/private",
+		func(_w http.ResponseWriter, _r *http.Request, _t testing.TInterface) {
+			_params := struct {
+				Before string `schema:"before,omitempty"`
+				Limit  uint   `schema:"limit,omitempty"`
+			}{
+				Limit: limit,
+			}
+
+			if before.IsValid() {
+				_params.Before = before.Format(discord.TimestampFormat)
+			}
+
+			var _values url.Values
+			err := schema.NewEncoder().Encode(_params, _values)
+			assert.NoError(_t, err)
+
+			check.Query(_t, _values, _r.URL.Query())
+
+			check.WriteJSON(_t, _w, ret)
 		})
 }
 
@@ -220,6 +304,44 @@ func (m *Mocker) RespondInteraction(id discord.InteractionID, token string, resp
 			} else {
 				check.JSON(t, resp, r.Body)
 			}
+		})
+}
+
+// CreateInteractionFollowup mocks api.Client.CreateInteractionFollowup.
+func (m *Mocker) CreateInteractionFollowup(
+	appID discord.AppID, token string, resp api.InteractionResponseData, ret discord.Message,
+) {
+	m.MockAPI("CreateInteractionFollowup", http.MethodPost, "webhooks/"+appID.String()+"/"+token+"?",
+		func(w http.ResponseWriter, r *http.Request, t testing.TInterface) {
+			if resp.NeedsMultipart() {
+				files := resp.Files
+				resp.Files = nil
+
+				check.Multipart(t, r.Body, r.Header, resp, files)
+			} else {
+				check.JSON(t, resp, r.Body)
+			}
+
+			check.WriteJSON(t, w, ret)
+		})
+}
+
+// FollowUpInteraction mocks api.Client.FollowUpInteraction.
+func (m *Mocker) FollowUpInteraction(
+	appID discord.AppID, token string, resp api.InteractionResponseData, ret discord.Message,
+) {
+	m.MockAPI("FollowUpInteraction", http.MethodPost, "webhooks/"+appID.String()+"/"+token+"?",
+		func(w http.ResponseWriter, r *http.Request, t testing.TInterface) {
+			if resp.NeedsMultipart() {
+				files := resp.Files
+				resp.Files = nil
+
+				check.Multipart(t, r.Body, r.Header, resp, files)
+			} else {
+				check.JSON(t, resp, r.Body)
+			}
+
+			check.WriteJSON(t, w, ret)
 		})
 }
 

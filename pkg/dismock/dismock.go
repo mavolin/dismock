@@ -2,7 +2,7 @@
 // The names of the mocks correspond to arikawa's API wrapper names, but as
 // this are http mocks, any discord library can be mocked.
 //
-// Mocking Requests for Metadata
+// # Mocking Requests for Metadata
 //
 // Besides the regular API calls, dismock also features mocks for fetching
 // an entities meta data, e.g. an icon or a splash.
@@ -10,13 +10,12 @@
 // that those requests are made with Mocker.Client, so that the requests are
 // correctly redirected to the mock server.
 //
-// Mocking Errors
+// # Mocking Errors
 //
 // To send a discord error, use the Mocker.Error method with the path of the
 // endpoint that should return an error.
 //
-//
-// Important Notes
+// # Important Notes
 //
 // BUG(mavolin): Due to an inconvenient behavior of json.Unmarshal where
 // sometimes on JSON null the UnmarshalJSON method doesn't get called there is
@@ -30,7 +29,6 @@ package dismock
 import (
 	"context"
 	"crypto/tls"
-	"github.com/diamondburned/arikawa/v3/utils/handler"
 	"math"
 	"net"
 	"net/http"
@@ -39,6 +37,8 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/diamondburned/arikawa/v3/utils/handler"
+
 	"github.com/diamondburned/arikawa/v3/api"
 	"github.com/diamondburned/arikawa/v3/gateway"
 	"github.com/diamondburned/arikawa/v3/session"
@@ -46,13 +46,14 @@ import (
 	"github.com/diamondburned/arikawa/v3/state/store"
 	"github.com/diamondburned/arikawa/v3/utils/httputil"
 	"github.com/diamondburned/arikawa/v3/utils/httputil/httpdriver"
-	"github.com/mavolin/dismock/v3/internal/testing"
 	"github.com/stretchr/testify/assert"
+
+	"github.com/mavolin/dismock/v3/internal/testing"
 )
 
 // to be able to run this go:generate statement, you must first install
 // dismockgen
-// 	go install github.com/mavolin/dismock/tools/codegen/mock/cmd/dismockgen
+// 	go install github.com/mavolin/dismock/v3/tools/codegen/mock/cmd/dismockgen
 //go:generate dismockgen ../../dismockgen_config.yml
 
 type (
@@ -328,10 +329,11 @@ func (m *Mocker) Close() {
 // genUninvokedMsg generates an error message stating the unused handlers.
 //
 // Example
-//		/guilds/118456055842734083
-// 			Guild: 2 uinvoked handlers
-// 		/guilds/118456055842734083/members/256827968133791744
-//			ModifyMember: 1 uinvoked handler
+//
+//	/guilds/118456055842734083
+//		Guild: 2 uinvoked handlers
+//	/guilds/118456055842734083/members/256827968133791744
+//		ModifyMember: 1 uinvoked handler
 func (m *Mocker) genUninvokedMsg() string {
 	missing := make(map[string]map[string]int, len(m.handlers))
 

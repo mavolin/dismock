@@ -3,7 +3,7 @@ package dismock
 import (
 	"bytes"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"testing"
 
@@ -43,16 +43,20 @@ func TestMocker_Error(t *testing.T) {
 // =====================================================================================
 
 func TestMocker_Ack(t *testing.T) {
+	abc := "abc"
+	def := "def"
+	ghi := "ghi"
+
 	t.Run("success", func(t *testing.T) {
 		m, s := NewSession(t)
 
 		var (
 			channelID discord.ChannelID = 123
 			messageID discord.MessageID = 456
-			ack                         = api.Ack{Token: "abc"}
+			ack                         = api.Ack{Token: &abc}
 		)
 
-		expect := api.Ack{Token: "def"}
+		expect := api.Ack{Token: &def}
 		actual := &ack
 
 		m.Ack(channelID, messageID, ack, expect)
@@ -72,11 +76,11 @@ func TestMocker_Ack(t *testing.T) {
 			messageID discord.MessageID = 456
 		)
 
-		expect := api.Ack{Token: "def"}
+		expect := api.Ack{Token: &def}
 
-		m.Ack(channelID, messageID, api.Ack{Token: "abc"}, expect)
+		m.Ack(channelID, messageID, api.Ack{Token: &abc}, expect)
 
-		actual := &api.Ack{Token: "ghi"}
+		actual := &api.Ack{Token: &ghi}
 
 		err := s.Ack(channelID, messageID, actual)
 		require.NoError(t, err)
@@ -399,7 +403,7 @@ func TestMocker_RespondInteraction(t *testing.T) {
 					// deep copied. Therefore, we create two readers using the data from the original
 					// reader.
 					for i, f := range c.resp.Data.Files {
-						b, err := ioutil.ReadAll(f.Reader)
+						b, err := io.ReadAll(f.Reader)
 						require.NoError(t, err)
 
 						cp.Data.Files[i].Reader = bytes.NewBuffer(b)
@@ -1822,7 +1826,7 @@ func TestMocker_SendMessageComplex(t *testing.T) {
 				// deep copied. therefore we create two readers using the data from the original
 				// reader
 				for i, f := range c.data.Files {
-					b, err := ioutil.ReadAll(f.Reader)
+					b, err := io.ReadAll(f.Reader)
 					require.NoError(t, err)
 
 					cp.Files[i].Reader = bytes.NewBuffer(b)
@@ -1924,7 +1928,7 @@ func TestMocker_ExecuteWebhook(t *testing.T) {
 				// deep copied. therefore we create two readers using the data from the original
 				// reader
 				for i, f := range c.data.Files {
-					b, err := ioutil.ReadAll(f.Reader)
+					b, err := io.ReadAll(f.Reader)
 					require.NoError(t, err)
 
 					cp.Files[i].Reader = bytes.NewBuffer(b)
@@ -2030,7 +2034,7 @@ func TestMocker_ExecuteWebhookAndWait(t *testing.T) {
 				// deep copied. therefore we create two readers using the data from the original
 				// reader
 				for i, f := range c.data.Files {
-					b, err := ioutil.ReadAll(f.Reader)
+					b, err := io.ReadAll(f.Reader)
 					require.NoError(t, err)
 
 					cp.Files[i].Reader = bytes.NewBuffer(b)

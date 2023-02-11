@@ -6,6 +6,7 @@ import (
 
 	"github.com/diamondburned/arikawa/v3/api"
 	"github.com/diamondburned/arikawa/v3/discord"
+	"github.com/diamondburned/arikawa/v3/utils/json/option"
 	"github.com/gorilla/schema"
 	"github.com/stretchr/testify/assert"
 
@@ -73,7 +74,7 @@ func (m *Mocker) DeleteCommand(appID discord.AppID, commandID discord.CommandID)
 }
 
 // BulkOverwriteCommands mocks api.Client.BulkOverwriteCommands.
-func (m *Mocker) BulkOverwriteCommands(appID discord.AppID, commands []discord.Command, _ret []discord.Command) {
+func (m *Mocker) BulkOverwriteCommands(appID discord.AppID, commands []api.CreateCommandData, _ret []discord.Command) {
 	if _ret == nil {
 		_ret = []discord.Command{}
 	}
@@ -132,7 +133,7 @@ func (m *Mocker) DeleteGuildCommand(appID discord.AppID, guildID discord.GuildID
 }
 
 // BulkOverwriteGuildCommands mocks api.Client.BulkOverwriteGuildCommands.
-func (m *Mocker) BulkOverwriteGuildCommands(appID discord.AppID, guildID discord.GuildID, commands []discord.Command, _ret []discord.Command) {
+func (m *Mocker) BulkOverwriteGuildCommands(appID discord.AppID, guildID discord.GuildID, commands []api.CreateCommandData, _ret []discord.Command) {
 	if _ret == nil {
 		_ret = []discord.Command{}
 	}
@@ -393,13 +394,9 @@ func (m *Mocker) ActiveThreads(guildID discord.GuildID, _ret api.ActiveThreads) 
 		})
 }
 
-// PublicArchivedThreadsBefore mocks api.Client.PublicArchivedThreadsBefore.
-func (m *Mocker) PublicArchivedThreadsBefore(channelID discord.ChannelID, before discord.Timestamp, limit uint, _ret []api.ArchivedThread) {
-	if _ret == nil {
-		_ret = []api.ArchivedThread{}
-	}
-
-	m.MockAPI("PublicArchivedThreadsBefore", http.MethodGet, "channels/"+channelID.String()+"/threads/archived/public",
+// PublicArchivedThreads mocks api.Client.PublicArchivedThreads.
+func (m *Mocker) PublicArchivedThreads(channelID discord.ChannelID, before discord.Timestamp, limit uint, _ret api.ArchivedThreads) {
+	m.MockAPI("PublicArchivedThreads", http.MethodGet, "channels/"+channelID.String()+"/threads/archived/public",
 		func(_w http.ResponseWriter, _r *http.Request, _t testing.TInterface) {
 			_params := struct {
 				Before string `schema:"before"`
@@ -422,13 +419,9 @@ func (m *Mocker) PublicArchivedThreadsBefore(channelID discord.ChannelID, before
 		})
 }
 
-// PrivateArchivedThreadsBefore mocks api.Client.PrivateArchivedThreadsBefore.
-func (m *Mocker) PrivateArchivedThreadsBefore(channelID discord.ChannelID, before discord.Timestamp, limit uint, _ret []api.ArchivedThread) {
-	if _ret == nil {
-		_ret = []api.ArchivedThread{}
-	}
-
-	m.MockAPI("PrivateArchivedThreadsBefore", http.MethodGet, "channels/"+channelID.String()+"/threads/archived/private",
+// PrivateArchivedThreads mocks api.Client.PrivateArchivedThreads.
+func (m *Mocker) PrivateArchivedThreads(channelID discord.ChannelID, before discord.Timestamp, limit uint, _ret api.ArchivedThreads) {
+	m.MockAPI("PrivateArchivedThreads", http.MethodGet, "channels/"+channelID.String()+"/threads/archived/private",
 		func(_w http.ResponseWriter, _r *http.Request, _t testing.TInterface) {
 			_params := struct {
 				Before string `schema:"before"`
@@ -451,13 +444,9 @@ func (m *Mocker) PrivateArchivedThreadsBefore(channelID discord.ChannelID, befor
 		})
 }
 
-// JoinedPrivateArchivedThreadsBefore mocks api.Client.JoinedPrivateArchivedThreadsBefore.
-func (m *Mocker) JoinedPrivateArchivedThreadsBefore(channelID discord.ChannelID, before discord.Timestamp, limit uint, _ret []api.ArchivedThread) {
-	if _ret == nil {
-		_ret = []api.ArchivedThread{}
-	}
-
-	m.MockAPI("JoinedPrivateArchivedThreadsBefore", http.MethodGet, "channels/"+channelID.String()+"/users/@me/threads/archived/private",
+// JoinedPrivateArchivedThreads mocks api.Client.JoinedPrivateArchivedThreads.
+func (m *Mocker) JoinedPrivateArchivedThreads(channelID discord.ChannelID, before discord.Timestamp, limit uint, _ret api.ArchivedThreads) {
+	m.MockAPI("JoinedPrivateArchivedThreads", http.MethodGet, "channels/"+channelID.String()+"/users/@me/threads/archived/private",
 		func(_w http.ResponseWriter, _r *http.Request, _t testing.TInterface) {
 			_params := struct {
 				Before string `schema:"before"`
@@ -740,22 +729,6 @@ func (m *Mocker) EditInteractionResponse(appID discord.AppID, token string, data
 // DeleteInteractionResponse mocks api.Client.DeleteInteractionResponse.
 func (m *Mocker) DeleteInteractionResponse(appID discord.AppID, token string) {
 	m.MockAPI("DeleteInteractionResponse", http.MethodDelete, "webhooks/"+appID.String()+"/"+token+"/messages/@original", nil)
-}
-
-// CreateInteractionFollowup mocks api.Client.CreateInteractionFollowup.
-func (m *Mocker) CreateInteractionFollowup(appID discord.AppID, token string, data api.InteractionResponseData, _ret discord.Message) {
-	m.MockAPI("CreateInteractionFollowup", http.MethodPost, "webhooks/"+appID.String()+"/"+token+"?",
-		func(_w http.ResponseWriter, _r *http.Request, _t testing.TInterface) {
-			if data.NeedsMultipart() {
-				_files := data.Files
-				data.Files = nil
-				check.Multipart(_t, _r.Body, _r.Header, data, _files)
-			} else {
-				check.JSON(_t, data, _r.Body)
-			}
-
-			check.WriteJSON(_t, _w, _ret)
-		})
 }
 
 // EditInteractionFollowup mocks api.Client.EditInteractionFollowup.
@@ -1145,6 +1118,113 @@ func (m *Mocker) DeleteRole(guildID discord.GuildID, roleID discord.RoleID, reas
 	m.MockAPI("DeleteRole", http.MethodDelete, "guilds/"+guildID.String()+"/roles/"+roleID.String(),
 		func(_w http.ResponseWriter, _r *http.Request, _t testing.TInterface) {
 			check.Header(_t, reason.Header(), _r.Header)
+		})
+}
+
+// =============================================================================
+// scheduled_events.go
+// =====================================================================================
+
+// ListScheduledEventUsers mocks api.Client.ListScheduledEventUsers.
+func (m *Mocker) ListScheduledEventUsers(guildID discord.GuildID, eventID discord.EventID, limit option.NullableInt, withMember bool, before discord.UserID, after discord.UserID, _ret []api.GuildScheduledEventUser) {
+	if _ret == nil {
+		_ret = []api.GuildScheduledEventUser{}
+	}
+
+	m.MockAPI("ListScheduledEventUsers", http.MethodGet, "guilds/"+guildID.String()+"/scheduled-events/"+eventID.String()+"/users",
+		func(_w http.ResponseWriter, _r *http.Request, _t testing.TInterface) {
+			_params := struct {
+				Limit      option.NullableInt `schema:"limit"`
+				WithMember bool               `schema:"with_member"`
+				Before     discord.UserID     `schema:"before"`
+				After      discord.UserID     `schema:"after"`
+			}{
+				Limit:      limit,
+				WithMember: withMember,
+				Before:     before,
+				After:      after,
+			}
+
+			var _values url.Values
+			err := schema.NewEncoder().Encode(_params, _values)
+			assert.NoError(_t, err)
+
+			check.Query(_t, _values, _r.URL.Query())
+
+			check.WriteJSON(_t, _w, _ret)
+		})
+}
+
+// ListScheduledEvents mocks api.Client.ListScheduledEvents.
+func (m *Mocker) ListScheduledEvents(guildID discord.GuildID, withUserCount bool, _ret []discord.GuildScheduledEvent) {
+	if _ret == nil {
+		_ret = []discord.GuildScheduledEvent{}
+	}
+
+	m.MockAPI("ListScheduledEvents", http.MethodGet, "guilds/"+guildID.String()+"/scheduled-events",
+		func(_w http.ResponseWriter, _r *http.Request, _t testing.TInterface) {
+			_params := struct {
+				WithUserCount bool `schema:"with_user_count"`
+			}{
+				WithUserCount: withUserCount,
+			}
+
+			var _values url.Values
+			err := schema.NewEncoder().Encode(_params, _values)
+			assert.NoError(_t, err)
+
+			check.Query(_t, _values, _r.URL.Query())
+
+			check.WriteJSON(_t, _w, _ret)
+		})
+}
+
+// CreateScheduledEvent mocks api.Client.CreateScheduledEvent.
+func (m *Mocker) CreateScheduledEvent(guildID discord.GuildID, reason api.AuditLogReason, data api.CreateScheduledEventData, _ret discord.GuildScheduledEvent) {
+	m.MockAPI("CreateScheduledEvent", http.MethodPost, "guilds/"+guildID.String()+"/scheduled-events",
+		func(_w http.ResponseWriter, _r *http.Request, _t testing.TInterface) {
+			check.JSON(_t, data, _r.Body)
+
+			check.Header(_t, reason.Header(), _r.Header)
+
+			check.WriteJSON(_t, _w, _ret)
+		})
+}
+
+// EditScheduledEvent mocks api.Client.EditScheduledEvent.
+func (m *Mocker) EditScheduledEvent(guildID discord.GuildID, eventID discord.EventID, reason api.AuditLogReason, data api.EditScheduledEventData, _ret discord.GuildScheduledEvent) {
+	m.MockAPI("EditScheduledEvent", http.MethodPatch, "guilds/"+guildID.String()+"/scheduled-events/"+eventID.String(),
+		func(_w http.ResponseWriter, _r *http.Request, _t testing.TInterface) {
+			check.JSON(_t, data, _r.Body)
+
+			check.Header(_t, reason.Header(), _r.Header)
+
+			check.WriteJSON(_t, _w, _ret)
+		})
+}
+
+// DeleteScheduledEvent mocks api.Client.DeleteScheduledEvent.
+func (m *Mocker) DeleteScheduledEvent(guildID discord.GuildID, eventID discord.EventID) {
+	m.MockAPI("DeleteScheduledEvent", http.MethodDelete, "guilds/"+guildID.String()+"/scheduled-events/"+eventID.String(), nil)
+}
+
+// ScheduledEvent mocks api.Client.ScheduledEvent.
+func (m *Mocker) ScheduledEvent(guildID discord.GuildID, eventID discord.EventID, withUserCount bool, _ret discord.GuildScheduledEvent) {
+	m.MockAPI("ScheduledEvent", http.MethodGet, "guilds/"+guildID.String()+"/scheduled-events/"+eventID.String(),
+		func(_w http.ResponseWriter, _r *http.Request, _t testing.TInterface) {
+			_params := struct {
+				WithUserCount bool `schema:"with_user_count"`
+			}{
+				WithUserCount: withUserCount,
+			}
+
+			var _values url.Values
+			err := schema.NewEncoder().Encode(_params, _values)
+			assert.NoError(_t, err)
+
+			check.Query(_t, _values, _r.URL.Query())
+
+			check.WriteJSON(_t, _w, _ret)
 		})
 }
 

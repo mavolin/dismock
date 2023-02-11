@@ -216,36 +216,45 @@ StartThreadWithoutMessage:
   infer_params:
     - infer: channelID
       from: ParentID
+PublicArchivedThreads:
+  url_params:
+    - param: before
+      type: string
+      omitempty: true
+      val: |
+        if {{.Param}}.IsValid() {
+            {{.Var}} = {{.Param}}.Format(discord.TimestampFormat)
+        }
+    - param: limit
+      omitempty: true
+PrivateArchivedThreads:
+  url_params:
+    - param: before
+      type: string
+      omitempty: true
+      val: |
+        if {{.Param}}.IsValid() {
+            {{.Var}} = {{.Param}}.Format(discord.TimestampFormat)
+        }
+    - param: limit
+      omitempty: true
+JoinedPrivateArchivedThreads:
+  url_params:
+    - param: before
+      type: string
+      omitempty: true
+      val: |
+        if {{.Param}}.IsValid() {
+            {{.Var}} = {{.Param}}.Format(discord.TimestampFormat)
+        }
+    - param: limit
+      omitempty: true
 PublicArchivedThreadsBefore:
-  url_params:
-    - param: before
-      type: string
-      omitempty: true
-      val: |
-        if {{.Param}}.IsValid() {
-            {{.Var}} = {{.Param}}.Format(discord.TimestampFormat)
-        }
-    - param: limit
+  exclude: true
 PrivateArchivedThreadsBefore:
-  url_params:
-    - param: before
-      type: string
-      omitempty: true
-      val: |
-        if {{.Param}}.IsValid() {
-            {{.Var}} = {{.Param}}.Format(discord.TimestampFormat)
-        }
-    - param: limit
+  exclude: true
 JoinedPrivateArchivedThreadsBefore:
-  url_params:
-    - param: before
-      type: string
-      omitempty: true
-      val: |
-        if {{.Param}}.IsValid() {
-            {{.Var}} = {{.Param}}.Format(discord.TimestampFormat)
-        }
-    - param: limit
+  exclude: true
 
 
 ##########################################################################################
@@ -305,6 +314,10 @@ GuildWidgetImage:
 ################################################################################################
 
 RespondInteraction:
+  exclude: true
+CreateInteractionFollowup:
+  exclude: true
+FollowUpInteraction:
   exclude: true
 
 
@@ -412,8 +425,8 @@ EditMessageComplex:
   exclude: true
 DeleteMessages:
   exclude: true
-  
-  
+
+
 #####################################################################################################
 ######################################## message_reaction.go ########################################
 #####################################################################################################
@@ -438,6 +451,28 @@ ModifyRole:
   infer_params:
     - infer: roleID
       from: ID
+
+
+#########################################################################################
+################################## scheduled_events.go ##################################
+#########################################################################################
+
+ListScheduledEventUsers:
+  url_params:
+    - param: limit
+      omitempty: true
+    - param: withMember
+      omitempty: true
+    - param: before
+      omitempty: true
+    - param: after
+      omitempty: true
+ListScheduledEvents:
+  url_params:
+    - param: withUserCount
+ScheduledEvent:
+  url_params:
+    - param: withUserCount
 
 
 #########################################################################################
