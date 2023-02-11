@@ -1,7 +1,7 @@
 <div align="center">
 <h1>dismock</h1>
-    
-[![GitHub Workflow Status (branch)](https://img.shields.io/github/workflow/status/mavolin/dismock/Test/v3)](https://github.com/mavolin/dismock/actions?query=workflow%3ATest+branch%3Av3+)
+
+[![GitHub Test Workflow](https://github.com/mavolin/dismock/actions/workflows/test.yml/badge.svg)](https://github.com/mavolin/dismock/actions/workflows/test.yml)
 [![Test Coverage](https://codecov.io/gh/mavolin/dismock/branch/v3/graph/badge.svg)](https://codecov.io/gh/mavolin/dismock/branch/v3)
 [![Go Report Card](https://goreportcard.com/badge/github.com/mavolin/dismock)](https://goreportcard.com/report/github.com/mavolin/dismock)
 [![PkgGoDev](https://pkg.go.dev/badge/github.com/mavolin/dismock/v3)](https://pkg.go.dev/github.com/mavolin/dismock/v3)
@@ -23,20 +23,37 @@ You can create a mock by calling the method that corresponds to the API request 
 Below is a simple example of a ping command, and it's unit test.
 
 ```go
-func (b *Bot) Ping(e *gateway.MessageCreateEvent) (error) {
+import (
+    "github.com/diamondburned/arikawa/v3/bot"
+    "github.com/diamondburned/arikawa/v3/gateway"
+)
+
+type Bot struct {
+    Ctx *bot.Context
+}
+
+func (b *Bot) Ping(e *gateway.MessageCreateEvent) error {
     _, err := b.Ctx.SendText(e.ChannelID, "🏓")
     if err != nil {
         return err
     }
-
-    _, err := b.Ctx.SendText(e.ChannelID, "Pong!")
+    _, err = b.Ctx.SendText(e.ChannelID, "Pong!")
     return err
 }
 ```
 
 ```go
+import (
+    "testing"
+
+    "github.com/diamondburned/arikawa/v2/bot"
+    "github.com/diamondburned/arikawa/v2/discord"
+    "github.com/diamondburned/arikawa/v2/gateway"
+    "github.com/mavolin/dismock/v2/pkg/dismock"
+)
+
 func TestBot_Ping(t *testing.T) {
-    // you can also mock a Session by using dismock.NewSession(t), or dismock.New(t) 
+    // you can also mock a Session by using dismock.NewSession(t), or dismock.New(t)
     // to only create a Mocker
     m, s := dismock.NewState(t)
 
@@ -46,7 +63,7 @@ func TestBot_Ping(t *testing.T) {
         // the doc of every mock specifies what fields are required, all other
         // fields not relevant to your test can be omitted
         ChannelID: channelID,
-        Content: "🏓",
+        Content:   "🏓",
     })
 
     // Mocks should be added in the same order their calls are made.
@@ -54,13 +71,17 @@ func TestBot_Ping(t *testing.T) {
     // using the same http method.
     m.SendText(discord.Message{
         ChannelID: channelID,
-        Content: "Pong!"
+        Content:   "Pong!",
     })
 
-    b := NewBot(s)
-    b.Ping(&gateway.MessageCreateEvent{
-        Message: discord.Message{ChannelID: channelID}
+    var b Bot
+    _, _ = bot.New(s, &b)
+    err := b.Ping(&gateway.MessageCreateEvent{
+        Message: discord.Message{ChannelID: channelID},
     })
+    if err != nil {
+        t.Fatal(err)
+    }
 }
 ```
 
@@ -69,13 +90,22 @@ func TestBot_Ping(t *testing.T) {
 Now imagine a bit more complicated test, that has multiple sub-tests:
 
 ```go
-func (b *Bot) Ping(e *gateway.MessageCreateEvent) (error) {
+import (
+    "github.com/diamondburned/arikawa/v2/bot"
+    "github.com/diamondburned/arikawa/v2/gateway"
+)
+
+type Bot struct {
+    Ctx *bot.Context
+}
+
+func (b *Bot) Ping(e *gateway.MessageCreateEvent) error {
     _, err := b.Ctx.SendText(e.ChannelID, "🏓")
     if err != nil {
         return err
     }
 
-    _, err := b.Ctx.SendText(e.ChannelID, e.Author.Mention()+" Pong!")
+    _, err = b.Ctx.SendText(e.ChannelID, e.Author.Mention()+" Pong!")
     return err
 }
 ```
